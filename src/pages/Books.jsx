@@ -18,7 +18,7 @@ const books = [
     cover: textingGodCover,
     title: 'Texting With God',
     subtitle: '30 Days to Learn How to Hear His Voice',
-    description: 'A 30-day devotional that teaches you how to have a real, two-way conversation with God. If you\'ve ever wondered whether God still speaks — this book is for you.',
+    description: 'The story of how one man learned to hear God\'s voice — not in thunder, but in the quiet of a Notes app on his phone.',
     status: 'available',
     buyLink: '#',
   },

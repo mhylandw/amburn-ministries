@@ -4,6 +4,7 @@ import heroBg from '../assets/mk-header.png'
 import mkPhoto from '../assets/mk-hero.avif'
 import logo from '../assets/logo.avif'
 import overcomerCover from '../assets/overcomer-cover.png'
+import EmailSubscribe from '../components/EmailSubscribe'
 
 export default function Home() {
   return (
@@ -106,12 +107,11 @@ export default function Home() {
             <p className="text-white/60 font-sans leading-relaxed mb-4">
               Michael Amstutz-Washburn is a gifted writer whose prose resonates with a rare blend of passion and precision. His writing moves you—and points you back to Jesus.
             </p>
-            <p className="text-white/40 font-sans text-sm mb-8">Coming Soon...</p>
             <Link
-              to="/resources"
-              className="flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/70 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full inline-flex transition-colors w-fit"
+              to="/books"
+              className="flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full inline-flex transition-colors w-fit"
             >
-              Learn More <ArrowRight size={15} />
+              Get the Book <ArrowRight size={15} />
             </Link>
           </div>
         </div>
@@ -120,22 +120,11 @@ export default function Home() {
       {/* Newsletter signup */}
       <section className="py-20 px-4 bg-coal-900">
         <div className="max-w-lg mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-flame-500/10 border border-flame-500/30 mb-6">
-            <Mail className="text-flame-500" size={24} />
-          </div>
           <h2 className="font-serif text-3xl text-white mb-4">Stay Connected</h2>
           <p className="text-white/50 font-sans leading-relaxed mb-8">
-            Join our mailing list to stay up-to-date with the latest news, tour dates, and exclusive content from Amburn Ministries.
+            Join our mailing list for the latest updates, blog posts, and exclusive content from Amburn Ministries.
           </p>
-          <a
-            href="https://amburnministries.beehiiv.com/subscribe"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold px-8 py-3 rounded-full transition-colors"
-          >
-            <Mail size={16} />
-            Subscribe Now
-          </a>
+          <EmailSubscribe />
         </div>
       </section>
     </div>

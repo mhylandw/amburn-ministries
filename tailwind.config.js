@@ -18,8 +18,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Lora', 'Georgia', 'serif'],
+        sans: ['Jost', 'sans-serif'],
+        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
       },
     },
   },

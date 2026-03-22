@@ -17,7 +17,7 @@ const books = [
   {
     cover: textingGodCover,
     title: 'Texting With God',
-    subtitle: '30 Days to Learn How to Hear His Voice',
+    subtitle: 'The Story Behind the Conversation',
     description: 'The story of how one man learned to hear God\'s voice — not in thunder, but in the quiet of a Notes app on his phone.',
     status: 'available',
     buyLink: '#',

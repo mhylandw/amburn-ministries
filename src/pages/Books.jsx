@@ -3,7 +3,7 @@ import overcomerCover from '../assets/overcomer-cover-3d.png'
 import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
 import weightOfYesCover from '../assets/weight-of-yes-3d.png'
 import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.png'
-import textingGodCover from '../assets/texting-with-god.jpg'
+import textingGodCover from '../assets/texting-with-god-3d.png'
 
 const books = [
   {

@@ -10,6 +10,8 @@ import Donate from './pages/Donate'
 import Resources from './pages/Resources'
 import Books from './pages/Books'
 import Ebooks from './pages/Ebooks'
+import Store from './pages/Store'
+import CheckoutSuccess from './pages/CheckoutSuccess'
 import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
 
@@ -34,6 +36,8 @@ export default function App() {
           <Route path="/resources" element={<Resources />} />
           <Route path="/books" element={<Books />} />
           <Route path="/ebooks" element={<Ebooks />} />
+          <Route path="/store" element={<Store />} />
+          <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>

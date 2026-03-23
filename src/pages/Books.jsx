@@ -12,7 +12,7 @@ const books = [
     title: 'Overcomer',
     subtitle: "God's Love Through the Eyes of a Rebel",
     description: 'A raw, honest story of failure, faith, and the relentless love of God. Michael\'s debut memoir traces the wreckage of rebellion and the miracle of redemption.',
-    status: 'available',
+    status: 'coming-soon',
     buyLink: '#',
   },
   {
@@ -110,7 +110,7 @@ export default function Books() {
                         Get the Book <ArrowRight size={15} />
                       </a>
                       <Link
-                        to="/ebooks"
+                        to="/store"
                         className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/50 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"
                       >
                         <BookOpen size={14} /> eBook
@@ -122,7 +122,7 @@ export default function Books() {
                         Print — Coming Soon
                       </span>
                       <Link
-                        to="/ebooks"
+                        to="/store"
                         className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/50 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"
                       >
                         <BookOpen size={14} /> eBook

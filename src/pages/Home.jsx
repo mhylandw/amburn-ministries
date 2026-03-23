@@ -115,12 +115,19 @@ export default function Home() {
             <p className="text-white/60 font-sans leading-relaxed mb-4">
               Michael Amstutz-Washburn is a gifted writer whose prose resonates with a rare blend of passion and precision. His writing moves you—and points you back to Jesus.
             </p>
-            <Link
-              to="/books"
-              className="flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full inline-flex transition-colors w-fit"
-            >
-              Get the Book <ArrowRight size={15} />
-            </Link>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="inline-flex items-center gap-2 border border-flame-500/40 text-flame-400 font-sans text-sm px-6 py-3 rounded-full w-fit">
+                Coming Soon
+              </span>
+              <a
+                href="https://amburnministries.beehiiv.com/subscribe"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-white/40 hover:text-flame-400 font-sans text-sm transition-colors"
+              >
+                Get notified <ArrowRight size={13} />
+              </a>
+            </div>
           </div>
         </div>
       </section>

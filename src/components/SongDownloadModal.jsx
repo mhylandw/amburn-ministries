@@ -9,14 +9,7 @@ export default function SongDownloadModal({ onClose }) {
     e.preventDefault()
     if (!email) return
 
-    // Subscribe via Beehiiv
-    window.open(
-      `https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
-
-    // Trigger the download
+    // Trigger the download immediately
     const link = document.createElement('a')
     link.href = '/healing-you-again.m4a'
     link.download = 'Healing You Again (Communion) - Amburn.m4a'
@@ -47,9 +40,17 @@ export default function SongDownloadModal({ onClose }) {
               <Check className="text-green-400" size={20} />
             </div>
             <h3 className="font-serif text-2xl text-white mb-2">Your download is starting</h3>
-            <p className="text-white/50 font-sans text-sm">
-              Check your downloads folder for <em>Healing You Again</em>. Also check the new tab to confirm your newsletter subscription.
+            <p className="text-white/50 font-sans text-sm mb-4">
+              Check your Downloads folder for <em>Healing You Again (Communion)</em>.
             </p>
+            <a
+              href={`https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-flame-400 font-sans text-xs transition-colors"
+            >
+              Also subscribe to the Amburn Newsletter →
+            </a>
           </div>
         ) : (
           <>

@@ -26,12 +26,13 @@ export default function LeadMagnetPopup() {
     e.preventDefault()
     if (!email) return
 
-    // Open Beehiiv subscribe with email pre-filled
-    window.open(
-      `https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
+    // Trigger download immediately
+    const link = document.createElement('a')
+    link.href = '/when-the-grace-lifts.epub'
+    link.download = 'When the Grace Lifts - Amburn Ministries.epub'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
 
     setSubmitted(true)
     localStorage.setItem('popup_dismissed', 'true')
@@ -73,21 +74,26 @@ export default function LeadMagnetPopup() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-flame-400">
                   <Check size={20} />
-                  <span className="font-sans font-semibold text-sm">You're in!</span>
+                  <span className="font-sans font-semibold text-sm">Your download is starting!</span>
                 </div>
                 <p className="text-white font-serif text-xl leading-snug">
-                  Check the new tab to confirm your subscription.
-                </p>
-                <p className="text-white/50 font-sans text-sm">
-                  Then download your free copy of <em>When the Grace Lifts</em> below:
+                  Check your Downloads folder for <em>When the Grace Lifts</em>.
                 </p>
                 <a
                   href="/when-the-grace-lifts.epub"
                   download="When the Grace Lifts - Amburn Ministries.epub"
-                  className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors w-fit mt-2"
+                  className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors w-fit"
                 >
                   <Download size={15} />
-                  Download eBook
+                  Download Again
+                </a>
+                <a
+                  href={`https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/40 hover:text-flame-400 font-sans text-xs transition-colors"
+                >
+                  Also subscribe to the Amburn Newsletter →
                 </a>
               </div>
             ) : (

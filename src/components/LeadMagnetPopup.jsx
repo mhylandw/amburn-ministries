@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Download, ArrowRight, Check, BookOpen } from 'lucide-react'
-import graceLiftscover from '../assets/when-the-grace-lifts-3d.png'
+import graceLiftscover from '../assets/grace-lifts-promo.jpg'
 
 export default function LeadMagnetPopup() {
   const [visible, setVisible] = useState(false)
@@ -59,11 +59,11 @@ export default function LeadMagnetPopup() {
 
         <div className="flex flex-col md:flex-row">
           {/* Book image */}
-          <div className="bg-coal-900 flex items-center justify-center p-8 md:w-48 shrink-0">
+          <div className="bg-coal-900 flex items-center justify-center p-6 md:w-56 shrink-0">
             <img
               src={graceLiftscover}
               alt="When the Grace Lifts"
-              className="w-32 md:w-36 object-contain drop-shadow-2xl"
+              className="w-full object-contain drop-shadow-2xl rounded-lg"
             />
           </div>
 

@@ -1,31 +1,17 @@
 import { useState } from 'react'
-import { Heart, ArrowRight, Loader } from 'lucide-react'
+import { Heart, ArrowRight } from 'lucide-react'
 
 const PRESETS = [10, 25, 50, 100]
 
 export default function Donate() {
   const [amount, setAmount] = useState('')
   const [custom, setCustom] = useState('')
-  const [loading, setLoading] = useState(false)
 
   const finalAmount = custom || amount
 
-  async function handleGive() {
+  function handleGive() {
     if (!finalAmount || parseFloat(finalAmount) < 1) return
-    setLoading(true)
-    try {
-      const res = await fetch('/api/create-donation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: finalAmount }),
-      })
-      const data = await res.json()
-      if (data.url) window.location.href = data.url
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
+    window.open(`https://www.paypal.me/amburnmedia/${parseFloat(finalAmount).toFixed(2)}`, '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -49,7 +35,6 @@ export default function Donate() {
             We believe generosity is an act of worship. Thank you for partnering with what God is doing through this ministry.
           </p>
 
-          {/* Preset amounts */}
           <div className="flex gap-3 justify-center mb-4 flex-wrap">
             {PRESETS.map(p => (
               <button
@@ -66,7 +51,6 @@ export default function Donate() {
             ))}
           </div>
 
-          {/* Custom amount */}
           <div className="relative mb-6">
             <span className="absolute left-5 top-1/2 -translate-y-1/2 text-white/40 font-sans text-sm">$</span>
             <input
@@ -81,13 +65,10 @@ export default function Donate() {
 
           <button
             onClick={handleGive}
-            disabled={!finalAmount || loading}
-            className="w-full flex items-center justify-center gap-2 bg-flame-500 hover:bg-flame-400 disabled:opacity-40 text-white font-sans font-semibold px-8 py-4 rounded-full transition-colors mb-8"
+            disabled={!finalAmount}
+            className="w-full flex items-center justify-center gap-2 bg-flame-500 hover:bg-flame-400 disabled:opacity-40 text-white font-sans font-semibold px-8 py-4 rounded-full transition-colors mb-4"
           >
-            {loading
-              ? <><Loader size={16} className="animate-spin" /> Processing…</>
-              : <><Heart size={16} /> Give {finalAmount ? `$${parseFloat(finalAmount).toFixed(2)}` : 'Now'}</>
-            }
+            <Heart size={16} /> Give {finalAmount ? `$${parseFloat(finalAmount).toFixed(2)}` : 'Now'} via PayPal
           </button>
 
           <p className="text-white/30 text-xs font-sans">

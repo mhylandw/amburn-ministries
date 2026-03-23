@@ -1,5 +1,6 @@
 import mkPhoto from '../assets/mk-photo.avif'
 import ministryPhoto from '../assets/ministry-photo.avif'
+import mkTogetherPhoto from '../assets/IMG_2773_edited.jpg'
 
 export default function About() {
   return (
@@ -27,7 +28,7 @@ export default function About() {
           </div>
           <div className="flex justify-center">
             <div className="w-80 h-80 rounded-2xl overflow-hidden shadow-2xl">
-              <img src={mkPhoto} alt="Michael & Kayla" className="w-full h-full object-cover" />
+              <img src={mkPhoto} alt="Michael & Katrina Amstutz-Washburn" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
@@ -102,20 +103,23 @@ export default function About() {
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center order-2 md:order-1">
             <div className="w-80 h-80 rounded-2xl overflow-hidden shadow-2xl">
-              <img src={ministryPhoto} alt="Amburn Ministries" className="w-full h-full object-cover" />
+              <img src={mkTogetherPhoto} alt="Michael & Katrina Amstutz-Washburn" className="w-full h-full object-cover object-top" />
             </div>
           </div>
           <div className="order-1 md:order-2">
             <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">The Story Behind It</p>
-            <h2 className="font-serif text-3xl text-white mb-6">Built from a redeemed one.</h2>
+            <h2 className="font-serif text-3xl text-white mb-6">Built from redeemed ones.</h2>
             <p className="text-white/60 font-sans leading-relaxed mb-4">
-              Amburn Ministries isn't built from a perfect background—it's built from a redeemed one.
+              Amburn Ministries isn't built from a perfect background—it's built from redeemed ones.
             </p>
             <p className="text-white/60 font-sans leading-relaxed mb-4">
               Out of seasons of confusion, striving, and searching came a revelation: God was never distant. He was always speaking. Always present. Always inviting relationship.
             </p>
-            <p className="text-white/60 font-sans leading-relaxed">
+            <p className="text-white/60 font-sans leading-relaxed mb-4">
               What began as personal journaling and raw conversations with God eventually became something meant to be shared—through writing, music, and tools that help others experience that same connection for themselves.
+            </p>
+            <p className="text-white/60 font-sans leading-relaxed">
+              Michael and Katrina Amstutz-Washburn lead this ministry together. Each carries their own story of redemption, and together they bring a shared calling to help others encounter God in a way that is personal, honest, and lasting. Katrina's teaching and creative materials are coming soon.
             </p>
           </div>
         </div>

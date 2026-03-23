@@ -5,3 +5,6 @@ dist/
 *.csv
 .wrangler/
 Books/*.epub
+
+ios/
+android/

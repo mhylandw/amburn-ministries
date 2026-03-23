@@ -68,7 +68,7 @@ export default function BlogPost() {
               <ArrowLeft size={14} /> Back to Blog
             </Link>
             <a
-              href="https://amburnministries.beehiiv.com/subscribe"
+              href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-2.5 rounded-full transition-colors"

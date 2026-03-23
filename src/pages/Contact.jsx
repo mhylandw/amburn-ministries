@@ -55,8 +55,8 @@ export default function Contact() {
                 <a href="mailto:admin@amburnmedia.com" className="flex items-center gap-2 text-white/50 hover:text-flame-400 text-sm font-sans transition-colors mb-1">
                   <Mail size={14} /> admin@amburnmedia.com
                 </a>
-                <a href="tel:7199120192" className="flex items-center gap-2 text-white/50 hover:text-flame-400 text-sm font-sans transition-colors">
-                  <Phone size={14} /> 719-912-0192
+                <a href="tel:7196506172" className="flex items-center gap-2 text-white/50 hover:text-flame-400 text-sm font-sans transition-colors">
+                  <Phone size={14} /> 719-650-6172
                 </a>
               </div>
 

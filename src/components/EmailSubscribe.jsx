@@ -15,7 +15,7 @@ export default function EmailSubscribe({ className = '' }) {
     if (!email) return
     // Open Beehiiv subscribe page with email pre-filled
     window.open(
-      `https://amburnministries.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
+      `https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
       '_blank',
       'noopener,noreferrer'
     )

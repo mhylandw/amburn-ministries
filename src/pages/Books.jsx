@@ -130,7 +130,7 @@ export default function Books() {
                     </div>
                   ) : book.status === 'coming-soon' ? (
                     <a
-                      href="https://amburnministries.beehiiv.com/subscribe"
+                      href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"

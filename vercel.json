@@ -2,8 +2,7 @@
   "redirects": [
     { "source": "/post/:slug", "destination": "/blog/:slug", "permanent": true },
     { "source": "/blog-post/:slug", "destination": "/blog/:slug", "permanent": true },
-    { "source": "/store", "destination": "/books", "permanent": true },
-    { "source": "/shop", "destination": "/books", "permanent": true },
+    { "source": "/shop", "destination": "/store", "permanent": true },
     { "source": "/music", "destination": "/resources", "permanent": true },
     { "source": "/media", "destination": "/resources", "permanent": true }
   ],

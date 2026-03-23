@@ -34,7 +34,7 @@ export default function Footer() {
           {/* Nav links */}
           <div className="flex flex-col gap-2">
             <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Pages</p>
-            {[['Home', '/'], ['About', '/about'], ['Books', '/books'], ['Blog', '/blog'], ['Resources', '/resources'], ['Donate', '/donate'], ['Contact', '/contact']].map(([label, to]) => (
+            {[['Home', '/'], ['About', '/about'], ['Books', '/books'], ['Store', '/store'], ['Blog', '/blog'], ['Resources', '/resources'], ['Donate', '/donate'], ['Contact', '/contact']].map(([label, to]) => (
               <Link key={to} to={to} className="text-white/60 hover:text-flame-400 text-sm transition-colors">{label}</Link>
             ))}
           </div>

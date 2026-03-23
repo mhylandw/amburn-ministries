@@ -1,8 +1,11 @@
-import { Music, Download, ArrowRight } from 'lucide-react'
+import { useState } from 'react'
+import { Music, Download, ArrowRight, Compass } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import overcomerCover from '../assets/overcomer-cover.png'
+import SongDownloadModal from '../components/SongDownloadModal'
 
 export default function Resources() {
+  const [showSongModal, setShowSongModal] = useState(false)
   return (
     <div className="pt-16">
       {/* Page header */}
@@ -35,35 +38,31 @@ export default function Resources() {
                 It's a reminder that God doesn't roll His eyes at your need. He draws near to it. He invites you back to the table.
               </p>
             </div>
-            <a
-              href="https://amburnministries.beehiiv.com/subscribe"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setShowSongModal(true)}
               className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-8 py-3 rounded-full transition-colors"
             >
               <Download size={15} />
               Get Free Download
-            </a>
+            </button>
           </div>
 
-          {/* Newest EP */}
+          {/* Discern App */}
           <div className="bg-coal-800 border border-coal-600 rounded-2xl p-8 md:p-12">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-flame-500/10 border border-flame-500/30 mb-6">
-              <Music className="text-flame-500" size={22} />
+              <Compass className="text-flame-500" size={22} />
             </div>
-            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-2">Music</p>
-            <h2 className="font-serif text-2xl md:text-3xl text-white mb-4">Our Newest EP</h2>
+            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-2">Coming Soon</p>
+            <h2 className="font-serif text-2xl md:text-3xl text-white mb-4">Discern App</h2>
             <p className="text-white/60 font-sans leading-relaxed mb-8 max-w-2xl">
-              Stream or download our latest worship EP. Music born out of real life, real pain, and real encounters with God.
+              A spiritual discernment tool built to help you hear God clearly — not just once, but every day. Guided prompts, Scripture-based testing, and a space to grow in two-way conversation with God.
             </p>
-            <a
-              href="https://www.youtube.com/channel/UCFHvg1qehn1Wc1OXpXALUzw"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/discern"
               className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/70 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors"
             >
-              Listen on YouTube <ArrowRight size={15} />
-            </a>
+              Learn More <ArrowRight size={15} />
+            </Link>
           </div>
 
           {/* Book */}
@@ -77,7 +76,7 @@ export default function Resources() {
               Michael Amstutz-Washburn's debut book. A raw, honest story of failure, faith, and the relentless love of God. Stay connected to be the first to know when it drops.
             </p>
             <a
-              href="https://amburnministries.beehiiv.com/subscribe"
+              href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/70 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors"
@@ -89,6 +88,8 @@ export default function Resources() {
 
         </div>
       </section>
+
+      {showSongModal && <SongDownloadModal onClose={() => setShowSongModal(false)} />}
     </div>
   )
 }

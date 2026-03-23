@@ -11,7 +11,7 @@ export default function SongDownloadModal({ onClose }) {
 
     // Subscribe via Beehiiv
     window.open(
-      `https://amburnministries.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
+      `https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
       '_blank',
       'noopener,noreferrer'
     )

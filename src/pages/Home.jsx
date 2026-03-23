@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Music, Mail } from 'lucide-react'
 import heroBg from '../assets/mk-header.png'
@@ -9,8 +10,11 @@ import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
 import weightCover from '../assets/weight-of-yes-3d.png'
 import breakthroughCover from '../assets/after-the-breakthrough-3d.png'
 import EmailSubscribe from '../components/EmailSubscribe'
+import SongDownloadModal from '../components/SongDownloadModal'
 
 export default function Home() {
+  const [showSongModal, setShowSongModal] = useState(false)
+
   return (
     <div>
       {/* Hero */}
@@ -87,12 +91,12 @@ export default function Home() {
           <p className="text-white/60 font-sans leading-relaxed max-w-xl mx-auto mb-8">
             <em className="text-white/80">Healing You Again (Communion)</em> — born in one of the most desperate seasons of life, this song is a reminder that God doesn't roll His eyes at your need. He draws near to it.
           </p>
-          <Link
-            to="/resources"
+          <button
+            onClick={() => setShowSongModal(true)}
             className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-8 py-3 rounded-full transition-colors"
           >
             Get Free Download <ArrowRight size={15} />
-          </Link>
+          </button>
         </div>
       </section>
 
@@ -139,6 +143,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {showSongModal && <SongDownloadModal onClose={() => setShowSongModal(false)} />}
 
       {/* Newsletter signup */}
       <section className="py-20 px-4 bg-coal-900">

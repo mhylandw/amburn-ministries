@@ -3,7 +3,7 @@ import { ArrowRight, Music, Mail } from 'lucide-react'
 import heroBg from '../assets/mk-header.png'
 import mkPhoto from '../assets/mk-hero.avif'
 import logo from '../assets/logo.avif'
-import overcomerCover from '../assets/overcomer-cover.png'
+import overcomerCover from '../assets/overcomer-cover-3d.png'
 import EmailSubscribe from '../components/EmailSubscribe'
 
 export default function Home() {
@@ -103,7 +103,7 @@ export default function Home() {
           <div>
             <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">New Book</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white mb-2">Overcomer</h2>
-            <p className="text-white/50 font-sans text-sm italic mb-6">A True Story of God's Love Through the Life of a Rebel</p>
+            <p className="text-white/50 font-sans text-sm italic mb-6">God's Love Through the Eyes of a Rebel</p>
             <p className="text-white/60 font-sans leading-relaxed mb-4">
               Michael Amstutz-Washburn is a gifted writer whose prose resonates with a rare blend of passion and precision. His writing moves you—and points you back to Jesus.
             </p>

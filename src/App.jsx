@@ -8,6 +8,7 @@ import Blog from './pages/Blog'
 import Donate from './pages/Donate'
 import Resources from './pages/Resources'
 import Books from './pages/Books'
+import Ebooks from './pages/Ebooks'
 import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
 
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/donate" element={<Donate />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/books" element={<Books />} />
+          <Route path="/ebooks" element={<Ebooks />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>

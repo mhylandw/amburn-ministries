@@ -1,4 +1,5 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, BookOpen } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
 import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
 import weightOfYesCover from '../assets/weight-of-yes-3d.png'
@@ -98,15 +99,35 @@ export default function Books() {
                   <p className="text-white/50 font-sans italic text-sm mb-4">{book.subtitle}</p>
                   <p className="text-white/60 font-sans leading-relaxed mb-6 max-w-lg">{book.description}</p>
 
-                  {book.status === 'available' && book.buyLink ? (
-                    <a
-                      href={book.buyLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors w-fit"
-                    >
-                      Get the Book <ArrowRight size={15} />
-                    </a>
+                  {book.status === 'available' && book.buyLink && book.buyLink !== '#' ? (
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <a
+                        href={book.buyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors w-fit"
+                      >
+                        Get the Book <ArrowRight size={15} />
+                      </a>
+                      <Link
+                        to="/ebooks"
+                        className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/50 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"
+                      >
+                        <BookOpen size={14} /> eBook
+                      </Link>
+                    </div>
+                  ) : book.status === 'available' && book.buyLink === '#' ? (
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="inline-flex items-center gap-2 border border-white/10 text-white/30 font-sans text-sm px-6 py-3 rounded-full w-fit cursor-default">
+                        Print — Coming Soon
+                      </span>
+                      <Link
+                        to="/ebooks"
+                        className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/50 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"
+                      >
+                        <BookOpen size={14} /> eBook
+                      </Link>
+                    </div>
                   ) : book.status === 'coming-soon' ? (
                     <a
                       href="https://amburnministries.beehiiv.com/subscribe"

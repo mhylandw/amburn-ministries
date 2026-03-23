@@ -21,7 +21,7 @@ const ebooks = [
     subtitle: 'The Story Behind the Conversation',
     description: 'The story of how one man learned to hear God\'s voice — not in thunder, but in the quiet of a Notes app on his phone.',
     price: 9.99,
-    stripeLink: null,
+    stripeLink: 'https://buy.stripe.com/14AbJ1cwgcW7cxP5BH3sI03',
   },
   {
     cover: graceLiftsCover,
@@ -29,7 +29,7 @@ const ebooks = [
     subtitle: 'Finding faithfulness in the inbetweens',
     description: 'A field guide for when God feels distant — written for the seasons when heaven feels silent.',
     price: 9.99,
-    stripeLink: null,
+    stripeLink: 'https://buy.stripe.com/eVq3cvao8e0b41j9RX3sI00',
   },
   {
     cover: weightOfYesCover,
@@ -37,7 +37,7 @@ const ebooks = [
     subtitle: 'What obedience costs... and what it forms',
     description: 'Saying yes to God sounds simple — until it costs you something.',
     price: 9.99,
-    stripeLink: null,
+    stripeLink: 'https://buy.stripe.com/cNi4gz9k43lx7dv9RX3sI01',
   },
   {
     cover: afterBreakthroughCover,
@@ -45,7 +45,7 @@ const ebooks = [
     subtitle: 'Living from intimacy, not outcomes',
     description: 'The breakthrough came — now what? Learn to steward what God unlocked.',
     price: 9.99,
-    stripeLink: null,
+    stripeLink: 'https://buy.stripe.com/7sY3cvao8aNZ0P7c053sI02',
   },
 ]
 

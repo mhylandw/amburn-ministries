@@ -4,6 +4,10 @@ import heroBg from '../assets/mk-header.png'
 import mkPhoto from '../assets/mk-hero.avif'
 import logo from '../assets/logo.avif'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
+import textingCover from '../assets/texting-with-god-3d.png'
+import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
+import weightCover from '../assets/weight-of-yes-3d.png'
+import breakthroughCover from '../assets/after-the-breakthrough-3d.png'
 import EmailSubscribe from '../components/EmailSubscribe'
 
 export default function Home() {
@@ -113,6 +117,25 @@ export default function Home() {
             >
               Get the Book <ArrowRight size={15} />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* More Books */}
+      <section className="py-10 px-4 bg-coal-800 border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-white/40 font-sans text-xs uppercase tracking-widest">More Books</p>
+            <Link to="/books" className="text-flame-400 font-sans text-xs hover:text-flame-300 transition-colors flex items-center gap-1">
+              Browse All <ArrowRight size={12} />
+            </Link>
+          </div>
+          <div className="flex gap-4 justify-center">
+            {[textingCover, graceLiftsCover, weightCover, breakthroughCover].map((cover, i) => (
+              <Link to="/books" key={i}>
+                <img src={cover} alt="Book" className="w-16 md:w-20 rounded-md shadow-lg hover:scale-105 transition-transform" />
+              </Link>
+            ))}
           </div>
         </div>
       </section>

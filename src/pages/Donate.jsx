@@ -72,7 +72,7 @@ export default function Donate() {
           </button>
 
           <p className="text-white/30 text-xs font-sans">
-            Amburn Ministries is operated under Amburn Media, LLC.<br />
+            Amburn Ministries is operated under Amburn, LLC — a 501(c)(3) nonprofit organization. Donations may be tax-deductible.<br />
             For questions about giving, contact{' '}
             <a href="mailto:admin@amburnministries.com" className="text-flame-500 hover:underline">
               admin@amburnministries.com

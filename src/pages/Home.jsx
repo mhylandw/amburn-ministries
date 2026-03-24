@@ -62,7 +62,7 @@ export default function Home() {
             <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Our Purpose</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white mb-6">Our Vision</h2>
             <p className="text-white/60 font-sans leading-relaxed mb-4">
-              The world and the Church are searching for truth... They want to encounter the heart of God—to understand the Love of God. Our mission is to bring healing, deliverance, and restoration to every soul that God brings across our path.
+              The world is searching for truth... People want to encounter the heart of God—to understand the love of God. Our mission is to bring healing, deliverance, and restoration to souls that God brings across our path.
             </p>
             <p className="text-white/60 font-sans leading-relaxed mb-8">
               Amburn Ministries stands as a beacon of hope and transformation. Rooted in the belief that every individual deserves an environment where healing, deliverance, and restoration are not just ideals but realities.
@@ -110,7 +110,7 @@ export default function Home() {
             <h2 className="font-serif text-3xl md:text-4xl text-white mb-2">Overcomer</h2>
             <p className="text-white/50 font-sans text-sm italic mb-6">God's Love Through the Eyes of a Rebel</p>
             <p className="text-white/60 font-sans leading-relaxed mb-4">
-              Michael Amstutz-Washburn is a gifted writer whose prose resonates with a rare blend of passion and precision. His writing moves you—and points you back to Jesus.
+              Michael Amstutz-Washburn's writing style hits with a rare blend of passion and honesty. It moves you—and points you back to Jesus.
             </p>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="inline-flex items-center gap-2 border border-flame-500/40 text-flame-400 font-sans text-sm px-6 py-3 rounded-full w-fit">

@@ -1,7 +1,51 @@
-import { useState } from 'react'
-import { Heart, ArrowRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Heart, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import img1 from '../assets/ministry-1.avif'
+import img2 from '../assets/ministry-2.jpg'
+import img3 from '../assets/ministry-3.avif'
+import img4 from '../assets/ministry-4.avif'
+import img5 from '../assets/ministry-5.avif'
+import img6 from '../assets/ministry-6.png'
+import img7 from '../assets/mk-photo.avif'
+import img8 from '../assets/IMG_2773_edited.jpg'
+
+const slides = [img1, img2, img3, img4, img5, img6, img7, img8]
 
 const PRESETS = [10, 25, 50, 100]
+
+function Slideshow() {
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    const t = setInterval(() => setCurrent(c => (c + 1) % slides.length), 4000)
+    return () => clearInterval(t)
+  }, [])
+
+  return (
+    <div className="relative w-full rounded-2xl overflow-hidden aspect-video shadow-2xl">
+      {slides.map((src, i) => (
+        <img
+          key={i}
+          src={src}
+          alt="Amburn Ministries in action"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${i === current ? 'opacity-100' : 'opacity-0'}`}
+        />
+      ))}
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-coal-900/60 to-transparent pointer-events-none" />
+      {/* Dots */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? 'bg-white w-4' : 'bg-white/40'}`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function Donate() {
   const [amount, setAmount] = useState('')
@@ -21,7 +65,30 @@ export default function Donate() {
         <h1 className="font-serif text-4xl md:text-5xl text-white">Donate</h1>
       </div>
 
-      <section className="py-20 px-4 bg-coal-900">
+      {/* Photo slideshow + missions video */}
+      <section className="py-16 px-4 bg-coal-900">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+          <div className="flex flex-col gap-3">
+            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest">The Ministry in Action</p>
+            <Slideshow />
+          </div>
+          <div className="flex flex-col gap-3">
+            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest">Healing & Worship — Indonesia 2025</p>
+            <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl aspect-video">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/Gu5wZN0Wr-M?rel=0"
+                title="Healing and Worship Tour 2025 — Indonesia"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Donation form */}
+      <section className="py-20 px-4 bg-coal-800">
         <div className="max-w-lg mx-auto text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-flame-500/10 border border-flame-500/30 mb-8">
             <Heart className="text-flame-500" size={28} />

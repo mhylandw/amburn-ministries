@@ -27,7 +27,7 @@ const books = [
     cover: graceLiftsCover,
     title: 'When the Grace Lifts',
     subtitle: 'Finding faithfulness in the inbetweens',
-    description: 'A field guide for when God feels distant. Written in the quiet after the storm, this book helps you find God\'s voice in the seasons when heaven feels silent.',
+    description: 'A field guide for when God feels distant. Written in the quiet after the storm, this book helps you find God\'s voice in the seasons… when it feels silent.',
     status: 'available',
     buyLink: '#',
   },
@@ -69,7 +69,7 @@ export default function Books() {
         <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">By Michael Amstutz-Washburn</p>
         <h1 className="font-serif text-4xl md:text-5xl text-white mb-4">Books</h1>
         <p className="text-white/50 font-sans max-w-lg mx-auto text-sm leading-relaxed">
-          Real stories and honest theology for people who are done with easy answers and ready for the real thing.
+          Real stories and honest theology for people who are ready to go deeper with God.
         </p>
       </div>
 

@@ -1,15 +1,22 @@
 import mkPhoto from '../assets/mk-photo.avif'
 import ministryPhoto from '../assets/ministry-photo.avif'
 import mkTogetherPhoto from '../assets/IMG_2773_edited.jpg'
+import headerBg from '../assets/mk-header.png'
 
 export default function About() {
   return (
     <div className="pt-16">
 
       {/* Page header */}
-      <div className="bg-coal-800 py-20 px-4 text-center border-b border-coal-600">
-        <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Who We Are</p>
-        <h1 className="font-serif text-4xl md:text-5xl text-white">About Amburn Ministries</h1>
+      <div className="relative py-24 px-4 text-center border-b border-coal-600 overflow-hidden">
+        <div className="absolute inset-0">
+          <img src={headerBg} alt="" className="w-full h-full object-cover object-top" />
+          <div className="absolute inset-0 bg-coal-900/80" />
+        </div>
+        <div className="relative z-10">
+          <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Who We Are</p>
+          <h1 className="font-serif text-4xl md:text-5xl text-white">About Amburn Ministries</h1>
+        </div>
       </div>
 
       {/* Intro */}

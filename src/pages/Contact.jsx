@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Mail, Phone, Send, CheckCircle } from 'lucide-react'
+import { Mail, Phone, Send, CheckCircle, Music, Users, Mic2 } from 'lucide-react'
 
 export default function Contact() {
   const [status, setStatus] = useState('idle') // idle | sending | success | error
@@ -40,6 +40,32 @@ export default function Contact() {
         <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Reach Out</p>
         <h1 className="font-serif text-4xl md:text-5xl text-white">Contact Us</h1>
       </div>
+
+      {/* Booking section */}
+      <section className="py-16 px-4 bg-coal-900 border-b border-coal-700">
+        <div className="max-w-4xl mx-auto text-center mb-10">
+          <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Available to Book</p>
+          <h2 className="font-serif text-3xl text-white mb-4">Bring Amburn Ministries to Your Event</h2>
+          <p className="text-white/50 font-sans leading-relaxed max-w-xl mx-auto">
+            We're available for churches, conferences, retreats, and gatherings. Use the contact form below to inquire.
+          </p>
+        </div>
+        <div className="max-w-4xl mx-auto grid sm:grid-cols-3 gap-5">
+          {[
+            { icon: Music, title: 'Worship Music Sessions', body: 'Live original worship — intimate and Spirit-led.' },
+            { icon: Users, title: 'Awaken My Heart Gatherings', body: 'An evening of encounter, story, and presence.' },
+            { icon: Mic2, title: 'Public Speaking', body: 'Michael speaks on faith, healing, identity, and hearing God.' },
+          ].map(({ icon: Icon, title, body }) => (
+            <div key={title} className="bg-coal-800 border border-coal-600 rounded-2xl p-6 flex flex-col gap-3">
+              <div className="w-10 h-10 rounded-full bg-flame-500/10 border border-flame-500/30 flex items-center justify-center">
+                <Icon className="text-flame-500" size={18} />
+              </div>
+              <h3 className="font-serif text-lg text-white">{title}</h3>
+              <p className="text-white/50 font-sans text-sm leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="py-16 px-4 bg-coal-900">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">

@@ -43,8 +43,49 @@ import imgMusicDarkness from '../assets/blog/music-through-the-darkness.jpg'
 import imgTrustMe from '../assets/blog/trust-me.jpg'
 import imgClearCache from '../assets/blog/clear-your-cache.jpg'
 import imgDontGiveUp from '../assets/blog/dont-give-up.jpg'
+import imgUndoneUnbroken from '../assets/blog/undone-and-unbroken.jpg'
 
 export const posts = [
+  {
+    slug: 'undone-and-unbroken',
+    title: 'Undone and Unbroken',
+    date: 'March 23, 2026',
+    authors: 'Michael',
+    readTime: '5 min read',
+    tag: 'Surrender',
+    image: imgUndoneUnbroken,
+    excerpt: 'I came to the end of myself… the way a man stands at the end of his ability… and decides to fall…',
+    body: `(About a 5 min read)
+
+I came to the end of myself… the way a man stands at the end of his ability… and decides to fall…
+
+In the moment, I can't say that it feels good… but there's a peace about surrender… especially when you have nothing left to lose…
+
+I stared at her cold pale body… I watched the color change before my eyes… I felt loss and freedom all at the same time… in an instant… the way that you laugh and cry simultaneously when hitting your elbow just the right way…
+
+The end isn't always the end though… the pain we feel isn't long term… it passes… and time can heal, if you allow it…
+
+I did allow it… but the time was still the enemy… before she died, it was a sprint for healing… after she died… it was a marathon of survival… and survival doesn't have any more limits than what you can handle… I could handle a lot… and so survival to me was heavy…
+
+At least I had my music… it was always a thread… or better yet… a lifeline… I could release my overwhelmed heart into it… the music would form around my hurt… my questions… my experience the way that a cocoon forms around a caterpillar… it protected… it defended… and what was inside would inevitably emerge as something beautiful… unbroken… a song…
+
+Not everyone has a place like this… a tangible place… a safe place to process… I was fortunate… I was protected in my cocoon… since I came to the Lord, I've discovered that what David said is like this… I think he had a place like this as well… in Psalms 91:4 He wrote:
+
+He shall cover you with His feathers,
+and under His wings you shall take refuge;
+
+This is that place… but it isn't necessarily music… it's a posture… for some, it's a chair in the corner of the living room… to others… It's the closed doors and rolled up windows of a car on a rainy night… a place closed in to where your true self can be revealed to God…
+
+When we hide ourselves under the shadow of his wing… we're safe… we're His… and no matter what happens on the outside our inside is at peace…
+
+Do you have a place like this?
+
+Thank you for reading…
+
+Michael
+
+If you'd like to read more blogs like this, you can visit: Amburnministries.com/blog`,
+  },
   {
     slug: 'confessions-of-a-sinner',
     title: 'Confessions of a Sinner',

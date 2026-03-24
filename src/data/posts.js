@@ -43,7 +43,7 @@ import imgMusicDarkness from '../assets/blog/music-through-the-darkness.jpg'
 import imgTrustMe from '../assets/blog/trust-me.jpg'
 import imgClearCache from '../assets/blog/clear-your-cache.jpg'
 import imgDontGiveUp from '../assets/blog/dont-give-up.jpg'
-import imgUndoneUnbroken from '../assets/blog/undone-and-unbroken.jpg'
+// imgUndoneUnbroken — save image to src/assets/blog/undone-and-unbroken.jpg to enable
 
 export const posts = [
   {
@@ -53,7 +53,7 @@ export const posts = [
     authors: 'Michael',
     readTime: '5 min read',
     tag: 'Surrender',
-    image: imgUndoneUnbroken,
+    image: null,
     excerpt: 'I came to the end of myself… the way a man stands at the end of his ability… and decides to fall…',
     body: `(About a 5 min read)
 

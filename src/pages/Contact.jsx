@@ -54,7 +54,7 @@ export default function Contact() {
           {[
             { icon: Music, title: 'Worship Music Sessions', body: 'Live original worship — intimate and Spirit-led.' },
             { icon: Users, title: 'Awaken My Heart Gatherings', body: "A time of connection, relationship, stories, and always God's presence." },
-            { icon: Mic2, title: 'Public Speaking', body: 'Michael speaks on faith, healing, identity, and hearing God.' },
+            { icon: Mic2, title: 'Public Speaking', body: 'Michael & Katrina speak on healing, deliverance, restoration, identity, and hearing God.' },
           ].map(({ icon: Icon, title, body }) => (
             <div key={title} className="bg-coal-800 border border-coal-600 rounded-2xl p-6 flex flex-col gap-3">
               <div className="w-10 h-10 rounded-full bg-flame-500/10 border border-flame-500/30 flex items-center justify-center">

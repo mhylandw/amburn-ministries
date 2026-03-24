@@ -20,6 +20,7 @@ import Contact from './pages/Contact'
 import Radio from './pages/Radio'
 import Discern from './pages/Discern'
 import Missions from './pages/Missions'
+import Media from './pages/Media'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/radio" element={<Radio />} />
             <Route path="/discern" element={<Discern />} />
             <Route path="/missions" element={<Missions />} />
+            <Route path="/media" element={<Media />} />
           </Routes>
         </main>
         <RadioMiniPlayer />

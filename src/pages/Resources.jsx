@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Music, Download, ArrowRight, Compass } from 'lucide-react'
+import { Music, Download, ArrowRight, Compass, Tv } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import overcomerCover from '../assets/overcomer-cover.png'
 import SongDownloadModal from '../components/SongDownloadModal'
@@ -16,6 +16,37 @@ export default function Resources() {
 
       <section className="py-16 px-4 bg-coal-900">
         <div className="max-w-4xl mx-auto flex flex-col gap-12">
+
+          {/* Charis Unplugged */}
+          <div className="bg-coal-800 border border-coal-600 rounded-2xl p-8 md:p-12">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-flame-500/10 border border-flame-500/30 mb-6">
+              <Tv className="text-flame-500" size={22} />
+            </div>
+            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-2">Featured Appearance</p>
+            <h2 className="font-serif text-2xl md:text-3xl text-white mb-4">Charis Unplugged</h2>
+            <p className="text-white/60 font-sans leading-relaxed mb-8 max-w-2xl">
+              Michael and Katrina sat down with Charis Unplugged to share their stories — raw, honest conversations about faith, loss, healing, and what God does with broken people.
+            </p>
+            <div className="flex flex-col gap-8">
+              {[
+                { id: 'q7sRBwlKmgE', label: 'Episode 1' },
+                { id: '_8gyW8gVgWo', label: 'Episode 2' },
+              ].map(({ id, label }) => (
+                <div key={id}>
+                  <p className="text-white/40 font-sans text-xs uppercase tracking-widest mb-3">{label}</p>
+                  <div className="relative w-full rounded-xl overflow-hidden shadow-xl" style={{ paddingBottom: '56.25%' }}>
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src={`https://www.youtube.com/embed/${id}?rel=0`}
+                      title={`Charis Unplugged — ${label}`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Free Song Download */}
           <div className="bg-coal-800 border border-coal-600 rounded-2xl p-8 md:p-12">

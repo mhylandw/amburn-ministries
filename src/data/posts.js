@@ -47,6 +47,9 @@ import imgUndoneUnbroken from '../assets/blog/undone-and-unbroken.jpg'
 import imgThornLionsPaw from '../assets/blog/The Thorn in the Lions Paw.jpg'
 import imgSellingMySoul from '../assets/blog/selling-my-soul-or-saving-it.jpg'
 import imgPlaceForUs from '../assets/blog/theres-a-place-for-us.jpg'
+import imgLightGetsIn from '../assets/blog/This is where the light gets in.jpg'
+import imgYearWithoutFear from '../assets/blog/a year without fear.jpg'
+import imgDaughtersDream from "../assets/blog/A Daughter's Dream.jpg"
 
 export const posts = [
   {
@@ -56,7 +59,7 @@ export const posts = [
     authors: 'Michael',
     readTime: '4 min read',
     tag: 'Testimony',
-    image: null,
+    image: imgDaughtersDream,
     excerpt: "Seven years ago, I was invited, last minute, to play bass guitar for a conference in Kansas City… and something changed everything.",
     body: `A Daughter's Dream
 
@@ -95,7 +98,7 @@ Michael`,
     authors: 'Michael',
     readTime: '3 min read',
     tag: 'Faith',
-    image: null,
+    image: imgYearWithoutFear,
     excerpt: "Last year at about this time, the Lord said to me 'this upcoming year is a year without fear'… it was a much needed word that I held close to my heart throughout the whole year…",
     body: `A Year Without Fear
 
@@ -128,7 +131,7 @@ Michael`,
     authors: 'Michael',
     readTime: '10 min read',
     tag: 'Healing',
-    image: null,
+    image: imgLightGetsIn,
     excerpt: "Sometimes memories come in pieces… especially after so many years pass… You don't ever forget… it just feels like you remember less…",
     body: `(About a 10-minute read… let it soak in…)
 

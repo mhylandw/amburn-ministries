@@ -49,27 +49,27 @@ export default function LeadMagnetPopup() {
       />
 
       {/* Modal */}
-      <div className="relative bg-coal-800 border border-coal-600 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
+      <div className="relative bg-coal-800 border border-coal-600 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Close */}
         <button
           onClick={dismiss}
-          className="absolute top-4 right-4 text-white/30 hover:text-white/70 transition-colors z-10"
+          className="absolute top-3 right-3 flex items-center gap-1.5 bg-coal-700 hover:bg-coal-600 border border-coal-500 text-white/70 hover:text-white rounded-full px-3 py-1.5 text-xs font-sans transition-colors z-10"
         >
-          <X size={20} />
+          <X size={13} /> Close
         </button>
 
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col sm:flex-row">
           {/* Book image */}
-          <div className="bg-coal-900 flex items-center justify-center p-6 md:w-56 shrink-0">
+          <div className="bg-coal-900 flex items-center justify-center p-4 sm:w-40 shrink-0">
             <img
               src={textingWithGodCover}
               alt="Texting With God"
-              className="w-full object-contain drop-shadow-2xl rounded-lg"
+              className="w-28 sm:w-full object-contain drop-shadow-2xl rounded-lg"
             />
           </div>
 
           {/* Content */}
-          <div className="p-8 flex flex-col justify-center">
+          <div className="p-6 flex flex-col justify-center">
             {submitted ? (
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 text-flame-400">
@@ -97,18 +97,18 @@ export default function LeadMagnetPopup() {
                 </a>
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-flame-500">
-                  <BookOpen size={16} />
+                  <BookOpen size={14} />
                   <span className="font-sans text-xs uppercase tracking-widest">Free eBook</span>
                 </div>
-                <h2 className="font-serif text-2xl text-white leading-snug">
+                <h2 className="font-serif text-xl text-white leading-snug">
                   Get <em>Texting With God</em> — free.
                 </h2>
                 <p className="text-white/50 font-sans text-sm leading-relaxed">
                   The story of how one man learned to hear God's voice. Enter your email and get the free download.
                 </p>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-2">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-2 mt-1">
                   <input
                     type="email"
                     required

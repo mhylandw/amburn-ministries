@@ -43,7 +43,8 @@ import imgMusicDarkness from '../assets/blog/music-through-the-darkness.jpg'
 import imgTrustMe from '../assets/blog/trust-me.jpg'
 import imgClearCache from '../assets/blog/clear-your-cache.jpg'
 import imgDontGiveUp from '../assets/blog/dont-give-up.jpg'
-// imgUndoneUnbroken — save image to src/assets/blog/undone-and-unbroken.jpg to enable
+import imgUndoneUnbroken from '../assets/blog/undone-and-unbroken.jpg'
+import imgThornLionsPaw from '../assets/blog/The Thorn in the Lions Paw.jpg'
 
 export const posts = [
   {
@@ -53,7 +54,7 @@ export const posts = [
     authors: 'Michael',
     readTime: '6 min read',
     tag: 'Faith',
-    image: null,
+    image: imgThornLionsPaw,
     excerpt: 'I was raised in church… for the most part. As children, many of us grow to believe what we\'re taught as truth to be just that… truth…',
     body: `(About a 6 min read… the Truth hurts…)
 
@@ -107,7 +108,7 @@ Amburnministries.com/blog
     authors: 'Michael',
     readTime: '5 min read',
     tag: 'Surrender',
-    image: null,
+    image: imgUndoneUnbroken,
     excerpt: 'I came to the end of myself… the way a man stands at the end of his ability… and decides to fall…',
     body: `(About a 5 min read)
 

@@ -23,7 +23,7 @@ export default function About() {
       <section className="py-20 px-4 bg-coal-900">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-white/70 font-sans leading-relaxed text-lg mb-4">
+            <p className="text-white/60 font-sans leading-relaxed mb-4">
               Amburn Ministries was born out of a journey—not a platform. A journey marked by questions, broken places, unexpected encounters with God, and a growing realization that what people are really searching for isn't more information… it's connection.
             </p>
             <p className="text-white/60 font-sans leading-relaxed">

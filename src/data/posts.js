@@ -47,6 +47,60 @@ import imgDontGiveUp from '../assets/blog/dont-give-up.jpg'
 
 export const posts = [
   {
+    slug: 'the-thorn-in-the-lions-paw',
+    title: 'The Thorn in the Lions Paw',
+    date: 'March 23, 2026',
+    authors: 'Michael',
+    readTime: '6 min read',
+    tag: 'Faith',
+    image: null,
+    excerpt: 'I was raised in church… for the most part. As children, many of us grow to believe what we\'re taught as truth to be just that… truth…',
+    body: `(About a 6 min read… the Truth hurts…)
+
+I was raised in church… for the most part. As children, many of us grow to believe what we're taught as truth to be just that… truth… however, we grow and change… life throws us challenges and setbacks… we start reasoning for ourselves and forming our own opinions and beliefs which we model and pass down to our own children… and the same generational cycle continues over and over again… down through the generations…
+
+I was recently talking to my wife about prayer… I had some beliefs… I didn't really think about their origins… however, I believed them… they had never been proven… never really been challenged… they just "were"… they were brought in during my upbringing… and they bonded to a shelf somewhere in my heart… like a messy honey jar sticks to the cabinet shelf…
+
+There was a verse that always set wrong with me… causing contradictions… and confusions… leaving me to quickly pass over it in conversation or avoid it in confrontation…
+
+It was the thought that we have to ask and receive, seek and find, knock and the door will open…
+
+I don't consider myself a theologian or a scholar by any means… I'm just a man who's realized the true love of God as a Father, friend and accountability… it draws me deeper into His heart, His ways and leads me towards his purpose… so at times as truths are revealed to me, I proceed it and search the Word to confirm it validity… I want to know truth, but I don't always get it right…
+
+This moment was one of those thoughts…
+
+"why am I asking if God already knows my needs"? According to Matthew 6, we shouldn't worry about that, but trust that God knows our needs before we ask…
+
+"What am I seeking and needing to find?" I used to see this as "looking for a sign…"
+
+"I've knocked and knocked and knocked… and it would sometimes seem like God isn't home… because the door didn't open…"
+
+Have you ever felt like this?… it's easy to see things through our own lenses… and every person has their own custom glasses with different experiences, nurturing, influences and personalities that have tinted and colored them uniquely…
+
+As I was sitting at the table I felt frustrated and began to target my offense at my wife… I kept my mouth closed most of the time trying not to say something hurtful… because the words that she was speaking were sparking offense in my heart…
+
+This went on for nearly an hour… until… that one moment when the deep thorn that was buried deep inside my lions paw… was removed… and healing began…
+
+The lie that I'd made a part of my belief system was so simple and yet so destructive… and it was this: it's up to you, Michael to ask, seek and knock… in order to get what you want… YOU tell God what to do, how and when He should take care of you and provide for you, and because YOU have been trying to control… YOU are blocking YOURSELF… or as we like to say "You're getting in your own way…"
+
+Here's what I learned… when we ask, it isn't for stuff… it's for encounter… when we seek… it's for truth… and when we knock… it's for revelation… because in these things, we reuse who God really is AND we receive the grace equipping to overcome…
+
+Things in life are just that… things… but greater is He that is in me than He that is in the world… that's power made alive in us through relationship, communication and proximity…
+
+One more thing… perspective is a lot like repentance… once it shifts… so does your direction…
+
+I pray that as you ask, you'll receive truth, as you seek… you will find the answers and as you knock… as you are forward and intentional… that you will receive the revelation of just how far, wide and deep the Fathers love for you is.
+
+Thank you for reading
+
+Michael
+
+If you'd like to read more posts like these, you can visit us at:
+Amburnministries.com/blog
+
+(This post was not written with AI)`,
+  },
+  {
     slug: 'undone-and-unbroken',
     title: 'Undone and Unbroken',
     date: 'March 23, 2026',

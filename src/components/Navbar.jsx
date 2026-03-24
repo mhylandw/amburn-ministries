@@ -12,6 +12,7 @@ const navLinks = [
   { label: 'Resources', to: '/resources' },
   { label: 'Missions', to: '/missions' },
   { label: 'Media', to: '/media' },
+  { label: 'Podcast', to: '/podcast' },
   { label: 'Donate', to: '/donate' },
   { label: 'Contact', to: '/contact' },
 ]

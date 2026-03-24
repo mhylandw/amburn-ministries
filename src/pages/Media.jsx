@@ -15,7 +15,7 @@ export default function Media() {
     <div className="pt-16">
       <div className="bg-coal-800 py-20 px-4 text-center border-b border-coal-600">
         <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Watch & Listen</p>
-        <h1 className="font-serif text-4xl md:text-5xl text-white">Performance Videos</h1>
+        <h1 className="font-serif text-4xl md:text-5xl text-white">Worship Sessions</h1>
       </div>
 
       <section className="py-16 px-4 bg-coal-900">

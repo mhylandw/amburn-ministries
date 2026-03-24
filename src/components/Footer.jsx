@@ -4,7 +4,7 @@ import logo from '../assets/logo.avif'
 
 const socials = [
   { icon: Facebook, href: 'https://www.facebook.com/AmburnMinistries/', label: 'Facebook' },
-  { icon: Instagram, href: 'https://www.instagram.com/amburnmusic/', label: 'Instagram' },
+  { icon: Instagram, href: 'https://www.instagram.com/amburnministries', label: 'Instagram' },
   { icon: Youtube, href: 'https://www.youtube.com/channel/UCFHvg1qehn1Wc1OXpXALUzw', label: 'YouTube' },
 ]
 

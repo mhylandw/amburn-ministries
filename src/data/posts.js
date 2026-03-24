@@ -48,6 +48,56 @@ import imgThornLionsPaw from '../assets/blog/The Thorn in the Lions Paw.jpg'
 
 export const posts = [
   {
+    slug: 'theres-a-place-for-us',
+    title: "There's a Place For Us…",
+    date: 'March 23, 2026',
+    authors: 'Michael',
+    readTime: '5 min read',
+    tag: 'Unity',
+    image: null,
+    excerpt: "We met in a church youth group in the 90's… looking back, it seems like such a long time ago… and yet, I remember it like it was yesterday…",
+    body: `(About a 5 min read… it isn't what you'd expect…)
+
+We met in a church youth group in the 90's… looking back, it seems like such a long time ago… and yet, I remember it like it was yesterday…
+
+She was a sweet and opinionated girl… the way she would respond to people hitting on her, or me for that matter reminded me of how a territorial dog tries to intimidate passersby… and yet… they whimper as the threatened passerby passed by and don't stay to play…
+
+I often feel like I missed something… a valid or valuable element that would prove to me that my experience was wrong… or misguided somehow… that the violence, the emotional abuse… or the subservient expectations were real… however, it was real and I have scars to prove it…
+
+Over the years, I discovered that common pain can easily disguise itself as love… you meet someone… you complain… they respond… they stir drama… you react in kind… and the cycle feels normal… especially from two hurt souls from two different hurt homes…
+
+There was a series of moments… these utter and bonding moments… that brought us together… it unified us as "us against the world"… and there's power in unity…
+
+The first time was when she mentioned that she had a disease… it caused many setbacks in her life… she identified with it… I accepted it as a viable excuse for her to withdraw instead of overcome… these moments of realization can mold you or break you… for us… it shaped us together into a model of living by excuses…
+
+Then we decided to get married… the pastor said that our relationship would last 2 years… that our personalities were toxic for each other and we would fight all the time… he was right, however… we decided to come together and spite the pastor's advice… demonizing him in our minds in unity…
+
+There was an assault… from a man she met while she was in school… she spoke her opinion… he responded with threats… so I came to her school to defend her… and the school removed me and released her… and together, we justified our unity…
+
+Then came the children… and life became hard… on so many levels… the lack of care… the self-centeredness that we had built up in unity was now making a wedge in our marriage…
+
+She became deeply unkind to me… and more loving to those outside the home… she had shifted her unity to my children… baiting them against me behind my back… indoctrinating them with fear of me… and I became the outsider… the outcast… this was my late wife… it was a life of shared pain…
+
+Unity has different faces though… if you're unified by death… you won't survive, but unity in Christ is life… I've discover this with my wife, Katrina…
+
+As life progresses people change… naturally… we adapt from what we call lived experiences and development… there are many times in life that we don't see it… we don't want the change… maybe we were part of the decision and now we realize that it isn't good for us anymore…
+
+These are the moments that we need to realize that unity isn't natural… Ephesians 4:3 states that we should "Make every effort to keep the unity of the Spirit through the bond of peace."
+
+Unity of the Spirit through peace… even the Bible says it takes effort… likewise unity of the flesh does as well… however, the bond of peace is a spiritual glue… peace is the third fruit of the spirit… which shows us that for us to maintain unity… we must be operating and in relationship with the Holy Spirit… and the fruit of peace that grows will sustain our unity with one another…
+
+So, You could say that to be in a Godly form of unity, one must stay near to God and walk by the Spirit…
+
+This is the place for us… I wish I knew it then… this place is the only way to stay united… the flesh kills and fails… but the spirit is life and peace…
+
+Thanks for reading,
+I appreciate you…
+
+Michael
+
+To read more blogs like this, visit: Amburnministries.com/blog`,
+  },
+  {
     slug: 'the-thorn-in-the-lions-paw',
     title: 'The Thorn in the Lions Paw',
     date: 'March 23, 2026',

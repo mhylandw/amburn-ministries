@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Download, ArrowRight, Check, BookOpen } from 'lucide-react'
-import graceLiftscover from '../assets/grace-lifts-promo.jpg'
+import textingWithGodCover from '../assets/texting-with-god-promo.jpg'
 
 export default function LeadMagnetPopup() {
   const [visible, setVisible] = useState(false)
@@ -28,8 +28,8 @@ export default function LeadMagnetPopup() {
 
     // Trigger download immediately
     const link = document.createElement('a')
-    link.href = '/when-the-grace-lifts.epub'
-    link.download = 'When the Grace Lifts - Amburn Ministries.epub'
+    link.href = '/texting-with-god.epub'
+    link.download = 'Texting With God - Amburn Ministries.epub'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -62,8 +62,8 @@ export default function LeadMagnetPopup() {
           {/* Book image */}
           <div className="bg-coal-900 flex items-center justify-center p-6 md:w-56 shrink-0">
             <img
-              src={graceLiftscover}
-              alt="When the Grace Lifts"
+              src={textingWithGodCover}
+              alt="Texting With God"
               className="w-full object-contain drop-shadow-2xl rounded-lg"
             />
           </div>
@@ -77,11 +77,11 @@ export default function LeadMagnetPopup() {
                   <span className="font-sans font-semibold text-sm">Your download is starting!</span>
                 </div>
                 <p className="text-white font-serif text-xl leading-snug">
-                  Check your Downloads folder for <em>When the Grace Lifts</em>.
+                  Check your Downloads folder for <em>Texting With God</em>.
                 </p>
                 <a
-                  href="/when-the-grace-lifts.epub"
-                  download="When the Grace Lifts - Amburn Ministries.epub"
+                  href="/texting-with-god.epub"
+                  download="Texting With God - Amburn Ministries.epub"
                   className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors w-fit"
                 >
                   <Download size={15} />
@@ -103,10 +103,10 @@ export default function LeadMagnetPopup() {
                   <span className="font-sans text-xs uppercase tracking-widest">Free eBook</span>
                 </div>
                 <h2 className="font-serif text-2xl text-white leading-snug">
-                  Get <em>When the Grace Lifts</em> — free.
+                  Get <em>Texting With God</em> — free.
                 </h2>
                 <p className="text-white/50 font-sans text-sm leading-relaxed">
-                  A field guide for when God feels distant. Enter your email and we'll send it straight to you.
+                  The story of how one man learned to hear God's voice. Enter your email and get the free download.
                 </p>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3 mt-2">
                   <input

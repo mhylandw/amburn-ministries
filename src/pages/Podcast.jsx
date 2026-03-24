@@ -80,6 +80,8 @@ export default function Podcast() {
             { title: 'Hearing God', body: 'Practical, honest talk about two-way communication with God — and what gets in the way.' },
             { title: 'Healing & Identity', body: 'Stories and truth about how God restores broken places and redefines who you are.' },
             { title: 'Faith That Works', body: 'Not theory — real life faith that holds up under pressure, loss, and uncertainty.' },
+            { title: 'Relationships', body: 'Raw, unfiltered conversations about what healthy relationships actually look like — and how God redeems the broken ones.' },
+            { title: 'Family Dynamics', body: 'Honest talk about parenting, blended families, generational patterns, and raising kids who know who they are in God.' },
           ].map((item) => (
             <div key={item.title} className="bg-coal-900 border border-coal-600 rounded-2xl p-6">
               <h3 className="font-serif text-xl text-white mb-3">{item.title}</h3>

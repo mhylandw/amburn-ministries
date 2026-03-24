@@ -48,6 +48,55 @@ import imgThornLionsPaw from '../assets/blog/The Thorn in the Lions Paw.jpg'
 
 export const posts = [
   {
+    slug: 'selling-my-soul-or-saving-it',
+    title: 'Selling My Soul or Saving It?…',
+    date: 'March 23, 2026',
+    authors: 'Michael',
+    readTime: '5 min read',
+    tag: 'Identity',
+    image: null,
+    excerpt: "I started writing songs when I was 16… but they fell flat… they lacked meaning… purpose… they lacked truth…",
+    body: `(About a 5 min read… sit back and soak it in…)
+
+I started writing song when I was 16… but they fell flat… they lacked meaning… purpose… they lacked truth…
+
+As a young man I was driven… I wanted to write like the greats… but every time, it felt predictable… cliche'… I wanted to take the world by storm.. to make change… to be an influence… however… my passion was met with dark setbacks… they fed my insecurities and I withdrew…
+
+As I grew older, I had an opportunity to record… professionally… I was very well rehearsed… the countless hours of singing and songwriting were about to pay off… the opportunity came and I was offered a recording contract with Sparrow Records… that was a big deal back then… that was where the fame was… this was my shot…
+
+When I first started playing guitar, I was constantly met with the deceiving but impacting voice of my father… "you'll NEVER make money with music… you should stop… all you make is noise!… give it up… you suck…"
+
+This was so ingrained in my thinking that when Sparrow reached out to me, I heard it on the phone calls… everything the music rep said echoed with "you'll never be good enough…" every meeting was tainted with fear and insecurity… it was all in my own mind… my own heart…
+
+Then, the day came… I was very nervous… the contracts would have set me on a music career path and it's all I ever wanted… however, my hands shook… my mind swirled… I choked… I sweated… and I stopped… I rejected the offer and walked away…
+
+I told myself that I wasn't ready for fame… and looking back now, I believe that was true… the music industry back then would have chewed me up and spit me out… a young man with severe insecurities… living in poverty… under extreme stress… it would not have gone well… but for the next couple decades… I always wondered where life would have taken me if I had moved ahead and embraced what life had for me…
+
+The truth is… without God… without knowing who He is… We have all fallen short of Gods best… music career or not…
+
+The life I chose wasn't much better than the worse of what could possibly have been… however, God was with me… he never left me… two decades later… my life was carved by the pressures of pain… the process of music… And it never left me… I was like David… playing guitar… a man after Gods own heart… but living in a pit of issues…
+
+My music stayed empty for such a long time… it had its place… its purpose… it was my journal… my hurt put to music…
+
+The moment that I encountered Gods Love… my heart changed… my mind changed… and so did my music… as the Lord began to show Himself to me… I began to see what he saw when He looked at me… and eventually… I started to believe it…
+
+Things have changed a lot since the days of trying to prove myself… the days of thinking that fame and fortune were the only way out of a poverty mindset and an orphan heart…
+
+The love of God reaches far deeper than we can… or psychology can… I've heard it said that God can do more in 5 mins than a psychologist can do in years…
+
+Call it a New Year's resolution or better yet… just call it a desire for change… but either way… let this new year be the year that you give yourself permission to change… slowly and thoroughly… change takes time… just like your best friends are usually the ones you known the longest and have weathered life with you…
+
+Leave the past in the past… let it be a reminder of why you're strong… not an excuse to stay weak… if you want to work out this year… work your heart… work on renewing your mind… the rest will follow…
+
+I speak blessing and favor over you this year… embrace all that God has for you and don't look back in order to move forward.
+
+Love you all…
+
+Michael
+
+Amburnministries.com/blog`,
+  },
+  {
     slug: 'theres-a-place-for-us',
     title: "There's a Place For Us…",
     date: 'March 23, 2026',

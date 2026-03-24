@@ -45,10 +45,82 @@ import imgClearCache from '../assets/blog/clear-your-cache.jpg'
 import imgDontGiveUp from '../assets/blog/dont-give-up.jpg'
 import imgUndoneUnbroken from '../assets/blog/undone-and-unbroken.jpg'
 import imgThornLionsPaw from '../assets/blog/The Thorn in the Lions Paw.jpg'
-import imgSellingMySoul from '../assets/blog/Selling My Soul or Saving It?.jpg'
-import imgPlaceForUs from '../assets/blog/There\'s a Place For Us.jpg'
+import imgSellingMySoul from '../assets/blog/selling-my-soul-or-saving-it.jpg'
+import imgPlaceForUs from '../assets/blog/theres-a-place-for-us.jpg'
 
 export const posts = [
+  {
+    slug: 'a-daughters-dream',
+    title: "A Daughter's Dream",
+    date: 'March 23, 2026',
+    authors: 'Michael',
+    readTime: '4 min read',
+    tag: 'Testimony',
+    image: null,
+    excerpt: "Seven years ago, I was invited, last minute, to play bass guitar for a conference in Kansas City… and something changed everything.",
+    body: `A Daughter's Dream
+
+Seven years ago, I was invited, last minute, to play bass guitar for a conference in Kansas City… my now Father-In-Law (Daniel) brought me in at the last minute to complete his worship team for the event… he also invited his daughter, Katrina…
+
+This was a season of not looking for love… I had put it on the shelf… it wasn't in my current vocabulary…
+
+As we all packed the truck and headed to the airport, Daniel put his arm over the back of the seat, leaned back and said "there's something special about this event, I believe something good is going to happen"…
+
+We arrived in Kansas City… we set up… and quickly discovered that we had A LOT of downtime… so, Katrina and I started talking… and talking turned to relating… relating turned to connecting… and as the hours flew by… we strangely began to know each other…
+
+Similarities… shared experiences… but, apart… shared viewpoints… beliefs… passions… goals… so many stories… as the guests began to arrive… we began to mingle… everyone thought we were married…
+
+I was a broken mess… and her parents knew it… my wife died only a year before… so it seemed strange to me as well as "inappropriate" to start something romantic… psychology told me to wait 5 years…
+
+However… there was a connection… Katrina's mother, Tracy, had her mama bear instincts live and ready… until we began to sing together… there was unity… it was anointed…
+
+This is how she explains it… "the Lord said 'I want you to reconsider this…' and dialed her heart a tick to the left…"
+
+The rest of the trip we were connected at the heart level… we left for the airport in separate cars, I received a text from Katrina that said "I feel like I lost my right arm…" I felt that way as well…
+
+… so, after the conference… we decided to marry… it was five days… we made plans for a beautiful Christmas wedding three months later… the theme "redeeming the time…"
+
+What many people don't know is this… in June of 2018… Katrina's daughter had a dream… she dreamed that Katrina would be married at Christmas… to a bald man with a beard and green eyes…
+
+Holy Spirit has a way of leading us into all truth… favor and blessings… if we listen and obey…
+
+Thanks for reading.
+
+Michael`,
+  },
+  {
+    slug: 'a-year-without-fear',
+    title: 'A Year Without Fear',
+    date: 'March 23, 2026',
+    authors: 'Michael',
+    readTime: '3 min read',
+    tag: 'Faith',
+    image: null,
+    excerpt: "Last year at about this time, the Lord said to me 'this upcoming year is a year without fear'… it was a much needed word that I held close to my heart throughout the whole year…",
+    body: `A Year Without Fear
+
+Last year at about this time, the Lord said to me "this upcoming year is a year without fear"… it was a much needed word that I held close to my heart throughout the whole year… this last year was turbulent… and trust-demanding…
+
+Another word I received from the Lord was in January of 2024… he said to me "you're finally on the path… and in order to get you where you need to be… where your calling lies… we're going to have to take the backroads… it will be bumpy… and you'll question your safety at times… but trust me… I know this road like the back of my hand…"
+
+So we trusted… we held each other close and we kept our eyes on the promise…
+
+These last two years haven't been for the faint of heart… from financial challenges and setbacks… family shiftings… it's felt like a long Alaskan winter without sun… without light…
+
+But through it all, we've carried the light and we've kept our focus… we've been writing and processing who we are and what God has been calling us to… which leads me to now…
+
+The other day the Lord spoke to me again… he said "This next year is going to be a year of great favor and even greater exploits… your impact will be stamped on your world…"
+
+It's exciting to see the fruits of endurance, faithfulness and trust start to show… but here's the thing… here's the soft and subtle truth…
+
+After the battles… after the hard and exhausting fights… the growth spurts and the strengthening… self reduces… it boils out anything that doesn't belong anymore… and what remains is this simple reality…
+
+We no longer strive… we stand… we don't wait for breakthrough… we know God… we love because He first loved us… it's His gain… His way… and through trust in His love… belief in that what He says is true and will be… we overcome… we thrive… because God is good and Holy Spirit leads us in all truth…
+
+Thanks for reading.
+
+Michael`,
+  },
   {
     slug: 'this-is-where-the-light-gets-in',
     title: 'This Is Where The Light Gets In',

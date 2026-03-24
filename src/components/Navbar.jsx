@@ -10,6 +10,7 @@ const navLinks = [
   { label: 'Store', to: '/store' },
   { label: 'Blog', to: '/blog' },
   { label: 'Resources', to: '/resources' },
+  { label: 'Missions', to: '/missions' },
   { label: 'Donate', to: '/donate' },
   { label: 'Contact', to: '/contact' },
 ]

@@ -555,8 +555,29 @@ export default function ScriptureMirror() {
       {/* UI */}
       <div className="absolute inset-0 flex flex-col" style={{ zIndex: 10 }}>
 
+        {/* Page title */}
+        <div className="text-center" style={{ paddingTop: 'max(2.8rem, env(safe-area-inset-top, 1.5rem))' }}>
+          <p style={{
+            fontFamily: 'Caveat, cursive',
+            fontWeight: 800,
+            fontSize: 'clamp(1.6rem, 7vw, 2.2rem)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: 'rgba(255,255,255,0.82)',
+            lineHeight: 1,
+            marginBottom: '0.18rem',
+          }}>Reflection</p>
+          <p style={{
+            fontFamily: 'sans-serif',
+            fontSize: '0.58rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.22em',
+            color: 'rgba(255,255,255,0.32)',
+          }}>How God Sees Me</p>
+        </div>
+
         {/* Top — swipe selector (input) or spacer (submitted) */}
-        <div style={{ paddingTop: 'max(2.2rem, env(safe-area-inset-top, 1rem))' }}>
+        <div style={{ paddingTop: '0.8rem' }}>
           {!submitted ? (
             <PromptSwiper onSubmit={handleSubmit} />
           ) : null}

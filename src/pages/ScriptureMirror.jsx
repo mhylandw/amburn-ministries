@@ -152,26 +152,17 @@ function wrapText(ctx, text, maxW) {
   return lines
 }
 
-// ─── Cut text into fog via destination-out ────────────────────────────────────
-function cutText(ctx, W, H, text, yCentre, fontSize) {
+// ─── Cut a single line into fog via destination-out ──────────────────────────
+function cutLine(ctx, W, text, y, fontSize) {
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-  ctx.font        = `800 ${fontSize}px Caveat`
-  ctx.textAlign   = 'center'
-  ctx.textBaseline= 'middle'
-
-  const lines  = wrapText(ctx, text, W * 0.78)
-  const lineH  = fontSize * 1.18
-  const startY = yCentre - ((lines.length - 1) * lineH) / 2
-
-  lines.forEach((line, i) => {
-    const y = startY + i * lineH
-    ctx.filter = 'blur(9px)';   ctx.fillStyle = 'rgba(0,0,0,0.5)';  ctx.fillText(line, W/2, y)
-    ctx.filter = 'blur(4px)';   ctx.fillStyle = 'rgba(0,0,0,0.9)';  ctx.fillText(line, W/2, y)
-    ctx.filter = 'blur(1px)';   ctx.fillStyle = 'rgba(0,0,0,1)';    ctx.fillText(line, W/2, y)
-    ctx.filter = 'none'
-  })
-
+  ctx.font         = `800 ${fontSize}px Caveat`
+  ctx.textAlign    = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.filter = 'blur(9px)';  ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillText(text, W/2, y)
+  ctx.filter = 'blur(4px)';  ctx.fillStyle = 'rgba(0,0,0,0.9)'; ctx.fillText(text, W/2, y)
+  ctx.filter = 'blur(1px)';  ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
+  ctx.filter = 'none'
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -207,13 +198,13 @@ function useMirrorCanvas() {
         ctx.clearRect(0, 0, W, H)
         ctx.drawImage(fog, 0, 0)
         drawDroplets(ctx, dropsRef.current, W, H)
-        itemsRef.current.forEach(({ text, fontSize, yCentre, progress }) => {
+        itemsRef.current.forEach(({ text, fontSize, y, progress }) => {
           if (progress <= 0) return
           ctx.save()
           ctx.beginPath()
           ctx.rect(0, 0, W * progress, H)
           ctx.clip()
-          cutText(ctx, W, H, text, yCentre, fontSize)
+          cutLine(ctx, W, text, y, fontSize)
           ctx.restore()
         })
       }
@@ -227,31 +218,45 @@ function useMirrorCanvas() {
     }
   }, [setup])
 
-  // Animate text writing — called externally
+  // Animate text writing — pre-calculates every wrapped line, reveals one at a time
   const writeText = useCallback((scripture, truth) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const W = canvas.width, H = canvas.height
-    const fsLarge  = Math.min(Math.floor(W * 0.095), 70)
-    const fsMed    = Math.min(Math.floor(W * 0.048), 34)
-    const fsSmall  = Math.min(Math.floor(W * 0.030), 22)
 
-    const allItems = [
-      { text: truth,              fontSize: fsLarge, yCentre: H * 0.30, progress: 0 },
-      { text: `"${scripture.text}"`, fontSize: fsMed, yCentre: H * 0.58, progress: 0 },
-      { text: scripture.reference,  fontSize: fsSmall, yCentre: H * 0.76, progress: 0 },
+    const fsLarge = Math.min(Math.floor(W * 0.095), 70)
+    const fsMed   = Math.min(Math.floor(W * 0.048), 34)
+    const fsSmall = Math.min(Math.floor(W * 0.030), 22)
+
+    // Measure lines using a temp canvas
+    const tmp = new OffscreenCanvas(W, H)
+    const tc  = tmp.getContext('2d')
+
+    const calcBlock = (text, fs, yCentre) => {
+      tc.font = `800 ${fs}px Caveat`
+      const lines  = wrapText(tc, text, W * 0.78)
+      const lineH  = fs * 1.18
+      const startY = yCentre - ((lines.length - 1) * lineH) / 2
+      return lines.map((l, i) => ({ text: l, fontSize: fs, y: startY + i * lineH }))
+    }
+
+    const allLines = [
+      ...calcBlock(truth,                  fsLarge, H * 0.28),
+      ...calcBlock(`"${scripture.text}"`,  fsMed,   H * 0.57),
+      { text: scripture.reference, fontSize: fsSmall, y: H * 0.76 },
     ]
-    itemsRef.current = allItems
 
-    const WRITE_DUR = 1300
-    const STAGGER   = 1400
+    itemsRef.current = allLines.map(l => ({ ...l, progress: 0 }))
+
+    const WRITE_DUR = 850    // ms to reveal each line
+    const STAGGER   = 900    // ms between line starts
     let startTs = null
 
     function animate(ts) {
       if (!startTs) startTs = ts
       const elapsed = ts - startTs
-      itemsRef.current = allItems.map((item, i) => ({
-        ...item,
+      itemsRef.current = allLines.map((line, i) => ({
+        ...line,
         progress: Math.max(0, Math.min(1, (elapsed - i * STAGGER) / WRITE_DUR)),
       }))
       if (itemsRef.current.some(it => it.progress < 1)) requestAnimationFrame(animate)
@@ -315,7 +320,7 @@ export default function ScriptureMirror() {
         style={{
           zIndex: 1,
           transform: 'scaleX(-1)',
-          filter: 'blur(10px) brightness(0.58) saturate(0.7)',
+          filter: 'blur(5px) brightness(0.72) saturate(0.75)',
           opacity: camReady ? 1 : 0,
           transition: 'opacity 1.2s ease',
         }}

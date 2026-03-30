@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Sparkles } from 'lucide-react'
 import { getScripturesForFeeling, getMirrorTruth } from '../data/identityScriptures'
 
 // ─── Camera ───────────────────────────────────────────────────────────────────
@@ -291,53 +290,64 @@ function useMirrorCanvas() {
     }
   }, [setup])
 
-  // Animate text writing — pre-calculates every wrapped line, reveals one at a time
+  // Animate text writing — per-line start offsets, scripture delayed after hero
   const writeText = useCallback((scripture, truth, feeling) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const W = canvas.width, H = canvas.height
 
-    const fsLarge  = Math.min(Math.floor(W * 0.095), 70)
-    const fsMed    = Math.min(Math.floor(W * 0.048), 34)
-    const fsSmall  = Math.min(Math.floor(W * 0.030), 22)
-    const fsLabel  = Math.min(Math.floor(W * 0.022), 15)
+    const fsLarge = Math.min(Math.floor(W * 0.098), 72)
+    const fsMed   = Math.min(Math.floor(W * 0.054), 40)
+    const fsSmall = Math.min(Math.floor(W * 0.030), 22)
+    const fsTiny  = Math.min(Math.floor(W * 0.022), 16)
 
-    // Measure lines using a temp canvas
     const tmp = makeCanvas(W, H)
     const tc  = tmp.getContext('2d')
 
     const calcBlock = (text, fs, yCentre) => {
-      tc.font = `800 ${fs}px Caveat`
-      const lines  = wrapText(tc, text, W * 0.78)
-      const lineH  = fs * 1.18
+      tc.font = `900 ${fs}px Caveat`
+      const lines  = wrapText(tc, text.toUpperCase(), W * 0.82)
+      const lineH  = fs * 1.22
       const startY = yCentre - ((lines.length - 1) * lineH) / 2
       return lines.map((l, i) => ({ text: l, fontSize: fs, y: startY + i * lineH }))
     }
 
-    const allLines = [
-      // ── "Who you were" section ──
-      { text: 'who you were', fontSize: fsLabel, y: H * 0.10 },
-      ...calcBlock(feeling,                    fsMed,   H * 0.175),
-      // ── "Who you're becoming" section ──
-      { text: "who you're becoming", fontSize: fsLabel, y: H * 0.34 },
-      ...calcBlock(truth,                      fsLarge, H * 0.44),
-      // ── Scripture ──
-      ...calcBlock(`"${scripture.text}"`,      fsMed,   H * 0.68),
-      { text: scripture.reference,             fontSize: fsSmall, y: H * 0.83 },
-    ]
+    const WRITE_DUR    = 750   // ms to reveal each line
+    const STAGGER      = 820   // ms between consecutive lines
+    const SCRIPT_PAUSE = 1500  // extra pause before scripture appears
+
+    // Assign absolute start offsets per line
+    let t = 0
+    const allLines = []
+
+    for (const line of calcBlock(feeling,         fsMed,   H * 0.14)) {
+      allLines.push({ ...line, startOffset: t }); t += STAGGER
+    }
+    for (const line of calcBlock(truth,           fsLarge, H * 0.43)) {
+      allLines.push({ ...line, startOffset: t }); t += STAGGER
+    }
+
+    t += SCRIPT_PAUSE  // ← scripture fades in after a beat
+
+    for (const line of calcBlock(`"${scripture.text}"`, fsSmall, H * 0.70)) {
+      allLines.push({ ...line, startOffset: t }); t += STAGGER
+    }
+    allLines.push({
+      text: scripture.reference.toUpperCase(),
+      fontSize: fsTiny,
+      y: H * 0.83,
+      startOffset: t,
+    })
 
     itemsRef.current = allLines.map(l => ({ ...l, progress: 0 }))
 
-    const WRITE_DUR = 850    // ms to reveal each line
-    const STAGGER   = 900    // ms between line starts
     let startTs = null
-
     function animate(ts) {
       if (!startTs) startTs = ts
       const elapsed = ts - startTs
-      itemsRef.current = allLines.map((line, i) => ({
+      itemsRef.current = allLines.map(line => ({
         ...line,
-        progress: Math.max(0, Math.min(1, (elapsed - i * STAGGER) / WRITE_DUR)),
+        progress: Math.max(0, Math.min(1, (elapsed - line.startOffset) / WRITE_DUR)),
       }))
       if (itemsRef.current.some(it => it.progress < 1)) requestAnimationFrame(animate)
     }
@@ -369,69 +379,95 @@ const PROMPTS = [
 ]
 
 // ─── Prompt swipe carousel ─────────────────────────────────────────────────────
-function PromptSwiper({ onSelect }) {
-  const scrollRef  = useRef(null)
-  const idxRef     = useRef(0)
-
-  // initialise scroll to first item
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    el.scrollLeft = 0
-    onSelect(PROMPTS[0])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+function PromptSwiper({ onSubmit }) {
+  const scrollRef = useRef(null)
+  const timerRef  = useRef(null)
+  const [idx, setIdx] = useState(0)
 
   function handleScroll() {
     const el = scrollRef.current
     if (!el) return
-    const newIdx = Math.round(el.scrollLeft / el.clientWidth)
-    if (newIdx !== idxRef.current && newIdx >= 0 && newIdx < PROMPTS.length) {
-      idxRef.current = newIdx
-      onSelect(PROMPTS[newIdx])
-    }
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      const newIdx = Math.round(el.scrollLeft / el.clientWidth)
+      if (newIdx >= 0 && newIdx < PROMPTS.length) setIdx(newIdx)
+    }, 60)
   }
 
   return (
-    <div style={{ position: 'relative', marginBottom: '0.6rem' }}>
-      {/* Edge fade */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
-        background: 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, transparent 22%, transparent 78%, rgba(0,0,0,0.55) 100%)',
-      }} />
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        style={{
-          display: 'flex',
-          overflowX: 'scroll',
-          scrollSnapType: 'x mandatory',
-          scrollbarWidth: 'none',
-          WebkitOverflowScrolling: 'touch',
-          msOverflowStyle: 'none',
-        }}
-      >
-        {PROMPTS.map((p, i) => (
-          <div key={p} style={{
-            scrollSnapAlign: 'center',
-            flexShrink: 0,
-            width: '100%',
-            textAlign: 'center',
-            padding: '0.25rem 1.5rem',
-          }}>
-            <span style={{
-              fontFamily: 'Caveat, cursive',
-              fontWeight: 800,
-              fontSize: 'clamp(1.15rem, 5.5vw, 1.5rem)',
-              color: 'rgba(255,255,255,0.88)',
-              lineHeight: 1.25,
-              display: 'block',
-            }}>{p}</span>
-          </div>
-        ))}
+    <div style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.2rem)' }}>
+      {/* Hint */}
+      <p style={{
+        textAlign: 'center',
+        fontFamily: 'sans-serif',
+        fontSize: '0.5rem',
+        color: 'rgba(255,255,255,0.2)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.16em',
+        marginBottom: '0.55rem',
+      }}>swipe to find your feeling</p>
+
+      {/* Carousel */}
+      <div style={{ position: 'relative' }}>
+        {/* Edge fade */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
+          background: 'linear-gradient(to right, rgba(0,0,0,0.72) 0%, transparent 26%, transparent 74%, rgba(0,0,0,0.72) 100%)',
+        }} />
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          style={{
+            display: 'flex',
+            overflowX: 'scroll',
+            scrollSnapType: 'x mandatory',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
+          {PROMPTS.map((p, i) => (
+            <div key={p} style={{
+              scrollSnapAlign: 'center',
+              flexShrink: 0,
+              width: '100%',
+              textAlign: 'center',
+              padding: '0.15rem 3rem',
+            }}>
+              <span style={{
+                fontFamily: 'Caveat, cursive',
+                fontWeight: 800,
+                fontSize: 'clamp(1.1rem, 5.5vw, 1.45rem)',
+                color: `rgba(255,255,255,${i === idx ? 0.92 : 0.22})`,
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                display: 'block',
+                lineHeight: 1.2,
+                transition: 'color 0.2s',
+              }}>{p}</span>
+            </div>
+          ))}
+        </div>
       </div>
-      {/* Hide scrollbar in webkit */}
-      <style>{`.prompt-scroll::-webkit-scrollbar{display:none}`}</style>
+
+      {/* Choose button */}
+      <div style={{ textAlign: 'center', marginTop: '0.65rem' }}>
+        <button
+          onClick={() => onSubmit(PROMPTS[idx])}
+          style={{
+            fontFamily: 'Caveat, cursive',
+            fontWeight: 700,
+            fontSize: '1.05rem',
+            color: 'rgba(255,255,255,0.48)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '0.4rem 2rem',
+          }}
+        >this is me →</button>
+      </div>
     </div>
   )
 }
@@ -440,13 +476,10 @@ function PromptSwiper({ onSelect }) {
 export default function ScriptureMirror() {
   const { videoRef, ready: camReady } = useCamera()
   const { canvasRef, writeText, clearText } = useMirrorCanvas()
-  const [feeling,   setFeeling]   = useState('')
   const [submitted, setSubmitted] = useState(false)
-  const textareaRef = useRef(null)
 
-  function handleSubmit(e) {
-    e?.preventDefault()
-    const input = feeling.trim()
+  function handleSubmit(prompt) {
+    const input = prompt.trim()
     if (!input) return
     const [best] = getScripturesForFeeling(input)
     if (!best) return
@@ -457,9 +490,7 @@ export default function ScriptureMirror() {
 
   function handleReset() {
     clearText()
-    setFeeling('')
     setSubmitted(false)
-    setTimeout(() => textareaRef.current?.focus(), 100)
   }
 
   return (
@@ -492,53 +523,25 @@ export default function ScriptureMirror() {
 
         <div className="flex-1" />
 
-        {/* Bottom panel */}
-        <div className="px-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}>
+        {/* Bottom */}
+        <div>
           {!submitted ? (
-            <div className="rounded-2xl pt-3 pb-4 px-0"
-              style={{
-                background: 'rgba(0,0,0,0.52)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                overflow: 'hidden',
-              }}
-            >
-              <p className="font-sans uppercase tracking-widest text-center mb-2 px-4"
-                 style={{ fontSize: '0.56rem', color: 'rgba(255,255,255,0.28)' }}>
-                What do you feel or believe about yourself?
-              </p>
-
-              {/* Swipe to pick a prompt */}
-              <PromptSwiper onSelect={p => setFeeling(p)} />
-
-              {/* Or type your own */}
-              <div className="px-4">
-                <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-                  <textarea ref={textareaRef} value={feeling}
-                    onChange={e => setFeeling(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit() } }}
-                    placeholder="or type your own…" rows={2} maxLength={400}
-                    className="flex-1 font-sans text-sm text-white placeholder:text-white/25 resize-none outline-none leading-relaxed rounded-xl px-4 py-3"
-                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}
-                  />
-                  <button type="submit" disabled={!feeling.trim()}
-                    className="rounded-xl px-4 py-3 disabled:opacity-30"
-                    style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.16)' }}
-                  >
-                    <Sparkles size={15} />
-                  </button>
-                </form>
-              </div>
-            </div>
+            <PromptSwiper onSubmit={handleSubmit} />
           ) : (
-            <div className="text-center">
+            <div className="text-center" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}>
               <button onClick={handleReset}
-                className="font-sans text-xs"
-                style={{ color: 'rgba(255,255,255,0.25)', letterSpacing: '0.05em' }}
-              >
-                look again
-              </button>
+                style={{
+                  fontFamily: 'Caveat, cursive',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: 'rgba(255,255,255,0.3)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >look again</button>
             </div>
           )}
         </div>

@@ -238,17 +238,18 @@ function wipeStripe(ctx, W, y, stripeH, progress) {
 function cutLine(ctx, W, text, y, fontSize) {
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-  ctx.font         = `900 ${fontSize}px Caveat`
+  ctx.font         = `700 ${fontSize}px Caveat`
   ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
-  // Wide soft halo
-  ctx.filter = 'blur(11px)'; ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillText(text, W/2, y)
-  // Medium feather
-  ctx.filter = 'blur(5px)';  ctx.fillStyle = 'rgba(0,0,0,0.95)'; ctx.fillText(text, W/2, y)
-  // Crisp stroke body (drawn 3× for density)
-  ctx.filter = 'blur(1.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
-  ctx.filter = 'blur(0.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
-  ctx.filter = 'none';        ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
+  // Wide atmospheric halo — gives the organic foggy edge
+  ctx.filter = 'blur(13px)'; ctx.fillStyle = 'rgba(0,0,0,0.5)';  ctx.fillText(text, W/2,       y)
+  ctx.filter = 'blur(6px)';  ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillText(text, W/2,       y)
+  // Messy overlapping body passes — slight hand-drawn offsets create thick irregular strokes
+  ctx.filter = 'blur(1.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2 - 2,   y + 1.5)
+  ctx.filter = 'blur(1px)';   ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2 + 1.5, y - 1)
+  ctx.filter = 'blur(2px)';   ctx.fillStyle = 'rgba(0,0,0,0.9)'; ctx.fillText(text, W/2 + 0.5, y + 2)
+  ctx.filter = 'blur(0.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2 - 1,   y - 1.5)
+  ctx.filter = 'none';        ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2,       y)
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -325,7 +326,7 @@ function useMirrorCanvas() {
     const tc  = tmp.getContext('2d')
 
     const calcBlock = (text, fs, yCentre) => {
-      tc.font = `900 ${fs}px Caveat`
+      tc.font = `700 ${fs}px Caveat`
       const lines  = wrapText(tc, text.toUpperCase(), W * 0.82)
       const lineH  = fs * 1.22
       const startY = yCentre - ((lines.length - 1) * lineH) / 2
@@ -559,20 +560,20 @@ export default function ScriptureMirror() {
         <div className="text-center" style={{ paddingTop: 'max(2.8rem, env(safe-area-inset-top, 1.5rem))' }}>
           <p style={{
             fontFamily: 'Caveat, cursive',
-            fontWeight: 800,
-            fontSize: 'clamp(1.6rem, 7vw, 2.2rem)',
+            fontWeight: 700,
+            fontSize: 'clamp(2rem, 9vw, 2.8rem)',
             textTransform: 'uppercase',
-            letterSpacing: '0.18em',
-            color: 'rgba(255,255,255,0.82)',
+            letterSpacing: '0.22em',
+            color: 'rgba(255,255,255,0.85)',
             lineHeight: 1,
-            marginBottom: '0.18rem',
           }}>Reflection</p>
           <p style={{
             fontFamily: 'sans-serif',
-            fontSize: '0.58rem',
+            fontSize: '0.6rem',
             textTransform: 'uppercase',
-            letterSpacing: '0.22em',
-            color: 'rgba(255,255,255,0.32)',
+            letterSpacing: '0.26em',
+            color: 'rgba(255,255,255,0.30)',
+            marginTop: '0.4rem',
           }}>How God Sees Me</p>
         </div>
 

@@ -25,6 +25,16 @@ function useCamera() {
   return { videoRef, ready }
 }
 
+// ─── Canvas factory (OffscreenCanvas with fallback for older iOS Safari) ──────
+function makeCanvas(W, H) {
+  if (typeof OffscreenCanvas !== 'undefined') {
+    return new OffscreenCanvas(W, H)
+  }
+  const c = document.createElement('canvas')
+  c.width = W; c.height = H
+  return c
+}
+
 // ─── Seeded RNG ───────────────────────────────────────────────────────────────
 function mkRng(seed) {
   let s = seed
@@ -39,17 +49,17 @@ function mkRng(seed) {
 
 // ─── Static fog buffer (texture only — no droplets, those are animated) ───────
 function buildFogBuffer(W, H) {
-  const buf = new OffscreenCanvas(W, H)
+  const buf = makeCanvas(W, H)
   const c   = buf.getContext('2d')
   const r   = mkRng(7)
 
   // Base fog
-  c.fillStyle = 'rgba(198,206,216,0.18)'
+  c.fillStyle = 'rgba(198,206,216,0.42)'
   c.fillRect(0, 0, W, H)
 
   // Texture blobs
   for (let i = 0; i < 150; i++) {
-    const x = r()*W, y = r()*H, rad = 28+r()*110, a = 0.025+r()*0.06
+    const x = r()*W, y = r()*H, rad = 28+r()*110, a = 0.055+r()*0.12
     const g = c.createRadialGradient(x,y,0,x,y,rad)
     g.addColorStop(0, `rgba(218,223,230,${a})`)
     g.addColorStop(1, 'rgba(200,205,215,0)')
@@ -211,16 +221,21 @@ function wrapText(ctx, text, maxW) {
 }
 
 // ─── Cut a single line into fog via destination-out ──────────────────────────
+// Extra passes give thick, bold finger-stroke edges
 function cutLine(ctx, W, text, y, fontSize) {
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-  ctx.font         = `800 ${fontSize}px Caveat`
+  ctx.font         = `900 ${fontSize}px Caveat`
   ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
-  ctx.filter = 'blur(9px)';  ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillText(text, W/2, y)
-  ctx.filter = 'blur(4px)';  ctx.fillStyle = 'rgba(0,0,0,0.9)'; ctx.fillText(text, W/2, y)
-  ctx.filter = 'blur(1px)';  ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
-  ctx.filter = 'none'
+  // Wide soft halo
+  ctx.filter = 'blur(11px)'; ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillText(text, W/2, y)
+  // Medium feather
+  ctx.filter = 'blur(5px)';  ctx.fillStyle = 'rgba(0,0,0,0.95)'; ctx.fillText(text, W/2, y)
+  // Crisp stroke body (drawn 3× for density)
+  ctx.filter = 'blur(1.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
+  ctx.filter = 'blur(0.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
+  ctx.filter = 'none';        ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2, y)
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -288,7 +303,7 @@ function useMirrorCanvas() {
     const fsLabel  = Math.min(Math.floor(W * 0.022), 15)
 
     // Measure lines using a temp canvas
-    const tmp = new OffscreenCanvas(W, H)
+    const tmp = makeCanvas(W, H)
     const tc  = tmp.getContext('2d')
 
     const calcBlock = (text, fs, yCentre) => {
@@ -348,7 +363,78 @@ const PROMPTS = [
   "I feel anxious",
   "I feel rejected",
   "I feel weak",
+  "I feel unworthy of love",
+  "I feel invisible",
+  "I feel like a failure",
 ]
+
+// ─── Prompt swipe carousel ─────────────────────────────────────────────────────
+function PromptSwiper({ onSelect }) {
+  const scrollRef  = useRef(null)
+  const idxRef     = useRef(0)
+
+  // initialise scroll to first item
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollLeft = 0
+    onSelect(PROMPTS[0])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function handleScroll() {
+    const el = scrollRef.current
+    if (!el) return
+    const newIdx = Math.round(el.scrollLeft / el.clientWidth)
+    if (newIdx !== idxRef.current && newIdx >= 0 && newIdx < PROMPTS.length) {
+      idxRef.current = newIdx
+      onSelect(PROMPTS[newIdx])
+    }
+  }
+
+  return (
+    <div style={{ position: 'relative', marginBottom: '0.6rem' }}>
+      {/* Edge fade */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
+        background: 'linear-gradient(to right, rgba(0,0,0,0.55) 0%, transparent 22%, transparent 78%, rgba(0,0,0,0.55) 100%)',
+      }} />
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        style={{
+          display: 'flex',
+          overflowX: 'scroll',
+          scrollSnapType: 'x mandatory',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
+          msOverflowStyle: 'none',
+        }}
+      >
+        {PROMPTS.map((p, i) => (
+          <div key={p} style={{
+            scrollSnapAlign: 'center',
+            flexShrink: 0,
+            width: '100%',
+            textAlign: 'center',
+            padding: '0.25rem 1.5rem',
+          }}>
+            <span style={{
+              fontFamily: 'Caveat, cursive',
+              fontWeight: 800,
+              fontSize: 'clamp(1.15rem, 5.5vw, 1.5rem)',
+              color: 'rgba(255,255,255,0.88)',
+              lineHeight: 1.25,
+              display: 'block',
+            }}>{p}</span>
+          </div>
+        ))}
+      </div>
+      {/* Hide scrollbar in webkit */}
+      <style>{`.prompt-scroll::-webkit-scrollbar{display:none}`}</style>
+    </div>
+  )
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ScriptureMirror() {
@@ -385,7 +471,7 @@ export default function ScriptureMirror() {
         style={{
           zIndex: 1,
           transform: 'scaleX(-1)',
-          filter: 'blur(5px) brightness(0.72) saturate(0.75)',
+          filter: 'blur(3.5px) brightness(0.72) saturate(0.75)',
           opacity: camReady ? 1 : 0,
           transition: 'opacity 1.2s ease',
         }}
@@ -407,44 +493,43 @@ export default function ScriptureMirror() {
         <div className="flex-1" />
 
         {/* Bottom panel */}
-        <div className="px-4" style={{ paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 7rem))' }}>
+        <div className="px-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}>
           {!submitted ? (
-            <div className="rounded-2xl p-4"
+            <div className="rounded-2xl pt-3 pb-4 px-0"
               style={{
-                background: 'rgba(0,0,0,0.48)',
+                background: 'rgba(0,0,0,0.52)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
                 border: '1px solid rgba(255,255,255,0.08)',
+                overflow: 'hidden',
               }}
             >
-              <p className="font-sans uppercase tracking-widest text-center mb-3"
+              <p className="font-sans uppercase tracking-widest text-center mb-2 px-4"
                  style={{ fontSize: '0.56rem', color: 'rgba(255,255,255,0.28)' }}>
                 What do you feel or believe about yourself?
               </p>
-              <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-                {PROMPTS.map(p => (
-                  <button key={p}
-                    onClick={() => { setFeeling(p); setTimeout(() => textareaRef.current?.focus(), 50) }}
-                    className="font-sans rounded-full px-2.5 py-1"
-                    style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}
-                  >{p}</button>
-                ))}
+
+              {/* Swipe to pick a prompt */}
+              <PromptSwiper onSelect={p => setFeeling(p)} />
+
+              {/* Or type your own */}
+              <div className="px-4">
+                <form onSubmit={handleSubmit} className="flex gap-2 items-end">
+                  <textarea ref={textareaRef} value={feeling}
+                    onChange={e => setFeeling(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit() } }}
+                    placeholder="or type your own…" rows={2} maxLength={400}
+                    className="flex-1 font-sans text-sm text-white placeholder:text-white/25 resize-none outline-none leading-relaxed rounded-xl px-4 py-3"
+                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}
+                  />
+                  <button type="submit" disabled={!feeling.trim()}
+                    className="rounded-xl px-4 py-3 disabled:opacity-30"
+                    style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.16)' }}
+                  >
+                    <Sparkles size={15} />
+                  </button>
+                </form>
               </div>
-              <form onSubmit={handleSubmit} className="flex gap-2 items-end">
-                <textarea ref={textareaRef} value={feeling}
-                  onChange={e => setFeeling(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit() } }}
-                  placeholder="I feel…" rows={2} maxLength={400}
-                  className="flex-1 font-sans text-sm text-white placeholder:text-white/25 resize-none outline-none leading-relaxed rounded-xl px-4 py-3"
-                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}
-                />
-                <button type="submit" disabled={!feeling.trim()}
-                  className="rounded-xl px-4 py-3 disabled:opacity-30"
-                  style={{ background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.16)' }}
-                >
-                  <Sparkles size={15} />
-                </button>
-              </form>
             </div>
           ) : (
             <div className="text-center">

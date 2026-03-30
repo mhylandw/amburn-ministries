@@ -53,7 +53,7 @@ function buildFogBuffer(W, H) {
   const r   = mkRng(7)
 
   // Base fog
-  c.fillStyle = 'rgba(198,206,216,0.22)'
+  c.fillStyle = 'rgba(198,206,216,0.32)'
   c.fillRect(0, 0, W, H)
 
   // Texture blobs
@@ -102,106 +102,98 @@ function buildFogBuffer(W, H) {
   return buf
 }
 
-// ─── Drip droplets ────────────────────────────────────────────────────────────
+// ─── Unified light source direction (upper-left, normalised) ─────────────────
+const LIGHT = { x: -0.38, y: -0.60 }
+
+// ─── Windowpane water drops ───────────────────────────────────────────────────
 function createDroplet(W, H, randomY = true) {
-  const rad = 1.5 + Math.random() * 4.0
+  const rad = 2.5 + Math.random() * 3.8
   return {
-    x:         Math.random() * W,
-    y:         randomY ? Math.random() * H : -(rad + Math.random() * 80),
+    x:        Math.random() * W,
+    y:        randomY ? Math.random() * H : -(rad * 2 + Math.random() * 60),
     rad,
-    speed:     0.8 + rad * 0.7 + Math.random() * 1.0,
-    alpha:     0.4 + Math.random() * 0.45,
-    trailLen:  rad * (18 + Math.random() * 28),
-    // squirm / wobble
-    waveAmp:   0.4 + Math.random() * 1.4,   // horizontal drift amplitude (px)
-    waveFreq:  0.018 + Math.random() * 0.04, // cycles per pixel fallen
-    wavePhase: Math.random() * Math.PI * 2,
-    xBase:     0,   // accumulated x offset (set on spawn)
+    vy:       0.18 + rad * 0.09 + Math.random() * 0.22,   // gentle gravity
+    vx:       (Math.random() - 0.5) * 0.45,               // lateral drift
+    alpha:    0.52 + Math.random() * 0.20,                 // narrow range — same pane
+    trailLen: rad * (14 + Math.random() * 18),
+    stuck:    Math.floor(Math.random() * 90),              // start staggered
   }
 }
 
 function drawDroplets(ctx, drops, W, H) {
   drops.forEach(d => {
-    // Squirm — update x using a sine based on how far it has fallen
-    d.x += Math.sin(d.y * d.waveFreq + d.wavePhase) * d.waveAmp * 0.18
+    // Windowpane physics: surface tension causes sticking + random re-routing
+    if (d.stuck > 0) {
+      d.stuck -= 1
+    } else {
+      d.vx = d.vx * 0.82 + (Math.random() - 0.5) * 0.20
+      d.vx = Math.max(-1.1, Math.min(1.1, d.vx))
+      d.x += d.vx
+      d.y += d.vy
+      if (Math.random() < 0.0035) d.stuck = 20 + Math.floor(Math.random() * 55)
+    }
 
-    // Advance
-    d.y += d.speed
     if (d.y > H + d.rad + d.trailLen) {
       Object.assign(d, createDroplet(W, H, false))
       return
     }
 
-    const { x, y, rad, alpha, trailLen, waveAmp, waveFreq, wavePhase } = d
+    const { x, y, rad, alpha, trailLen } = d
 
-    // ── Trail: tapered, slightly wiggly streak ──────────────────────────────
-    const segments = Math.max(12, Math.floor(trailLen / 3))
-    for (let i = 0; i < segments; i++) {
-      const t0 = i / segments
-      const t1 = (i + 1) / segments
-      const py0 = y - trailLen * (1 - t0)
-      const py1 = y - trailLen * (1 - t1)
-      const px0 = x + Math.sin(py0 * waveFreq + wavePhase) * waveAmp * 0.6
-      const px1 = x + Math.sin(py1 * waveFreq + wavePhase) * waveAmp * 0.6
-      const segAlpha = alpha * 0.45 * t1          // fades toward top
-      const lw = rad * 0.22 + rad * 0.55 * t1    // tapers toward top
+    // ── Thin hairline trail ─────────────────────────────────────────────────
+    const trail = ctx.createLinearGradient(x, y - trailLen, x, y)
+    trail.addColorStop(0,   'rgba(215,226,240,0)')
+    trail.addColorStop(0.35, `rgba(215,226,240,${alpha * 0.14})`)
+    trail.addColorStop(1,   `rgba(215,226,240,${alpha * 0.30})`)
+    ctx.strokeStyle = trail
+    ctx.lineWidth   = Math.max(0.7, rad * 0.20)
+    ctx.lineCap     = 'round'
+    ctx.beginPath(); ctx.moveTo(x, y - trailLen); ctx.lineTo(x, y); ctx.stroke()
 
-      ctx.strokeStyle = `rgba(220,228,240,${segAlpha})`
-      ctx.lineWidth   = lw
-      ctx.lineCap     = 'round'
-      ctx.beginPath()
-      ctx.moveTo(px0, py0)
-      ctx.lineTo(px1, py1)
-      ctx.stroke()
-    }
+    // ── Drop body: oblate ellipse (pressed flat against glass) ──────────────
+    const bw = rad * 0.88
+    const bh = rad * 1.10
 
-    // ── Teardrop body ───────────────────────────────────────────────────────
-    // Pointed tip at top (y - rad*2.2), round bulge at bottom (y + rad)
-    const tipY  = y - rad * 2.2
-    const bodyY = y + rad
-    const cpX   = rad * 1.05   // control-point half-width for curves
-
-    ctx.beginPath()
-    ctx.moveTo(x, tipY)
-    ctx.bezierCurveTo(x + cpX, tipY + rad * 1.1,  x + cpX, y,  x, bodyY)
-    ctx.bezierCurveTo(x - cpX, y,                 x - cpX, tipY + rad * 1.1, x, tipY)
-    ctx.closePath()
-
-    // Glassy fill: radial gradient, lighter core → darker edge
-    const gFill = ctx.createRadialGradient(x - rad * 0.25, y - rad * 0.35, 0, x, y, rad * 1.5)
-    gFill.addColorStop(0,   `rgba(240,248,255,${alpha * 0.92})`)
-    gFill.addColorStop(0.5, `rgba(210,222,238,${alpha * 0.75})`)
-    gFill.addColorStop(1,   `rgba(175,192,215,${alpha * 0.55})`)
-    ctx.fillStyle = gFill
-    ctx.fill()
-
-    // Thin rim highlight
-    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.28})`
-    ctx.lineWidth   = 0.6
-    ctx.stroke()
-
-    // ── Primary crescent highlight (upper-left) ─────────────────────────────
     ctx.save()
     ctx.beginPath()
-    ctx.moveTo(x, tipY)
-    ctx.bezierCurveTo(x + cpX, tipY + rad * 1.1,  x + cpX, y,  x, bodyY)
-    ctx.bezierCurveTo(x - cpX, y,                 x - cpX, tipY + rad * 1.1, x, tipY)
-    ctx.clip()
-    const hiGrad = ctx.createRadialGradient(
-      x - rad * 0.32, y - rad * 0.5, 0,
-      x - rad * 0.32, y - rad * 0.5, rad * 0.9
-    )
-    hiGrad.addColorStop(0,   `rgba(255,255,255,${alpha * 0.82})`)
-    hiGrad.addColorStop(0.45, `rgba(255,255,255,${alpha * 0.3})`)
-    hiGrad.addColorStop(1,   `rgba(255,255,255,0)`)
-    ctx.fillStyle = hiGrad
+    ctx.ellipse(x, y, bw, bh, 0, 0, Math.PI * 2)
+
+    // Glass fill: light-source-aware radial gradient
+    const lcx = x + LIGHT.x * rad * 0.44
+    const lcy = y + LIGHT.y * rad * 0.44
+    const fill = ctx.createRadialGradient(lcx, lcy, 0, x, y, rad * 1.35)
+    fill.addColorStop(0,    `rgba(242,249,255,${alpha * 0.88})`)
+    fill.addColorStop(0.40, `rgba(212,224,240,${alpha * 0.68})`)
+    fill.addColorStop(1,    `rgba(172,190,215,${alpha * 0.46})`)
+    ctx.fillStyle = fill
     ctx.fill()
+
+    // Thin glass rim
+    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.18})`
+    ctx.lineWidth   = 0.65
+    ctx.stroke()
+
+    // ── Primary specular clipped inside drop ────────────────────────────────
+    ctx.beginPath()
+    ctx.ellipse(x, y, bw, bh, 0, 0, Math.PI * 2)
+    ctx.clip()
+
+    const sx = x + LIGHT.x * rad * 0.40
+    const sy = y + LIGHT.y * rad * 0.40
+    const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, rad * 0.72)
+    sg.addColorStop(0,    `rgba(255,255,255,${alpha * 0.92})`)
+    sg.addColorStop(0.38, `rgba(255,255,255,${alpha * 0.40})`)
+    sg.addColorStop(1,    'rgba(255,255,255,0)')
+    ctx.fillStyle = sg
+    ctx.fillRect(x - rad * 1.5, y - rad * 1.5, rad * 3, rad * 3)
     ctx.restore()
 
-    // ── Small secondary specular dot ────────────────────────────────────────
+    // ── Secondary refraction glint (opposite side, much softer) ────────────
+    const rx = x - LIGHT.x * rad * 0.32
+    const ry = y - LIGHT.y * rad * 0.28
     ctx.beginPath()
-    ctx.arc(x + rad * 0.22, y + rad * 0.28, rad * 0.2, 0, Math.PI * 2)
-    ctx.fillStyle = `rgba(255,255,255,${alpha * 0.38})`
+    ctx.arc(rx, ry, rad * 0.16, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(255,255,255,${alpha * 0.20})`
     ctx.fill()
   })
 }
@@ -220,25 +212,75 @@ function wrapText(ctx, text, maxW) {
 }
 
 // ─── Wipe a horizontal stripe clean (reveals camera beneath) ─────────────────
-function wipeStripe(ctx, W, y, stripeH, progress) {
-  if (progress <= 0) return
-  const x        = W * progress
-  const softEdge = stripeH * 2.2   // width of the soft leading finger-edge
+// ─── Pre-generate the zigzag wipe path (hand clearing a mirror up-and-down) ──
+// Returns an array of {x, y} waypoints the wipe edge travels along.
+function makeWipePath(W, H, y, stripeH, seed) {
+  const r       = mkRng(seed)
+  // Number of vertical strokes across the width
+  const strokes = Math.max(6, Math.ceil(W / (stripeH * 1.8)))
+  const pts     = []
+  for (let i = 0; i <= strokes; i++) {
+    const px = (i / strokes) * W
+    // Alternate top-to-bottom and bottom-to-top strokes
+    const goingDown = i % 2 === 0
+    const py = goingDown
+      ? y - stripeH * (0.55 + r() * 0.15)   // top of stroke
+      : y + stripeH * (0.55 + r() * 0.15)   // bottom of stroke
+    pts.push({ x: px, y: py, goingDown })
+  }
+  return { pts, strokes }
+}
+
+// ─── Wipe clear using an up-and-down zigzag hand motion ──────────────────────
+function wipeStripe(ctx, W, y, stripeH, progress, wipePath) {
+  if (progress <= 0 || !wipePath) return
+  const { pts, strokes } = wipePath
+  // How far along the path we are
+  const pathPos = progress * strokes   // in stroke-units
+  const edgeW   = stripeH * 0.9       // soft leading edge width
+
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-  // Solid cleared area behind the leading edge
-  ctx.fillStyle = 'rgba(0,0,0,1)'
-  ctx.fillRect(0, y - stripeH / 2, Math.max(0, x - softEdge * 0.35), stripeH)
-  // Soft leading edge — gradient fades out like a finger wipe
-  if (x > 0) {
-    const gx0 = Math.max(0, x - softEdge)
-    const g   = ctx.createLinearGradient(gx0, y, x, y)
-    g.addColorStop(0,   'rgba(0,0,0,0.92)')
-    g.addColorStop(0.5, 'rgba(0,0,0,0.65)')
-    g.addColorStop(1,   'rgba(0,0,0,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(gx0, y - stripeH / 2, Math.min(softEdge, x) + 2, stripeH)
+
+  // Build the filled polygon for the already-cleared area
+  // The polygon is bounded by the zigzag path on the right and screen edges elsewhere
+  ctx.beginPath()
+  // Start top-left
+  ctx.moveTo(0, y - stripeH * 1.0)
+
+  // Walk the zigzag pts up to the current progress position
+  for (let i = 0; i < pts.length; i++) {
+    const segStart = i
+    const segEnd   = i + 1
+    if (segStart >= pathPos) break
+    const t = Math.min(1, pathPos - segStart)
+    const p0 = pts[i]
+    const p1 = pts[i + 1] || pts[i]
+    const ex = p0.x + (p1.x - p0.x) * t
+    const ey = p0.y + (p1.y - p0.y) * t
+    ctx.lineTo(ex, ey)
   }
+
+  // Close back along bottom-left
+  ctx.lineTo(0, y + stripeH * 1.0)
+  ctx.closePath()
+  ctx.fillStyle = 'rgba(0,0,0,0.92)'
+  ctx.fill()
+
+  // Soft feathered leading edge (vertical gradient at tip)
+  const tipIdx  = Math.min(Math.floor(pathPos), pts.length - 2)
+  const tipFrac = pathPos - tipIdx
+  const tp0     = pts[tipIdx]
+  const tp1     = pts[tipIdx + 1] || tp0
+  const tipX    = tp0.x + (tp1.x - tp0.x) * tipFrac
+  const tipY    = tp0.y + (tp1.y - tp0.y) * tipFrac
+  const g = ctx.createRadialGradient(tipX, tipY, 0, tipX, tipY, edgeW * 2.2)
+  g.addColorStop(0,    'rgba(0,0,0,0.55)')
+  g.addColorStop(0.5,  'rgba(0,0,0,0.20)')
+  g.addColorStop(1,    'rgba(0,0,0,0)')
+  ctx.fillStyle = g
+  ctx.fillRect(Math.max(0, tipX - edgeW * 2.5), y - stripeH * 1.2, edgeW * 5.5, stripeH * 2.4)
+
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -278,7 +320,7 @@ function useMirrorCanvas() {
     canvas.width  = window.innerWidth
     canvas.height = window.innerHeight
     fogRef.current   = buildFogBuffer(canvas.width, canvas.height)
-    dropsRef.current = Array.from({ length: 70 }, () => createDroplet(canvas.width, canvas.height))
+    dropsRef.current = Array.from({ length: 45 }, () => createDroplet(canvas.width, canvas.height))
   }, [])
 
   useEffect(() => {
@@ -294,11 +336,12 @@ function useMirrorCanvas() {
         ctx.clearRect(0, 0, W, H)
         ctx.drawImage(fog, 0, 0)
         drawDroplets(ctx, dropsRef.current, W, H)
-        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0 }) => {
-          const lineH = fontSize * 1.55   // height band for this individual line
+        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0, wipePath }) => {
+          const lineH     = fontSize * 1.55              // write-in band height
+          const wipeH     = lineH + 70                   // wipe band 70px taller
           if (clearProgress > 0) {
-            // Wipe this line clean — finger sweeps left to right revealing camera
-            wipeStripe(ctx, W, y, lineH, clearProgress)
+            // Wipe this line clean — up-and-down hand motion reveals camera
+            wipeStripe(ctx, W, y, wipeH, clearProgress, wipePath)
           } else if (progress > 0) {
             // Write text into fog — clip to just this line's band
             ctx.save()
@@ -327,9 +370,9 @@ function useMirrorCanvas() {
     const W = canvas.width, H = canvas.height
 
     const fsLarge = Math.min(Math.floor(W * 0.098), 72)
-    const fsMed   = Math.min(Math.floor(W * 0.054), 40)
-    const fsSmall = Math.min(Math.floor(W * 0.030), 22)
-    const fsTiny  = Math.min(Math.floor(W * 0.022), 16)
+    const fsMed   = Math.min(Math.floor(W * 0.068), 52)   // bigger top feeling text
+    const fsSmall = Math.min(Math.floor(W * 0.042), 32)   // bigger scripture text
+    const fsTiny  = Math.min(Math.floor(W * 0.028), 20)
 
     const tmp = makeCanvas(W, H)
     const tc  = tmp.getContext('2d')
@@ -351,9 +394,14 @@ function useMirrorCanvas() {
     let t = 0
 
     // ── Feeling lines (write in, then wipe clean as truth starts) ──────────────
-    const feelingLines = calcBlock(feeling, fsMed, H * 0.12)
-    const feelingItems = feelingLines.map(line => {
-      const item = { ...line, startOffset: t, clearOffset: null }
+    const feelingLines = calcBlock(feeling, fsMed, H * 0.20)
+    const feelingItems = feelingLines.map((line, i) => {
+      const item = {
+        ...line,
+        startOffset: t,
+        clearOffset: null,
+        wipePath: makeWipePath(W, H, line.y, line.fontSize * 1.55 + 70, i * 37 + 11),
+      }
       t += STAGGER
       return item
     })
@@ -364,7 +412,7 @@ function useMirrorCanvas() {
     })
 
     // ── Truth lines ─────────────────────────────────────────────────────────────
-    const truthItems = calcBlock(truth, fsLarge, H * 0.42).map(line => {
+    const truthItems = calcBlock(truth, fsLarge, H * 0.50).map(line => {
       const item = { ...line, startOffset: t }
       t += STAGGER
       return item
@@ -373,7 +421,7 @@ function useMirrorCanvas() {
     t += SCRIPT_PAUSE
 
     // ── Scripture lines ─────────────────────────────────────────────────────────
-    const scriptItems = calcBlock(`"${scripture.text}"`, fsSmall, H * 0.72).map(line => {
+    const scriptItems = calcBlock(`"${scripture.text}"`, fsSmall, H * 0.76).map(line => {
       const item = { ...line, startOffset: t }
       t += STAGGER
       return item
@@ -381,7 +429,7 @@ function useMirrorCanvas() {
     const refItem = {
       text: scripture.reference.toUpperCase(),
       fontSize: fsTiny,
-      y: H * 0.84,
+      y: H * 0.90,
       startOffset: t,
     }
 

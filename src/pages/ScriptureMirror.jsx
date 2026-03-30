@@ -54,12 +54,12 @@ function buildFogBuffer(W, H) {
   const r   = mkRng(7)
 
   // Base fog
-  c.fillStyle = 'rgba(198,206,216,0.42)'
+  c.fillStyle = 'rgba(198,206,216,0.22)'
   c.fillRect(0, 0, W, H)
 
   // Texture blobs
   for (let i = 0; i < 150; i++) {
-    const x = r()*W, y = r()*H, rad = 28+r()*110, a = 0.055+r()*0.12
+    const x = r()*W, y = r()*H, rad = 28+r()*110, a = 0.03+r()*0.07
     const g = c.createRadialGradient(x,y,0,x,y,rad)
     g.addColorStop(0, `rgba(218,223,230,${a})`)
     g.addColorStop(1, 'rgba(200,205,215,0)')

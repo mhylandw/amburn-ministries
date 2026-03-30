@@ -320,22 +320,23 @@ function useMirrorCanvas() {
     let t = 0
     const allLines = []
 
-    for (const line of calcBlock(feeling,         fsMed,   H * 0.14)) {
+    // Feeling at top (where the swiper was), truth below it, scripture at bottom
+    for (const line of calcBlock(feeling,         fsMed,   H * 0.12)) {
       allLines.push({ ...line, startOffset: t }); t += STAGGER
     }
-    for (const line of calcBlock(truth,           fsLarge, H * 0.43)) {
+    for (const line of calcBlock(truth,           fsLarge, H * 0.42)) {
       allLines.push({ ...line, startOffset: t }); t += STAGGER
     }
 
     t += SCRIPT_PAUSE  // ← scripture fades in after a beat
 
-    for (const line of calcBlock(`"${scripture.text}"`, fsSmall, H * 0.70)) {
+    for (const line of calcBlock(`"${scripture.text}"`, fsSmall, H * 0.72)) {
       allLines.push({ ...line, startOffset: t }); t += STAGGER
     }
     allLines.push({
       text: scripture.reference.toUpperCase(),
       fontSize: fsTiny,
-      y: H * 0.83,
+      y: H * 0.84,
       startOffset: t,
     })
 
@@ -508,22 +509,20 @@ export default function ScriptureMirror() {
 
       {/* UI */}
       <div className="absolute inset-0 flex flex-col" style={{ zIndex: 10 }}>
-        {/* Label */}
-        <div className="text-center" style={{ paddingTop: '4.5rem' }}>
-          <p className="font-sans uppercase tracking-widest"
-             style={{ fontSize: '0.58rem', color: 'rgba(255,255,255,0.25)' }}>
-            Scripture Mirror
-          </p>
+
+        {/* Top — swipe selector (input) or spacer (submitted) */}
+        <div style={{ paddingTop: 'max(2.2rem, env(safe-area-inset-top, 1rem))' }}>
+          {!submitted ? (
+            <PromptSwiper onSubmit={handleSubmit} />
+          ) : null}
         </div>
 
         <div className="flex-1" />
 
-        {/* Bottom */}
+        {/* Bottom — look again when submitted */}
         <div>
-          {!submitted ? (
-            <PromptSwiper onSubmit={handleSubmit} />
-          ) : (
-            <div className="text-center" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}>
+          {submitted && (
+            <div className="text-center" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2.5rem)' }}>
               <button onClick={handleReset}
                 style={{
                   fontFamily: 'Caveat, cursive',

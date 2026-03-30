@@ -100,7 +100,7 @@ function createDroplet(W, H, randomY = true) {
     x:         Math.random() * W,
     y:         randomY ? Math.random() * H : -(rad + Math.random() * 80),
     rad,
-    speed:     0.25 + rad * 0.28 + Math.random() * 0.45,
+    speed:     0.8 + rad * 0.7 + Math.random() * 1.0,
     alpha:     0.4 + Math.random() * 0.45,
     trailLen:  rad * (18 + Math.random() * 28),
     // squirm / wobble

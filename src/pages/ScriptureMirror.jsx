@@ -277,14 +277,15 @@ function useMirrorCanvas() {
   }, [setup])
 
   // Animate text writing — pre-calculates every wrapped line, reveals one at a time
-  const writeText = useCallback((scripture, truth) => {
+  const writeText = useCallback((scripture, truth, feeling) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const W = canvas.width, H = canvas.height
 
-    const fsLarge = Math.min(Math.floor(W * 0.095), 70)
-    const fsMed   = Math.min(Math.floor(W * 0.048), 34)
-    const fsSmall = Math.min(Math.floor(W * 0.030), 22)
+    const fsLarge  = Math.min(Math.floor(W * 0.095), 70)
+    const fsMed    = Math.min(Math.floor(W * 0.048), 34)
+    const fsSmall  = Math.min(Math.floor(W * 0.030), 22)
+    const fsLabel  = Math.min(Math.floor(W * 0.022), 15)
 
     // Measure lines using a temp canvas
     const tmp = new OffscreenCanvas(W, H)
@@ -299,9 +300,15 @@ function useMirrorCanvas() {
     }
 
     const allLines = [
-      ...calcBlock(truth,                  fsLarge, H * 0.28),
-      ...calcBlock(`"${scripture.text}"`,  fsMed,   H * 0.57),
-      { text: scripture.reference, fontSize: fsSmall, y: H * 0.76 },
+      // ── "Who you were" section ──
+      { text: 'who you were', fontSize: fsLabel, y: H * 0.10 },
+      ...calcBlock(feeling,                    fsMed,   H * 0.175),
+      // ── "Who you're becoming" section ──
+      { text: "who you're becoming", fontSize: fsLabel, y: H * 0.34 },
+      ...calcBlock(truth,                      fsLarge, H * 0.44),
+      // ── Scripture ──
+      ...calcBlock(`"${scripture.text}"`,      fsMed,   H * 0.68),
+      { text: scripture.reference,             fontSize: fsSmall, y: H * 0.83 },
     ]
 
     itemsRef.current = allLines.map(l => ({ ...l, progress: 0 }))
@@ -359,7 +366,7 @@ export default function ScriptureMirror() {
     if (!best) return
     const truth = getMirrorTruth(input, best)
     setSubmitted(true)
-    writeText(best, truth)
+    writeText(best, truth, input)
   }
 
   function handleReset() {

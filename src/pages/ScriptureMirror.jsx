@@ -219,6 +219,30 @@ function wrapText(ctx, text, maxW) {
   return lines
 }
 
+// ─── Wipe a horizontal stripe clean (reveals camera beneath) ─────────────────
+function wipeStripe(ctx, W, y, stripeH, progress) {
+  if (progress <= 0) return
+  const x        = W * progress
+  const softEdge = stripeH * 2.2   // width of the soft leading finger-edge
+  ctx.save()
+  ctx.globalCompositeOperation = 'destination-out'
+  // Solid cleared area behind the leading edge
+  ctx.fillStyle = 'rgba(0,0,0,1)'
+  ctx.fillRect(0, y - stripeH / 2, Math.max(0, x - softEdge * 0.35), stripeH)
+  // Soft leading edge — gradient fades out like a finger wipe
+  if (x > 0) {
+    const gx0 = Math.max(0, x - softEdge)
+    const g   = ctx.createLinearGradient(gx0, y, x, y)
+    g.addColorStop(0,   'rgba(0,0,0,0.92)')
+    g.addColorStop(0.5, 'rgba(0,0,0,0.65)')
+    g.addColorStop(1,   'rgba(0,0,0,0)')
+    ctx.fillStyle = g
+    ctx.fillRect(gx0, y - stripeH / 2, Math.min(softEdge, x) + 2, stripeH)
+  }
+  ctx.globalCompositeOperation = 'source-over'
+  ctx.restore()
+}
+
 // ─── Cut a single line into fog via destination-out ──────────────────────────
 // Extra passes give thick, bold finger-stroke edges
 function cutLine(ctx, W, text, y, fontSize) {
@@ -270,14 +294,20 @@ function useMirrorCanvas() {
         ctx.clearRect(0, 0, W, H)
         ctx.drawImage(fog, 0, 0)
         drawDroplets(ctx, dropsRef.current, W, H)
-        itemsRef.current.forEach(({ text, fontSize, y, progress }) => {
-          if (progress <= 0) return
-          ctx.save()
-          ctx.beginPath()
-          ctx.rect(0, 0, W * progress, H)
-          ctx.clip()
-          cutLine(ctx, W, text, y, fontSize)
-          ctx.restore()
+        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0 }) => {
+          const lineH = fontSize * 1.55   // height band for this individual line
+          if (clearProgress > 0) {
+            // Wipe this line clean — finger sweeps left to right revealing camera
+            wipeStripe(ctx, W, y, lineH, clearProgress)
+          } else if (progress > 0) {
+            // Write text into fog — clip to just this line's band
+            ctx.save()
+            ctx.beginPath()
+            ctx.rect(0, y - lineH / 2, W * progress, lineH)
+            ctx.clip()
+            cutLine(ctx, W, text, y, fontSize)
+            ctx.restore()
+          }
         })
       }
       rafRef.current = requestAnimationFrame(loop)
@@ -312,35 +342,51 @@ function useMirrorCanvas() {
       return lines.map((l, i) => ({ text: l, fontSize: fs, y: startY + i * lineH }))
     }
 
-    const WRITE_DUR    = 750   // ms to reveal each line
-    const STAGGER      = 820   // ms between consecutive lines
-    const SCRIPT_PAUSE = 1500  // extra pause before scripture appears
+    const WRITE_DUR    = 750   // ms per line write-in
+    const STAGGER      = 820   // ms between lines
+    const WIPE_DUR     = 480   // ms per feeling-line wipe-away
+    const WIPE_STAGGER = 340   // ms between feeling line wipes
+    const SCRIPT_PAUSE = 1500  // extra pause before scripture
 
-    // Assign absolute start offsets per line
     let t = 0
-    const allLines = []
 
-    // Feeling at top (where the swiper was), truth below it, scripture at bottom
-    for (const line of calcBlock(feeling,         fsMed,   H * 0.12)) {
-      allLines.push({ ...line, startOffset: t }); t += STAGGER
-    }
-    for (const line of calcBlock(truth,           fsLarge, H * 0.42)) {
-      allLines.push({ ...line, startOffset: t }); t += STAGGER
-    }
+    // ── Feeling lines (write in, then wipe clean as truth starts) ──────────────
+    const feelingLines = calcBlock(feeling, fsMed, H * 0.12)
+    const feelingItems = feelingLines.map(line => {
+      const item = { ...line, startOffset: t, clearOffset: null }
+      t += STAGGER
+      return item
+    })
+    // Truth starts at current t — feeling lines begin clearing simultaneously
+    const truthStart = t
+    feelingItems.forEach((item, i) => {
+      item.clearOffset = truthStart + i * WIPE_STAGGER
+    })
 
-    t += SCRIPT_PAUSE  // ← scripture fades in after a beat
+    // ── Truth lines ─────────────────────────────────────────────────────────────
+    const truthItems = calcBlock(truth, fsLarge, H * 0.42).map(line => {
+      const item = { ...line, startOffset: t }
+      t += STAGGER
+      return item
+    })
 
-    for (const line of calcBlock(`"${scripture.text}"`, fsSmall, H * 0.72)) {
-      allLines.push({ ...line, startOffset: t }); t += STAGGER
-    }
-    allLines.push({
+    t += SCRIPT_PAUSE
+
+    // ── Scripture lines ─────────────────────────────────────────────────────────
+    const scriptItems = calcBlock(`"${scripture.text}"`, fsSmall, H * 0.72).map(line => {
+      const item = { ...line, startOffset: t }
+      t += STAGGER
+      return item
+    })
+    const refItem = {
       text: scripture.reference.toUpperCase(),
       fontSize: fsTiny,
       y: H * 0.84,
       startOffset: t,
-    })
+    }
 
-    itemsRef.current = allLines.map(l => ({ ...l, progress: 0 }))
+    const allLines = [...feelingItems, ...truthItems, ...scriptItems, refItem]
+    itemsRef.current = allLines.map(l => ({ ...l, progress: 0, clearProgress: 0 }))
 
     let startTs = null
     function animate(ts) {
@@ -348,9 +394,14 @@ function useMirrorCanvas() {
       const elapsed = ts - startTs
       itemsRef.current = allLines.map(line => ({
         ...line,
-        progress: Math.max(0, Math.min(1, (elapsed - line.startOffset) / WRITE_DUR)),
+        progress:      Math.max(0, Math.min(1, (elapsed - line.startOffset) / WRITE_DUR)),
+        clearProgress: line.clearOffset != null
+          ? Math.max(0, Math.min(1, (elapsed - line.clearOffset) / WIPE_DUR))
+          : 0,
       }))
-      if (itemsRef.current.some(it => it.progress < 1)) requestAnimationFrame(animate)
+      if (itemsRef.current.some(it =>
+        it.progress < 1 || (it.clearOffset != null && it.clearProgress < 1)
+      )) requestAnimationFrame(animate)
     }
     requestAnimationFrame(animate)
   }, [])

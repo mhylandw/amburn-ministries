@@ -361,40 +361,32 @@ export default function ScriptureMirror() {
               </form>
             </div>
           ) : (
-            /* ── Results — verse references fade in after writing ── */
-            <div className="flex flex-col gap-2">
+            /* ── Results — verse fades in centered after writing ── */
+            <div className="flex flex-col items-center gap-2">
               {scriptures.map((s, i) => (
                 <div key={s.id}
-                  className="rounded-xl px-4 py-3"
+                  className="text-center px-6 py-4 max-w-lg w-full"
                   style={{
-                    background: 'rgba(0,0,0,0.45)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255,255,255,0.07)',
                     opacity: 0,
-                    animation: `verse-in 0.7s ${i * 1500 + 1100}ms ease forwards`,
+                    animation: `verse-in 0.9s ${i * 1500 + 1100}ms ease forwards`,
                   }}
                 >
-                  <p className="font-sans uppercase tracking-widest mb-1"
-                     style={{ fontSize: '0.52rem', color: 'rgba(255,255,255,0.3)' }}>
-                    {s.reference}
-                  </p>
-                  <p className="font-sans leading-relaxed"
-                     style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.48)' }}>
+                  <p className="font-serif italic leading-relaxed mb-3"
+                     style={{ fontSize: 'clamp(0.9rem, 2.2vw, 1.05rem)', color: 'rgba(255,255,255,0.72)' }}>
                     "{s.text}"
+                  </p>
+                  <p className="font-sans uppercase tracking-widest"
+                     style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.35)' }}>
+                    — {s.reference}
                   </p>
                 </div>
               ))}
 
               <button onClick={handleReset}
-                className="self-center mt-1 inline-flex items-center gap-1.5 font-sans text-xs rounded-full px-5 py-2"
-                style={{
-                  color: 'rgba(255,255,255,0.32)',
-                  background: 'rgba(0,0,0,0.4)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
+                className="self-center mt-2 font-sans text-xs"
+                style={{ color: 'rgba(255,255,255,0.28)', letterSpacing: '0.05em' }}
               >
-                <RotateCcw size={12} /> Look again
+                look again
               </button>
             </div>
           )}

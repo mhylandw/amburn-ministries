@@ -22,6 +22,7 @@ import Discern from './pages/Discern'
 import Missions from './pages/Missions'
 import Media from './pages/Media'
 import Podcast from './pages/Podcast'
+import ScriptureMirror from './pages/ScriptureMirror'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="/missions" element={<Missions />} />
             <Route path="/media" element={<Media />} />
             <Route path="/podcast" element={<Podcast />} />
+            <Route path="/scripture-mirror" element={<ScriptureMirror />} />
           </Routes>
         </main>
         <RadioMiniPlayer />

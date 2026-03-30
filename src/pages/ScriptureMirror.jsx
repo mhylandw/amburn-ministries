@@ -44,8 +44,8 @@ function buildFogBuffer(W, H) {
   const c   = buf.getContext('2d')
   const r   = rng(7)
 
-  // Dense fog base
-  c.fillStyle = 'rgba(198,206,216,0.85)'
+  // Fog base
+  c.fillStyle = 'rgba(198,206,216,0.52)'
   c.fillRect(0, 0, W, H)
 
   // Fog texture blobs
@@ -258,12 +258,13 @@ export default function ScriptureMirror() {
     e?.preventDefault()
     const input = feeling.trim()
     if (!input) return
-    const results = getScripturesForFeeling(input)
-    const truths  = results.map(s => getMirrorTruth(input, s))
-    setScriptures(results)
-    setMirrorTruths(truths)
+    const [best]  = getScripturesForFeeling(input)
+    if (!best) return
+    const truth   = getMirrorTruth(input, best)
+    setScriptures([best])
+    setMirrorTruths([truth])
     setSubmitted(true)
-    animateTruths(truths)
+    animateTruths([truth])
   }
 
   function handleReset() {

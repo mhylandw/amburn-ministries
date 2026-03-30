@@ -53,7 +53,7 @@ function buildFogBuffer(W, H) {
   const r   = mkRng(7)
 
   // Base fog
-  c.fillStyle = 'rgba(198,206,216,0.22)'
+  c.fillStyle = 'rgba(198,206,216,0.32)'
   c.fillRect(0, 0, W, H)
 
   // Texture blobs
@@ -109,7 +109,7 @@ function createDroplet(W, H, randomY = true) {
     x:         Math.random() * W,
     y:         randomY ? Math.random() * H : -(rad + Math.random() * 80),
     rad,
-    speed:     0.8 + rad * 0.7 + Math.random() * 1.0,
+    speed:     0.4 + rad * 0.38 + Math.random() * 0.5,
     alpha:     0.4 + Math.random() * 0.45,
     trailLen:  rad * (18 + Math.random() * 28),
     // squirm / wobble
@@ -220,25 +220,53 @@ function wrapText(ctx, text, maxW) {
 }
 
 // ─── Wipe a horizontal stripe clean (reveals camera beneath) ─────────────────
-function wipeStripe(ctx, W, y, stripeH, progress) {
-  if (progress <= 0) return
-  const x        = W * progress
-  const softEdge = stripeH * 2.2   // width of the soft leading finger-edge
+// ─── Pre-generate blotchy blob positions for a wipe stripe ───────────────────
+function makeWipeBlobs(W, stripeH, seed) {
+  const r     = mkRng(seed)
+  const count = Math.ceil(W / (stripeH * 0.65))
+  return Array.from({ length: count }, (_, i) => ({
+    bx:  (i / count) * W * 1.08 + (r() - 0.5) * stripeH * 0.9,
+    dy:  (r() - 0.5) * stripeH * 0.42,
+    rx:  stripeH * (0.52 + r() * 0.82),
+    ry:  stripeH * (0.26 + r() * 0.34),
+    rot: (r() - 0.5) * 0.9,
+    a:   0.68 + r() * 0.32,
+  }))
+}
+
+// ─── Wipe a horizontal stripe clean using blotchy blobs ──────────────────────
+function wipeStripe(ctx, W, y, stripeH, progress, blobs) {
+  if (progress <= 0 || !blobs) return
+  const x       = W * progress
+  const edgeW   = stripeH * 2.8
+
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-  // Solid cleared area behind the leading edge
-  ctx.fillStyle = 'rgba(0,0,0,1)'
-  ctx.fillRect(0, y - stripeH / 2, Math.max(0, x - softEdge * 0.35), stripeH)
-  // Soft leading edge — gradient fades out like a finger wipe
-  if (x > 0) {
-    const gx0 = Math.max(0, x - softEdge)
-    const g   = ctx.createLinearGradient(gx0, y, x, y)
-    g.addColorStop(0,   'rgba(0,0,0,0.92)')
-    g.addColorStop(0.5, 'rgba(0,0,0,0.65)')
-    g.addColorStop(1,   'rgba(0,0,0,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(gx0, y - stripeH / 2, Math.min(softEdge, x) + 2, stripeH)
+
+  // Clip to swept region + soft-edge overhang
+  ctx.beginPath()
+  ctx.rect(0, y - stripeH * 1.6, Math.min(x + edgeW, W + 1), stripeH * 3.2)
+  ctx.clip()
+
+  // Blotchy ellipses — irregular coverage
+  for (const b of blobs) {
+    if (b.bx - b.rx > x) continue   // skip blobs beyond leading edge
+    ctx.save()
+    ctx.beginPath()
+    ctx.ellipse(b.bx, y + b.dy, b.rx, b.ry, b.rot, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(0,0,0,${b.a})`
+    ctx.fill()
+    ctx.restore()
   }
+
+  // Soft feathered leading edge
+  const g = ctx.createLinearGradient(Math.max(0, x - edgeW), y, x + 4, y)
+  g.addColorStop(0,    'rgba(0,0,0,0)')
+  g.addColorStop(0.45, 'rgba(0,0,0,0.28)')
+  g.addColorStop(1,    'rgba(0,0,0,0)')
+  ctx.fillStyle = g
+  ctx.fillRect(Math.max(0, x - edgeW), y - stripeH * 1.6, edgeW + 8, stripeH * 3.2)
+
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -294,11 +322,11 @@ function useMirrorCanvas() {
         ctx.clearRect(0, 0, W, H)
         ctx.drawImage(fog, 0, 0)
         drawDroplets(ctx, dropsRef.current, W, H)
-        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0 }) => {
+        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0, wipeBlobs }) => {
           const lineH = fontSize * 1.55   // height band for this individual line
           if (clearProgress > 0) {
-            // Wipe this line clean — finger sweeps left to right revealing camera
-            wipeStripe(ctx, W, y, lineH, clearProgress)
+            // Wipe this line clean — blotchy finger sweep reveals camera
+            wipeStripe(ctx, W, y, lineH, clearProgress, wipeBlobs)
           } else if (progress > 0) {
             // Write text into fog — clip to just this line's band
             ctx.save()
@@ -327,9 +355,9 @@ function useMirrorCanvas() {
     const W = canvas.width, H = canvas.height
 
     const fsLarge = Math.min(Math.floor(W * 0.098), 72)
-    const fsMed   = Math.min(Math.floor(W * 0.054), 40)
-    const fsSmall = Math.min(Math.floor(W * 0.030), 22)
-    const fsTiny  = Math.min(Math.floor(W * 0.022), 16)
+    const fsMed   = Math.min(Math.floor(W * 0.068), 52)   // bigger top feeling text
+    const fsSmall = Math.min(Math.floor(W * 0.042), 32)   // bigger scripture text
+    const fsTiny  = Math.min(Math.floor(W * 0.028), 20)
 
     const tmp = makeCanvas(W, H)
     const tc  = tmp.getContext('2d')
@@ -351,9 +379,14 @@ function useMirrorCanvas() {
     let t = 0
 
     // ── Feeling lines (write in, then wipe clean as truth starts) ──────────────
-    const feelingLines = calcBlock(feeling, fsMed, H * 0.12)
-    const feelingItems = feelingLines.map(line => {
-      const item = { ...line, startOffset: t, clearOffset: null }
+    const feelingLines = calcBlock(feeling, fsMed, H * 0.20)
+    const feelingItems = feelingLines.map((line, i) => {
+      const item = {
+        ...line,
+        startOffset: t,
+        clearOffset: null,
+        wipeBlobs: makeWipeBlobs(W, line.fontSize * 1.55, i * 37 + 11),
+      }
       t += STAGGER
       return item
     })
@@ -364,7 +397,7 @@ function useMirrorCanvas() {
     })
 
     // ── Truth lines ─────────────────────────────────────────────────────────────
-    const truthItems = calcBlock(truth, fsLarge, H * 0.42).map(line => {
+    const truthItems = calcBlock(truth, fsLarge, H * 0.50).map(line => {
       const item = { ...line, startOffset: t }
       t += STAGGER
       return item
@@ -373,7 +406,7 @@ function useMirrorCanvas() {
     t += SCRIPT_PAUSE
 
     // ── Scripture lines ─────────────────────────────────────────────────────────
-    const scriptItems = calcBlock(`"${scripture.text}"`, fsSmall, H * 0.72).map(line => {
+    const scriptItems = calcBlock(`"${scripture.text}"`, fsSmall, H * 0.76).map(line => {
       const item = { ...line, startOffset: t }
       t += STAGGER
       return item
@@ -381,7 +414,7 @@ function useMirrorCanvas() {
     const refItem = {
       text: scripture.reference.toUpperCase(),
       fontSize: fsTiny,
-      y: H * 0.84,
+      y: H * 0.90,
       startOffset: t,
     }
 

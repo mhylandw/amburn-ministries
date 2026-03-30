@@ -44,7 +44,7 @@ function buildFogBuffer(W, H) {
   const r   = mkRng(7)
 
   // Base fog
-  c.fillStyle = 'rgba(198,206,216,0.34)'
+  c.fillStyle = 'rgba(198,206,216,0.18)'
   c.fillRect(0, 0, W, H)
 
   // Texture blobs

@@ -139,39 +139,49 @@ function FogCanvas() {
 }
 
 // ─── Wipe-in scripture card ───────────────────────────────────────────────────
-// The cleared area sweeps from left to right (CSS clip-path animation),
-// revealing text that then fades in — mimicking a finger dragging through fog.
+// Each card starts covered in a solid fog-coloured overlay. The overlay is
+// clipped away from left → right (like a finger drag), revealing the dark
+// glass card and text beneath.
 
 function WipeCard({ reference, text, mirrorTruth, index }) {
-  const WIPE_DELAY  = index * 380   // ms between each card
-  const WIPE_DUR    = 1100          // ms for the wipe sweep
-  const TEXT_DELAY  = WIPE_DELAY + WIPE_DUR * 0.55
+  const WIPE_DELAY = index * 420   // stagger between cards
+  const WIPE_DUR   = 1200          // ms for the wipe sweep
+  const TEXT_DELAY = WIPE_DELAY + 180
 
   return (
-    <div className="relative overflow-hidden rounded-2xl" style={{ minHeight: '8rem' }}>
+    <div className="relative overflow-hidden rounded-2xl">
 
-      {/* ── Cleared mirror surface (wipes in) ── */}
+      {/* ── Dark glass base (always present behind the fog) ── */}
       <div
         className="absolute inset-0 rounded-2xl"
         style={{
-          background: 'linear-gradient(135deg, rgba(245,240,230,0.11) 0%, rgba(230,230,235,0.07) 100%)',
-          backdropFilter: 'blur(0.5px)',
-          WebkitBackdropFilter: 'blur(0.5px)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 24px rgba(0,0,0,0.3)',
-          // Wipe from left → right
-          clipPath: 'inset(0 100% 0 0 round 1rem)',
-          animation: `mirror-wipe ${WIPE_DUR}ms ${WIPE_DELAY}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`,
+          background: 'rgba(8,7,5,0.6)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
         }}
       />
 
-      {/* ── Residual moisture haze on leading edge (extra authenticity) ── */}
+      {/* ── Fog overlay — clipped away left→right to reveal card beneath ── */}
+      {/* inset(0 0 0 0) = fully covers; inset(0 0 0 100%) = fully gone      */}
       <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
+        className="absolute inset-0 rounded-2xl z-20"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(210,215,225,0.06) 85%, rgba(210,215,225,0.12) 100%)',
-          clipPath: 'inset(0 100% 0 0 round 1rem)',
-          animation: `mirror-wipe ${WIPE_DUR}ms ${WIPE_DELAY}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`,
+          background: 'rgba(188,196,210,0.78)',
+          clipPath: 'inset(0 0 0 0 round 1rem)',
+          animation: `fog-wipe-away ${WIPE_DUR}ms ${WIPE_DELAY}ms cubic-bezier(0.25,0.46,0.45,0.94) forwards`,
+        }}
+      />
+
+      {/* ── Gleam — bright edge that rides just ahead of the wipe ── */}
+      <div
+        className="absolute inset-y-0 z-30 pointer-events-none"
+        style={{
+          left: 0,
+          width: '10px',
+          background: 'linear-gradient(90deg, transparent, rgba(230,238,248,0.8), transparent)',
+          animation: `gleam-slide ${WIPE_DUR}ms ${WIPE_DELAY}ms linear forwards`,
         }}
       />
 
@@ -180,7 +190,7 @@ function WipeCard({ reference, text, mirrorTruth, index }) {
         className="relative z-10 px-6 py-5"
         style={{
           opacity: 0,
-          animation: `text-emerge 0.7s ${TEXT_DELAY}ms ease forwards`,
+          animation: `text-emerge 0.9s ${TEXT_DELAY}ms ease forwards`,
         }}
       >
         {/* Mirror truth in handwriting */}
@@ -422,12 +432,18 @@ export default function ScriptureMirror() {
 
       {/* ── Keyframe styles ── */}
       <style>{`
-        @keyframes mirror-wipe {
-          from { clip-path: inset(0 100% 0 0 round 1rem); }
-          to   { clip-path: inset(0 0%   0 0 round 1rem); }
+        /* Fog overlay shrinks left-to-right (left inset grows 0→100%) */
+        @keyframes fog-wipe-away {
+          from { clip-path: inset(0 0 0 0    round 1rem); }
+          to   { clip-path: inset(0 0 0 100% round 1rem); }
+        }
+        /* Gleam travels from left edge to right edge of card */
+        @keyframes gleam-slide {
+          from { left: -5px; }
+          to   { left: calc(100% + 5px); }
         }
         @keyframes text-emerge {
-          from { opacity: 0; filter: blur(4px); }
+          from { opacity: 0; filter: blur(5px); }
           to   { opacity: 1; filter: blur(0); }
         }
       `}</style>

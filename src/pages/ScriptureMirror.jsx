@@ -1,59 +1,227 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { RotateCcw, Sparkles, CameraOff } from 'lucide-react'
+import { RotateCcw, Sparkles } from 'lucide-react'
 import { getScripturesForFeeling, getMirrorTruth } from '../data/identityScriptures'
 
-// ── Camera hook ────────────────────────────────────────────────────────────────
-function useCamera() {
-  const videoRef = useRef(null)
-  const streamRef = useRef(null)
-  const [cameraReady, setCameraReady] = useState(false)
-  const [cameraDenied, setCameraDenied] = useState(false)
+// ─── Procedural fog canvas ────────────────────────────────────────────────────
+// Generates a static bathroom-mirror condensation scene: warm dark background,
+// fog texture built from overlapping soft circles, water droplets with specular
+// highlights, and vertical drip streaks.
 
-  const startCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false,
-      })
-      streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        videoRef.current.onloadedmetadata = () => setCameraReady(true)
-      }
-    } catch {
-      setCameraDenied(true)
-    }
-  }, [])
+function buildFogScene(canvas) {
+  const ctx = canvas.getContext('2d')
+  const W = canvas.width
+  const H = canvas.height
 
-  const stopCamera = useCallback(() => {
-    streamRef.current?.getTracks().forEach(t => t.stop())
-    streamRef.current = null
-    setCameraReady(false)
-  }, [])
+  ctx.clearRect(0, 0, W, H)
 
-  useEffect(() => {
-    startCamera()
-    return () => stopCamera()
-  }, [startCamera, stopCamera])
+  // 1 ── Warm dark background
+  const bg = ctx.createLinearGradient(0, 0, W * 0.6, H)
+  bg.addColorStop(0,   '#1a1208')
+  bg.addColorStop(0.5, '#100d08')
+  bg.addColorStop(1,   '#080806')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, W, H)
 
-  return { videoRef, cameraReady, cameraDenied }
+  // 2 ── Soft warm overhead light (vanity bulb glow)
+  const light = ctx.createRadialGradient(W * 0.5, -H * 0.05, 0, W * 0.5, H * 0.1, W * 0.85)
+  light.addColorStop(0,   'rgba(255,210,130,0.13)')
+  light.addColorStop(0.5, 'rgba(255,190,100,0.04)')
+  light.addColorStop(1,   'rgba(0,0,0,0)')
+  ctx.fillStyle = light
+  ctx.fillRect(0, 0, W, H)
+
+  // 3 ── Fog base — cold blue-white mist
+  ctx.fillStyle = 'rgba(205,210,218,0.52)'
+  ctx.fillRect(0, 0, W, H)
+
+  // 4 ── Fog texture — overlapping soft circles (pseudo-noise)
+  const rng = seededRng(42)
+  for (let i = 0; i < 120; i++) {
+    const x = rng() * W
+    const y = rng() * H
+    const r = 25 + rng() * 90
+    const alpha = 0.03 + rng() * 0.06
+    const fog = ctx.createRadialGradient(x, y, 0, x, y, r)
+    fog.addColorStop(0, `rgba(220,222,228,${alpha})`)
+    fog.addColorStop(1, 'rgba(200,205,215,0)')
+    ctx.fillStyle = fog
+    ctx.fillRect(x - r, y - r, r * 2, r * 2)
+  }
+
+  // 5 ── Drip streaks (condensation running downward)
+  for (let i = 0; i < 50; i++) {
+    const x  = rng() * W
+    const y0 = rng() * H * 0.55
+    const len = 18 + rng() * 70
+    const w  = 0.4 + rng() * 1.2
+    const a  = 0.08 + rng() * 0.22
+
+    const drip = ctx.createLinearGradient(x, y0, x, y0 + len)
+    drip.addColorStop(0,   `rgba(210,215,222,${a})`)
+    drip.addColorStop(0.7, `rgba(210,215,222,${a * 0.5})`)
+    drip.addColorStop(1,   'rgba(210,215,222,0)')
+    ctx.strokeStyle = drip
+    ctx.lineWidth = w
+    ctx.beginPath()
+    ctx.moveTo(x, y0)
+    // Slight curve to look organic
+    ctx.bezierCurveTo(x + (rng() - 0.5) * 4, y0 + len * 0.3,
+                      x + (rng() - 0.5) * 4, y0 + len * 0.7,
+                      x + (rng() - 0.5) * 3, y0 + len)
+    ctx.stroke()
+  }
+
+  // 6 ── Water droplets
+  for (let i = 0; i < 320; i++) {
+    const x = rng() * W
+    const y = rng() * H
+    const r = 0.6 + rng() * 2.8
+    const a = 0.25 + rng() * 0.55
+
+    // Main droplet body
+    ctx.beginPath()
+    ctx.arc(x, y, r, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(215,222,230,${a})`
+    ctx.fill()
+
+    // Specular highlight (upper-left)
+    ctx.beginPath()
+    ctx.arc(x - r * 0.28, y - r * 0.28, r * 0.38, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(255,255,255,${a * 0.65})`
+    ctx.fill()
+  }
+
+  // 7 ── Edge vignette (mirror frame darkening)
+  const vignette = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.3, W/2, H/2, Math.max(W,H)*0.75)
+  vignette.addColorStop(0, 'rgba(0,0,0,0)')
+  vignette.addColorStop(1, 'rgba(0,0,0,0.45)')
+  ctx.fillStyle = vignette
+  ctx.fillRect(0, 0, W, H)
 }
 
-// ── Steam scripture card ───────────────────────────────────────────────────────
-function SteamCard({ reference, text, mirrorTruth, index }) {
+// Minimal seeded pseudo-random (mulberry32)
+function seededRng(seed) {
+  let s = seed
+  return () => {
+    s += 0x6d2b79f5
+    let t = s
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function FogCanvas() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    function resize() {
+      canvas.width  = window.innerWidth
+      canvas.height = window.innerHeight
+      buildFogScene(canvas)
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
+  }, [])
+
   return (
-    <div
-      className="steam-card animate-steam-in"
-      style={{ animationDelay: `${index * 200}ms` }}
-    >
-      <p className="steam-truth">{mirrorTruth}</p>
-      <p className="steam-reference">{reference}</p>
-      <p className="steam-verse">"{text}"</p>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 0 }}
+    />
+  )
+}
+
+// ─── Wipe-in scripture card ───────────────────────────────────────────────────
+// The cleared area sweeps from left to right (CSS clip-path animation),
+// revealing text that then fades in — mimicking a finger dragging through fog.
+
+function WipeCard({ reference, text, mirrorTruth, index }) {
+  const WIPE_DELAY  = index * 380   // ms between each card
+  const WIPE_DUR    = 1100          // ms for the wipe sweep
+  const TEXT_DELAY  = WIPE_DELAY + WIPE_DUR * 0.55
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl" style={{ minHeight: '8rem' }}>
+
+      {/* ── Cleared mirror surface (wipes in) ── */}
+      <div
+        className="absolute inset-0 rounded-2xl"
+        style={{
+          background: 'linear-gradient(135deg, rgba(245,240,230,0.11) 0%, rgba(230,230,235,0.07) 100%)',
+          backdropFilter: 'blur(0.5px)',
+          WebkitBackdropFilter: 'blur(0.5px)',
+          border: '1px solid rgba(255,255,255,0.10)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 24px rgba(0,0,0,0.3)',
+          // Wipe from left → right
+          clipPath: 'inset(0 100% 0 0 round 1rem)',
+          animation: `mirror-wipe ${WIPE_DUR}ms ${WIPE_DELAY}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`,
+        }}
+      />
+
+      {/* ── Residual moisture haze on leading edge (extra authenticity) ── */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(210,215,225,0.06) 85%, rgba(210,215,225,0.12) 100%)',
+          clipPath: 'inset(0 100% 0 0 round 1rem)',
+          animation: `mirror-wipe ${WIPE_DUR}ms ${WIPE_DELAY}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`,
+        }}
+      />
+
+      {/* ── Text content ── */}
+      <div
+        className="relative z-10 px-6 py-5"
+        style={{
+          opacity: 0,
+          animation: `text-emerge 0.7s ${TEXT_DELAY}ms ease forwards`,
+        }}
+      >
+        {/* Mirror truth in handwriting */}
+        <p
+          className="font-handwriting leading-tight mb-3"
+          style={{
+            fontSize: 'clamp(1.4rem, 4vw, 1.9rem)',
+            color: 'rgba(248,244,235,0.95)',
+            textShadow: '0 0 18px rgba(255,255,255,0.18), 0 0 40px rgba(255,255,255,0.07)',
+            letterSpacing: '0.01em',
+          }}
+        >
+          {mirrorTruth}
+        </p>
+
+        {/* Reference */}
+        <p
+          className="font-sans uppercase tracking-widest mb-2"
+          style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.35)' }}
+        >
+          {reference}
+        </p>
+
+        {/* Verse */}
+        <p
+          className="font-sans leading-relaxed"
+          style={{
+            fontSize: '0.82rem',
+            color: 'rgba(255,255,255,0.5)',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            paddingTop: '0.6rem',
+          }}
+        >
+          "{text}"
+        </p>
+      </div>
     </div>
   )
 }
 
-// ── Prompt chips ───────────────────────────────────────────────────────────────
+// ─── Prompt chips ─────────────────────────────────────────────────────────────
 const PROMPTS = [
   "I feel like I'm not enough",
   "I feel forgotten",
@@ -69,33 +237,24 @@ const PROMPTS = [
   "I feel weak",
 ]
 
-// ── Main component ────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ScriptureMirror() {
-  const [feeling, setFeeling] = useState('')
+  const [feeling, setFeeling]     = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [scriptures, setScriptures] = useState([])
   const [mirrorTruths, setMirrorTruths] = useState([])
   const textareaRef = useRef(null)
-  const resultsRef = useRef(null)
-  const { videoRef, cameraReady, cameraDenied } = useCamera()
+  const resultsRef  = useRef(null)
 
   function handleSubmit(e) {
     e?.preventDefault()
     const input = feeling.trim()
     if (!input) return
     const results = getScripturesForFeeling(input)
-    const truths = results.map(s => getMirrorTruth(input, s))
     setScriptures(results)
-    setMirrorTruths(truths)
+    setMirrorTruths(results.map(s => getMirrorTruth(input, s)))
     setSubmitted(true)
-    setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 150)
-  }
-
-  function handlePrompt(p) {
-    setFeeling(p)
-    setTimeout(() => textareaRef.current?.focus(), 50)
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200)
   }
 
   function handleReset() {
@@ -106,133 +265,135 @@ export default function ScriptureMirror() {
     setTimeout(() => textareaRef.current?.focus(), 100)
   }
 
+  function handlePrompt(p) {
+    setFeeling(p)
+    setTimeout(() => textareaRef.current?.focus(), 50)
+  }
+
   return (
-    <div className="pt-16 min-h-screen bg-black relative overflow-x-hidden">
+    <div className="pt-16 min-h-screen bg-black relative">
 
-      {/* ── Mirror background (camera or fallback) ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Camera video — always rendered so stream starts immediately */}
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className={`w-full h-full object-cover scale-x-[-1] transition-opacity duration-1000 ${
-            cameraReady ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ filter: 'blur(14px) saturate(0.6) brightness(0.55)' }}
-        />
-        {/* Fallback gradient when no camera */}
-        {(!cameraReady) && (
-          <div
-            className="absolute inset-0 transition-opacity duration-1000"
-            style={{
-              background: 'radial-gradient(ellipse at 40% 50%, #1a1a2e 0%, #0a0a0a 70%)',
-              opacity: cameraReady ? 0 : 1,
-            }}
-          />
-        )}
-        {/* Vignette + dark overlay */}
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)'
-        }} />
-      </div>
+      {/* Fog background */}
+      <FogCanvas />
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
 
         {/* Header */}
-        <div className="text-center pt-12 pb-4 px-4">
-          <p className="steam-label">Scripture Mirror</p>
-          <h1 className="steam-title">
+        <div className="text-center pt-12 pb-6 px-4">
+          <p
+            className="font-sans uppercase tracking-widest mb-3"
+            style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)' }}
+          >
+            Scripture Mirror
+          </p>
+          <h1
+            className="font-serif leading-tight"
+            style={{
+              fontSize: 'clamp(2rem, 5vw, 2.8rem)',
+              color: 'rgba(255,255,255,0.82)',
+              textShadow: '0 0 40px rgba(255,255,255,0.12), 0 2px 8px rgba(0,0,0,0.6)',
+            }}
+          >
             What does God's Word<br />say about you?
           </h1>
-          {cameraDenied && (
-            <div className="inline-flex items-center gap-1.5 mt-3 text-white/30 font-sans text-xs">
-              <CameraOff size={12} /> Enable camera for the full mirror experience
-            </div>
-          )}
         </div>
 
-        {/* Input section */}
+        {/* Input */}
         {!submitted ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-4 pb-12">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 pb-16">
             <div className="w-full max-w-lg">
-              {/* Prompt chips */}
-              <div className="mb-5">
-                <p className="text-white/30 font-sans text-xs uppercase tracking-widest text-center mb-3">
-                  Start with…
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {PROMPTS.map(p => (
-                    <button
-                      key={p}
-                      onClick={() => handlePrompt(p)}
-                      className="text-xs font-sans text-white/50 hover:text-white border border-white/15 hover:border-white/40 rounded-full px-3 py-1.5 transition-colors backdrop-blur-sm bg-white/5 hover:bg-white/10"
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Input area */}
-              <form onSubmit={handleSubmit}>
-                <div className="relative">
-                  <textarea
-                    ref={textareaRef}
-                    value={feeling}
-                    onChange={e => setFeeling(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault()
-                        handleSubmit()
-                      }
-                    }}
-                    placeholder="I feel… / I think I am…"
-                    rows={3}
-                    maxLength={400}
-                    className="w-full rounded-2xl px-5 py-4 font-sans text-base text-white placeholder:text-white/30 resize-none outline-none leading-relaxed"
+              <p
+                className="font-sans uppercase tracking-widest text-center mb-3"
+                style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)' }}
+              >
+                Start with…
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 mb-6">
+                {PROMPTS.map(p => (
+                  <button
+                    key={p}
+                    onClick={() => handlePrompt(p)}
+                    className="font-sans transition-colors rounded-full px-3 py-1.5"
                     style={{
-                      background: 'rgba(255,255,255,0.06)',
-                      backdropFilter: 'blur(20px)',
-                      WebkitBackdropFilter: 'blur(20px)',
+                      fontSize: '0.75rem',
+                      color: 'rgba(255,255,255,0.45)',
+                      background: 'rgba(255,255,255,0.05)',
                       border: '1px solid rgba(255,255,255,0.12)',
                     }}
-                  />
-                </div>
+                    onMouseEnter={e => {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.85)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.45)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                    }}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+
+              <form onSubmit={handleSubmit}>
+                <textarea
+                  ref={textareaRef}
+                  value={feeling}
+                  onChange={e => setFeeling(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit() }}}
+                  placeholder="I feel… / I think I am…"
+                  rows={3}
+                  maxLength={400}
+                  className="w-full font-sans text-base text-white placeholder:text-white/25 resize-none outline-none leading-relaxed rounded-2xl px-5 py-4"
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255,255,255,0.11)',
+                  }}
+                />
                 <button
                   type="submit"
                   disabled={!feeling.trim()}
-                  className="mt-4 w-full flex items-center justify-center gap-2 font-sans font-semibold text-sm py-3.5 rounded-full transition-all disabled:opacity-30 disabled:cursor-not-allowed text-white"
+                  className="mt-3 w-full flex items-center justify-center gap-2 font-sans font-semibold text-sm py-3.5 rounded-full transition-opacity disabled:opacity-30"
                   style={{
-                    background: 'rgba(255,255,255,0.12)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255,255,255,0.25)',
+                    color: 'rgba(255,255,255,0.88)',
+                    background: 'rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.2)',
                   }}
                 >
-                  <Sparkles size={15} />
+                  <Sparkles size={14} />
                   Look in the mirror
                 </button>
               </form>
             </div>
           </div>
         ) : (
-          /* Results section */
-          <div ref={resultsRef} className="flex-1 flex flex-col items-center px-4 pb-16 pt-4">
+          <div ref={resultsRef} className="flex-1 flex flex-col items-center px-4 pb-20 pt-2">
 
             {/* What they said */}
-            <div className="w-full max-w-lg mb-8">
-              <p className="text-center font-sans text-sm text-white/40 mb-2 uppercase tracking-widest">You said</p>
-              <p className="text-center font-serif text-xl text-white/60 italic">"{feeling}"</p>
+            <div className="w-full max-w-lg mb-8 text-center">
+              <p
+                className="font-sans uppercase tracking-widest mb-2"
+                style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.28)' }}
+              >
+                You said
+              </p>
+              <p
+                className="font-handwriting"
+                style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', color: 'rgba(255,255,255,0.45)' }}
+              >
+                "{feeling}"
+              </p>
             </div>
 
-            {/* Steam scripture cards */}
-            <div className="w-full max-w-lg flex flex-col gap-5">
+            {/* Wipe cards */}
+            <div className="w-full max-w-lg flex flex-col gap-4">
               {scriptures.map((s, i) => (
-                <SteamCard
+                <WipeCard
                   key={s.id}
                   index={i}
                   reference={s.reference}
@@ -242,11 +403,16 @@ export default function ScriptureMirror() {
               ))}
             </div>
 
-            {/* Reset */}
             <button
               onClick={handleReset}
-              className="mt-10 inline-flex items-center gap-2 font-sans text-sm text-white/40 hover:text-white/80 border border-white/10 hover:border-white/30 px-7 py-3 rounded-full transition-all"
-              style={{ backdropFilter: 'blur(10px)', background: 'rgba(255,255,255,0.04)' }}
+              className="mt-10 inline-flex items-center gap-2 font-sans text-sm rounded-full px-7 py-3 transition-opacity"
+              style={{
+                color: 'rgba(255,255,255,0.38)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.04)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <RotateCcw size={13} /> Look again
             </button>
@@ -254,85 +420,15 @@ export default function ScriptureMirror() {
         )}
       </div>
 
-      {/* ── Steam styles ── */}
+      {/* ── Keyframe styles ── */}
       <style>{`
-        .steam-label {
-          font-family: 'Jost', sans-serif;
-          font-size: 0.65rem;
-          letter-spacing: 0.25em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.35);
-          margin-bottom: 0.75rem;
+        @keyframes mirror-wipe {
+          from { clip-path: inset(0 100% 0 0 round 1rem); }
+          to   { clip-path: inset(0 0%   0 0 round 1rem); }
         }
-        .steam-title {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: clamp(2rem, 5vw, 3rem);
-          color: rgba(255,255,255,0.85);
-          line-height: 1.2;
-          text-shadow:
-            0 0 40px rgba(255,255,255,0.15),
-            0 2px 8px rgba(0,0,0,0.5);
-        }
-        .steam-card {
-          position: relative;
-          padding: 1.5rem;
-          border-radius: 1.25rem;
-          background: rgba(255,255,255,0.07);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255,255,255,0.12);
-          box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.1),
-            0 8px 32px rgba(0,0,0,0.3);
-          opacity: 0;
-        }
-        .steam-truth {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-size: 1.35rem;
-          font-style: italic;
-          color: rgba(255,255,255,0.95);
-          line-height: 1.3;
-          margin-bottom: 0.85rem;
-          text-shadow:
-            0 0 20px rgba(255,255,255,0.3),
-            0 0 60px rgba(255,255,255,0.1);
-          letter-spacing: 0.01em;
-        }
-        .steam-reference {
-          font-family: 'Jost', sans-serif;
-          font-size: 0.65rem;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.4);
-          margin-bottom: 0.5rem;
-        }
-        .steam-verse {
-          font-family: 'Jost', sans-serif;
-          font-size: 0.85rem;
-          color: rgba(255,255,255,0.55);
-          line-height: 1.7;
-          border-top: 1px solid rgba(255,255,255,0.08);
-          padding-top: 0.75rem;
-        }
-
-        @keyframes steam-in {
-          0% {
-            opacity: 0;
-            filter: blur(8px);
-            transform: translateY(6px) scale(0.98);
-          }
-          60% {
-            opacity: 0.9;
-            filter: blur(1px);
-          }
-          100% {
-            opacity: 1;
-            filter: blur(0);
-            transform: translateY(0) scale(1);
-          }
-        }
-        .animate-steam-in {
-          animation: steam-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        @keyframes text-emerge {
+          from { opacity: 0; filter: blur(4px); }
+          to   { opacity: 1; filter: blur(0); }
         }
       `}</style>
     </div>

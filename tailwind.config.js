@@ -20,6 +20,7 @@ export default {
       fontFamily: {
         sans: ['Jost', 'sans-serif'],
         serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+        handwriting: ['Caveat', 'cursive'],
       },
       keyframes: {
         'fade-in': {

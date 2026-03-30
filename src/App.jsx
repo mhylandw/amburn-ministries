@@ -22,6 +22,7 @@ import Discern from './pages/Discern'
 import Missions from './pages/Missions'
 import Media from './pages/Media'
 import Podcast from './pages/Podcast'
+import ScriptureMirror from './pages/ScriptureMirror'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -29,38 +30,49 @@ function ScrollToTop() {
   return null
 }
 
+function SiteLayout() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <LeadMagnetPopup />
+      <Navbar />
+      {/* On mobile, add bottom padding for BottomTabBar (64px) and RadioMiniPlayer (approx 64px when active) */}
+      <main className="flex-1 md:pb-0 pb-16">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/books" element={<Books />} />
+          <Route path="/ebooks" element={<Ebooks />} />
+          <Route path="/store" element={<Store />} />
+          <Route path="/checkout-success" element={<CheckoutSuccess />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/radio" element={<Radio />} />
+          <Route path="/discern" element={<Discern />} />
+          <Route path="/missions" element={<Missions />} />
+          <Route path="/media" element={<Media />} />
+          <Route path="/podcast" element={<Podcast />} />
+        </Routes>
+      </main>
+      <RadioMiniPlayer />
+      <BottomTabBar />
+      <Footer />
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <RadioProvider>
-      <div className="min-h-screen flex flex-col">
-        <ScrollToTop />
-        <LeadMagnetPopup />
-        <Navbar />
-        {/* On mobile, add bottom padding for BottomTabBar (64px) and RadioMiniPlayer (approx 64px when active) */}
-        <main className="flex-1 md:pb-0 pb-16">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/donate" element={<Donate />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/books" element={<Books />} />
-            <Route path="/ebooks" element={<Ebooks />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/checkout-success" element={<CheckoutSuccess />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/radio" element={<Radio />} />
-            <Route path="/discern" element={<Discern />} />
-            <Route path="/missions" element={<Missions />} />
-            <Route path="/media" element={<Media />} />
-            <Route path="/podcast" element={<Podcast />} />
-          </Routes>
-        </main>
-        <RadioMiniPlayer />
-        <BottomTabBar />
-        <Footer />
-      </div>
+      <ScrollToTop />
+      <Routes>
+        {/* Scripture Mirror gets the full screen — no navbar, no player, no tabs */}
+        <Route path="/scripture-mirror" element={<ScriptureMirror />} />
+        {/* Everything else uses the normal site layout */}
+        <Route path="/*" element={<SiteLayout />} />
+      </Routes>
     </RadioProvider>
   )
 }

@@ -13,6 +13,7 @@ const navLinks = [
   { label: 'Missions', to: '/missions' },
   { label: 'Media', to: '/media' },
   { label: 'Podcast', to: '/podcast' },
+  { label: 'Homeschool Companion', to: '/homeschool-companion' },
   { label: 'Donate', to: '/donate' },
   { label: 'Contact', to: '/contact' },
 ]

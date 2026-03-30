@@ -19,6 +19,7 @@ import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
 import Radio from './pages/Radio'
 import Discern from './pages/Discern'
+import HomeschoolCompanion from './pages/HomeschoolCompanion'
 import Missions from './pages/Missions'
 import Media from './pages/Media'
 import Podcast from './pages/Podcast'
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/radio" element={<Radio />} />
             <Route path="/discern" element={<Discern />} />
+            <Route path="/homeschool-companion" element={<HomeschoolCompanion />} />
             <Route path="/missions" element={<Missions />} />
             <Route path="/media" element={<Media />} />
             <Route path="/podcast" element={<Podcast />} />

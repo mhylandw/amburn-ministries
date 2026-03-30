@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getScripturesForFeeling, getMirrorTruth } from '../data/identityScriptures'
 
 // ─── Camera ───────────────────────────────────────────────────────────────────
@@ -212,44 +213,25 @@ function wrapText(ctx, text, maxW) {
 }
 
 // ─── Wipe a horizontal stripe clean (reveals camera beneath) ─────────────────
-// ─── Wipe a band clean — simple left-to-right sweep with soft edge ───────────
-function wipeStripe(ctx, W, y, stripeH, progress) {
-  if (progress <= 0) return
-  const x     = W * progress
-  const soft  = stripeH * 1.1
-  ctx.save()
-  ctx.globalCompositeOperation = 'destination-out'
-  // Solid cleared area
-  ctx.fillStyle = 'rgba(0,0,0,0.96)'
-  ctx.fillRect(0, y - stripeH / 2, Math.max(0, x - soft * 0.5), stripeH)
-  // Soft feathered leading edge
-  const g = ctx.createLinearGradient(Math.max(0, x - soft), y, x + 2, y)
-  g.addColorStop(0,   'rgba(0,0,0,0.9)')
-  g.addColorStop(0.5, 'rgba(0,0,0,0.5)')
-  g.addColorStop(1,   'rgba(0,0,0,0)')
-  ctx.fillStyle = g
-  ctx.fillRect(Math.max(0, x - soft), y - stripeH / 2, soft + 2, stripeH)
-  ctx.globalCompositeOperation = 'source-over'
-  ctx.restore()
-}
-
 // ─── Cut a single line into fog via destination-out ──────────────────────────
-// Extra passes give thick, bold finger-stroke edges
-function cutLine(ctx, W, text, y, fontSize) {
+// fade: 1 = fully cut, 0 = invisible (fog fills back in — used for feeling fade-out)
+function cutLine(ctx, W, text, y, fontSize, fade = 1) {
+  if (fade <= 0) return
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
   ctx.font         = `700 ${fontSize}px Caveat`
   ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
-  // Wide atmospheric halo — gives the organic foggy edge
-  ctx.filter = 'blur(13px)'; ctx.fillStyle = 'rgba(0,0,0,0.5)';  ctx.fillText(text, W/2,       y)
-  ctx.filter = 'blur(6px)';  ctx.fillStyle = 'rgba(0,0,0,0.85)'; ctx.fillText(text, W/2,       y)
-  // Messy overlapping body passes — slight hand-drawn offsets create thick irregular strokes
-  ctx.filter = 'blur(1.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2 - 2,   y + 1.5)
-  ctx.filter = 'blur(1px)';   ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2 + 1.5, y - 1)
-  ctx.filter = 'blur(2px)';   ctx.fillStyle = 'rgba(0,0,0,0.9)'; ctx.fillText(text, W/2 + 0.5, y + 2)
-  ctx.filter = 'blur(0.5px)'; ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2 - 1,   y - 1.5)
-  ctx.filter = 'none';        ctx.fillStyle = 'rgba(0,0,0,1)';   ctx.fillText(text, W/2,       y)
+  const f = fade
+  // Wide atmospheric halo
+  ctx.filter = 'blur(13px)'; ctx.fillStyle = `rgba(0,0,0,${0.5  * f})`; ctx.fillText(text, W/2,       y)
+  ctx.filter = 'blur(6px)';  ctx.fillStyle = `rgba(0,0,0,${0.85 * f})`; ctx.fillText(text, W/2,       y)
+  // Messy overlapping body passes
+  ctx.filter = 'blur(1.5px)'; ctx.fillStyle = `rgba(0,0,0,${f})`;        ctx.fillText(text, W/2 - 2,   y + 1.5)
+  ctx.filter = 'blur(1px)';   ctx.fillStyle = `rgba(0,0,0,${f})`;        ctx.fillText(text, W/2 + 1.5, y - 1)
+  ctx.filter = 'blur(2px)';   ctx.fillStyle = `rgba(0,0,0,${0.9 * f})`;  ctx.fillText(text, W/2 + 0.5, y + 2)
+  ctx.filter = 'blur(0.5px)'; ctx.fillStyle = `rgba(0,0,0,${f})`;        ctx.fillText(text, W/2 - 1,   y - 1.5)
+  ctx.filter = 'none';        ctx.fillStyle = `rgba(0,0,0,${f})`;        ctx.fillText(text, W/2,       y)
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -287,16 +269,15 @@ function useMirrorCanvas() {
 
         itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0 }) => {
           const lineH = fontSize * 1.55
-          const wipeH = lineH + 70
-          if (clearProgress > 0) {
-            wipeStripe(ctx, W, y, wipeH, clearProgress)
-          } else if (progress > 0) {
-            // Write text into fog — clip to just this line's band
+          // fade: 1 while writing, fades to 0 as fog recondenses over feeling text
+          const fade = clearProgress > 0 ? Math.max(0, 1 - clearProgress) : 1
+          if (progress > 0 && fade > 0) {
             ctx.save()
             ctx.beginPath()
-            ctx.rect(0, y - lineH / 2, W * progress, lineH)
+            // During write-in: clip to progress width; during fade-out: full width
+            ctx.rect(0, y - lineH / 2, clearProgress > 0 ? W : W * progress, lineH)
             ctx.clip()
-            cutLine(ctx, W, text, y, fontSize)
+            cutLine(ctx, W, text, y, fontSize, fade)
             ctx.restore()
           }
         })
@@ -318,9 +299,9 @@ function useMirrorCanvas() {
     const W = canvas.width, H = canvas.height
 
     const fsLarge = Math.min(Math.floor(W * 0.098), 72)
-    const fsMed   = Math.min(Math.floor(W * 0.068), 52)   // bigger top feeling text
-    const fsSmall = Math.min(Math.floor(W * 0.042), 32)   // bigger scripture text
-    const fsTiny  = Math.min(Math.floor(W * 0.028), 20)
+    const fsMed   = Math.min(Math.floor(W * 0.068), 52)
+    const fsSmall = Math.min(Math.floor(W * 0.054), 40)   // bigger — must be readable
+    const fsTiny  = Math.min(Math.floor(W * 0.034), 24)
 
     const tmp = makeCanvas(W, H)
     const tc  = tmp.getContext('2d')
@@ -425,52 +406,68 @@ const PROMPTS = [
   "I feel like a failure",
 ]
 
-// ─── Prompt swipe carousel ─────────────────────────────────────────────────────
+// ─── Vertical Rolodex prompt selector ────────────────────────────────────────
 function PromptSwiper({ onSubmit }) {
   const scrollRef = useRef(null)
   const timerRef  = useRef(null)
   const [idx, setIdx] = useState(0)
+  const ITEM_H = 52   // px per item
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) el.scrollTop = 0
+  }, [])
 
   function handleScroll() {
     const el = scrollRef.current
     if (!el) return
     clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
-      const newIdx = Math.round(el.scrollLeft / el.clientWidth)
+      const newIdx = Math.round(el.scrollTop / ITEM_H)
       if (newIdx >= 0 && newIdx < PROMPTS.length) setIdx(newIdx)
     }, 60)
   }
 
   return (
-    <div style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.2rem)' }}>
-      {/* Hint */}
+    <div style={{ paddingBottom: '0.6rem' }}>
       <p style={{
         textAlign: 'center',
         fontFamily: 'sans-serif',
-        fontSize: '0.5rem',
+        fontSize: '0.48rem',
         color: 'rgba(255,255,255,0.2)',
         textTransform: 'uppercase',
         letterSpacing: '0.16em',
-        marginBottom: '0.55rem',
-      }}>swipe to find your feeling</p>
+        marginBottom: '0.4rem',
+      }}>scroll to your feeling</p>
 
-      {/* Carousel */}
-      <div style={{ position: 'relative' }}>
-        {/* Edge fade */}
+      {/* Rolodex drum */}
+      <div style={{ position: 'relative', height: ITEM_H * 3 }}>
+        {/* Top & bottom fade */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
-          background: 'linear-gradient(to right, rgba(0,0,0,0.72) 0%, transparent 26%, transparent 74%, rgba(0,0,0,0.72) 100%)',
+          background: `linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.7) 100%)`,
         }} />
+        {/* Center selection line */}
+        <div style={{
+          position: 'absolute', left: '8%', right: '8%',
+          top: ITEM_H, height: ITEM_H,
+          borderTop: '1px solid rgba(255,255,255,0.12)',
+          borderBottom: '1px solid rgba(255,255,255,0.12)',
+          pointerEvents: 'none', zIndex: 1,
+        }} />
+
         <div
           ref={scrollRef}
           onScroll={handleScroll}
           style={{
-            display: 'flex',
-            overflowX: 'scroll',
-            scrollSnapType: 'x mandatory',
+            height: '100%',
+            overflowY: 'scroll',
+            scrollSnapType: 'y mandatory',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             WebkitOverflowScrolling: 'touch',
+            paddingTop: ITEM_H,
+            paddingBottom: ITEM_H,
           }}
         >
           {PROMPTS.map((p, i) => (
@@ -478,21 +475,22 @@ function PromptSwiper({ onSubmit }) {
               onClick={() => onSubmit(PROMPTS[idx])}
               style={{
                 scrollSnapAlign: 'center',
-                flexShrink: 0,
-                width: '100%',
-                textAlign: 'center',
-                padding: '0.15rem 3rem',
+                height: ITEM_H,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 cursor: 'pointer',
+                padding: '0 2rem',
               }}>
               <span style={{
                 fontFamily: 'Caveat, cursive',
-                fontWeight: 800,
-                fontSize: 'clamp(1.1rem, 5.5vw, 1.45rem)',
+                fontWeight: 700,
+                fontSize: 'clamp(1.05rem, 5vw, 1.35rem)',
                 color: `rgba(255,255,255,${i === idx ? 0.92 : 0.22})`,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                display: 'block',
-                lineHeight: 1.2,
+                textAlign: 'center',
+                lineHeight: 1.15,
                 transition: 'color 0.2s',
               }}>{p}</span>
             </div>
@@ -500,15 +498,14 @@ function PromptSwiper({ onSubmit }) {
         </div>
       </div>
 
-      {/* Tap hint */}
       <p style={{
         textAlign: 'center',
         fontFamily: 'sans-serif',
-        fontSize: '0.5rem',
-        color: 'rgba(255,255,255,0.18)',
+        fontSize: '0.48rem',
+        color: 'rgba(255,255,255,0.16)',
         textTransform: 'uppercase',
         letterSpacing: '0.14em',
-        marginTop: '0.55rem',
+        marginTop: '0.4rem',
       }}>tap to reflect</p>
     </div>
   )
@@ -516,6 +513,7 @@ function PromptSwiper({ onSubmit }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ScriptureMirror() {
+  const navigate = useNavigate()
   const { videoRef, ready: camReady } = useCamera()
   const { canvasRef, writeText, clearText } = useMirrorCanvas()
   const [submitted, setSubmitted] = useState(false)
@@ -550,11 +548,37 @@ export default function ScriptureMirror() {
         }}
       />
 
+      {/* Dark overlay — dims the camera without washing out color */}
+      <div className="absolute inset-0" style={{ zIndex: 2, background: 'rgba(0,0,0,0.42)' }} />
+
       {/* Fog + drips + writing */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 2 }} />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 3 }} />
 
       {/* UI */}
       <div className="absolute inset-0 flex flex-col" style={{ zIndex: 10 }}>
+
+        {/* Close / back button */}
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          style={{
+            position: 'absolute',
+            top: 'max(1rem, env(safe-area-inset-top, 1rem))',
+            left: '1rem',
+            background: 'rgba(0,0,0,0.28)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '50%',
+            width: '2.2rem',
+            height: '2.2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '1.1rem',
+            lineHeight: 1,
+          }}
+        >&#8592;</button>
 
         {/* Page title */}
         <div className="text-center" style={{ paddingTop: 'max(2.8rem, env(safe-area-inset-top, 1.5rem))' }}>

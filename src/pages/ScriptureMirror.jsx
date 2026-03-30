@@ -212,75 +212,23 @@ function wrapText(ctx, text, maxW) {
 }
 
 // ─── Wipe a horizontal stripe clean (reveals camera beneath) ─────────────────
-// ─── Pre-generate the zigzag wipe path (hand clearing a mirror up-and-down) ──
-// Returns an array of {x, y} waypoints the wipe edge travels along.
-function makeWipePath(W, H, y, stripeH, seed) {
-  const r       = mkRng(seed)
-  // Number of vertical strokes across the width
-  const strokes = Math.max(6, Math.ceil(W / (stripeH * 1.8)))
-  const pts     = []
-  for (let i = 0; i <= strokes; i++) {
-    const px = (i / strokes) * W
-    // Alternate top-to-bottom and bottom-to-top strokes
-    const goingDown = i % 2 === 0
-    const py = goingDown
-      ? y - stripeH * (0.55 + r() * 0.15)   // top of stroke
-      : y + stripeH * (0.55 + r() * 0.15)   // bottom of stroke
-    pts.push({ x: px, y: py, goingDown })
-  }
-  return { pts, strokes }
-}
-
-// ─── Wipe clear using an up-and-down zigzag hand motion ──────────────────────
-function wipeStripe(ctx, W, y, stripeH, progress, wipePath) {
-  if (progress <= 0 || !wipePath) return
-  const { pts, strokes } = wipePath
-  // How far along the path we are
-  const pathPos = progress * strokes   // in stroke-units
-  const edgeW   = stripeH * 0.9       // soft leading edge width
-
+// ─── Wipe a band clean — simple left-to-right sweep with soft edge ───────────
+function wipeStripe(ctx, W, y, stripeH, progress) {
+  if (progress <= 0) return
+  const x     = W * progress
+  const soft  = stripeH * 1.1
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-
-  // Build the filled polygon for the already-cleared area
-  // The polygon is bounded by the zigzag path on the right and screen edges elsewhere
-  ctx.beginPath()
-  // Start top-left
-  ctx.moveTo(0, y - stripeH * 1.0)
-
-  // Walk the zigzag pts up to the current progress position
-  for (let i = 0; i < pts.length; i++) {
-    const segStart = i
-    const segEnd   = i + 1
-    if (segStart >= pathPos) break
-    const t = Math.min(1, pathPos - segStart)
-    const p0 = pts[i]
-    const p1 = pts[i + 1] || pts[i]
-    const ex = p0.x + (p1.x - p0.x) * t
-    const ey = p0.y + (p1.y - p0.y) * t
-    ctx.lineTo(ex, ey)
-  }
-
-  // Close back along bottom-left
-  ctx.lineTo(0, y + stripeH * 1.0)
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(0,0,0,0.92)'
-  ctx.fill()
-
-  // Soft feathered leading edge (vertical gradient at tip)
-  const tipIdx  = Math.min(Math.floor(pathPos), pts.length - 2)
-  const tipFrac = pathPos - tipIdx
-  const tp0     = pts[tipIdx]
-  const tp1     = pts[tipIdx + 1] || tp0
-  const tipX    = tp0.x + (tp1.x - tp0.x) * tipFrac
-  const tipY    = tp0.y + (tp1.y - tp0.y) * tipFrac
-  const g = ctx.createRadialGradient(tipX, tipY, 0, tipX, tipY, edgeW * 2.2)
-  g.addColorStop(0,    'rgba(0,0,0,0.55)')
-  g.addColorStop(0.5,  'rgba(0,0,0,0.20)')
-  g.addColorStop(1,    'rgba(0,0,0,0)')
+  // Solid cleared area
+  ctx.fillStyle = 'rgba(0,0,0,0.96)'
+  ctx.fillRect(0, y - stripeH / 2, Math.max(0, x - soft * 0.5), stripeH)
+  // Soft feathered leading edge
+  const g = ctx.createLinearGradient(Math.max(0, x - soft), y, x + 2, y)
+  g.addColorStop(0,   'rgba(0,0,0,0.9)')
+  g.addColorStop(0.5, 'rgba(0,0,0,0.5)')
+  g.addColorStop(1,   'rgba(0,0,0,0)')
   ctx.fillStyle = g
-  ctx.fillRect(Math.max(0, tipX - edgeW * 2.5), y - stripeH * 1.2, edgeW * 5.5, stripeH * 2.4)
-
+  ctx.fillRect(Math.max(0, x - soft), y - stripeH / 2, soft + 2, stripeH)
   ctx.globalCompositeOperation = 'source-over'
   ctx.restore()
 }
@@ -320,7 +268,7 @@ function useMirrorCanvas() {
     canvas.width  = window.innerWidth
     canvas.height = window.innerHeight
     fogRef.current   = buildFogBuffer(canvas.width, canvas.height)
-    dropsRef.current = Array.from({ length: 45 }, () => createDroplet(canvas.width, canvas.height))
+    dropsRef.current = []
   }, [])
 
   useEffect(() => {
@@ -335,13 +283,12 @@ function useMirrorCanvas() {
         const W = canvas.width, H = canvas.height
         ctx.clearRect(0, 0, W, H)
         ctx.drawImage(fog, 0, 0)
-        drawDroplets(ctx, dropsRef.current, W, H)
-        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0, wipePath }) => {
-          const lineH     = fontSize * 1.55              // write-in band height
-          const wipeH     = lineH + 70                   // wipe band 70px taller
+
+        itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0 }) => {
+          const lineH = fontSize * 1.55
+          const wipeH = lineH + 70
           if (clearProgress > 0) {
-            // Wipe this line clean — up-and-down hand motion reveals camera
-            wipeStripe(ctx, W, y, wipeH, clearProgress, wipePath)
+            wipeStripe(ctx, W, y, wipeH, clearProgress)
           } else if (progress > 0) {
             // Write text into fog — clip to just this line's band
             ctx.save()
@@ -400,7 +347,6 @@ function useMirrorCanvas() {
         ...line,
         startOffset: t,
         clearOffset: null,
-        wipePath: makeWipePath(W, H, line.y, line.fontSize * 1.55 + 70, i * 37 + 11),
       }
       t += STAGGER
       return item

@@ -314,7 +314,7 @@ export default function ScriptureMirror() {
         <div className="flex-1" />
 
         {/* Bottom panel */}
-        <div className="px-4 pb-6">
+        <div className="px-4" style={{ paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 7rem))' }}>
           {!submitted ? (
             /* ── Input panel ── */
             <div className="rounded-2xl p-4"

@@ -427,13 +427,16 @@ function PromptSwiper({ onSubmit }) {
           }}
         >
           {PROMPTS.map((p, i) => (
-            <div key={p} style={{
-              scrollSnapAlign: 'center',
-              flexShrink: 0,
-              width: '100%',
-              textAlign: 'center',
-              padding: '0.15rem 3rem',
-            }}>
+            <div key={p}
+              onClick={() => onSubmit(PROMPTS[idx])}
+              style={{
+                scrollSnapAlign: 'center',
+                flexShrink: 0,
+                width: '100%',
+                textAlign: 'center',
+                padding: '0.15rem 3rem',
+                cursor: 'pointer',
+              }}>
               <span style={{
                 fontFamily: 'Caveat, cursive',
                 fontWeight: 800,
@@ -450,24 +453,16 @@ function PromptSwiper({ onSubmit }) {
         </div>
       </div>
 
-      {/* Choose button */}
-      <div style={{ textAlign: 'center', marginTop: '0.65rem' }}>
-        <button
-          onClick={() => onSubmit(PROMPTS[idx])}
-          style={{
-            fontFamily: 'Caveat, cursive',
-            fontWeight: 700,
-            fontSize: '1.05rem',
-            color: 'rgba(255,255,255,0.48)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '0.4rem 2rem',
-          }}
-        >this is me →</button>
-      </div>
+      {/* Tap hint */}
+      <p style={{
+        textAlign: 'center',
+        fontFamily: 'sans-serif',
+        fontSize: '0.5rem',
+        color: 'rgba(255,255,255,0.18)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.14em',
+        marginTop: '0.55rem',
+      }}>tap to reflect</p>
     </div>
   )
 }

@@ -1,96 +1,202 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import {
   ArrowRight, Bell, BookOpen, Calculator, Globe, FlaskConical,
-  PenLine, Heart, Users, Clock, Shield, Sparkles, ChevronRight
+  PenLine, Heart, Users, Clock, Shield, Sparkles, ChevronRight, Check
 } from 'lucide-react'
+import { pipThemeList } from '../data/pip/themes'
 
-function PipAvatar({ size = 'md' }) {
-  const dim = size === 'lg' ? 'w-24 h-24' : 'w-16 h-16'
-  const text = size === 'lg' ? 'text-4xl' : 'text-2xl'
-  return (
-    <div className={`${dim} rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/30 flex items-center justify-center`}>
-      <span className={`font-serif ${text} text-emerald-400`}>P</span>
-    </div>
-  )
-}
+// ─── Static data ─────────────────────────────────────────────────────────────
 
 const subjects = [
-  { icon: Calculator, label: 'Math',          body: 'Break problems down step by step — Pip never solves it, but helps you see the path.' },
-  { icon: FlaskConical, label: 'Science',      body: 'Observation and hypothesis framing — Pip turns every question into an experiment.' },
-  { icon: BookOpen,   label: 'History',        body: 'Cause, effect, and perspective — Pip asks "why" until the story makes sense.' },
-  { icon: PenLine,    label: 'Language Arts',  body: 'Comprehension and interpretation — Pip helps kids find meaning, not just answers.' },
-  { icon: Globe,      label: 'Geography',      body: 'Spatial reasoning and comparison — Pip makes the world feel explorable.' },
-  { icon: Heart,      label: 'Bible / Faith',  body: 'Optional faith-based mode for families whose curriculum includes scripture.' },
+  { icon: Calculator,  label: 'Math',          body: 'Break problems down step by step — Pip never solves it, but helps you see the path.' },
+  { icon: FlaskConical,label: 'Science',        body: 'Observation and hypothesis framing — Pip turns every question into an experiment.' },
+  { icon: BookOpen,    label: 'History',        body: 'Cause, effect, and perspective — Pip asks "why" until the story makes sense.' },
+  { icon: PenLine,     label: 'Language Arts',  body: 'Comprehension and interpretation — Pip helps kids find meaning, not just answers.' },
+  { icon: Globe,       label: 'Geography',      body: 'Spatial reasoning and comparison — Pip makes the world feel explorable.' },
+  { icon: Heart,       label: 'Bible / Faith',  body: 'Optional faith-based mode for families whose curriculum includes scripture.' },
 ]
 
 const parentFeatures = [
-  { icon: Users,  title: 'Multiple Child Profiles',  body: 'Up to 4 children under one account, each with their own grade level and subject settings.' },
-  { icon: Clock,  title: 'Session Time Limits',       body: 'Set daily or per-session limits. Pip gives a gentle 5-minute warning before time is up.' },
-  { icon: Shield, title: 'Subject Restrictions',      body: 'Block categories that aren\'t part of your curriculum. Your plan, your boundaries.' },
-  { icon: Sparkles, title: 'Stuck Points Report',     body: 'See which concepts your child revisited most — so you know where to spend extra time.' },
+  { icon: Users,    title: 'Multiple Child Profiles', body: 'Up to 4 children under one account, each with their own grade level and subject settings.' },
+  { icon: Clock,    title: 'Session Time Limits',      body: 'Set daily or per-session limits. Pip gives a gentle 5-minute warning before time is up.' },
+  { icon: Shield,   title: 'Subject Restrictions',     body: "Block categories that aren't part of your curriculum. Your plan, your boundaries." },
+  { icon: Sparkles, title: 'Stuck Points Report',      body: 'See which concepts your child revisited most — so you know where to spend extra time.' },
 ]
 
 const pricing = [
   {
-    name: 'Free',
-    price: null,
-    description: 'Try Pip with your family.',
+    name: 'Free', price: null, description: 'Try Pip with your family.',
     features: ['1 child profile', '3 sessions per week', '15 minutes per session', '3 subjects'],
-    cta: 'Start Free',
-    primary: false,
+    cta: 'Start Free', primary: false,
   },
   {
-    name: 'Family Plan',
-    price: '$7.99',
-    period: '/mo',
-    description: 'The full Pip experience.',
+    name: 'Family Plan', price: '$7.99', period: '/mo', description: 'The full Pip experience.',
     features: ['Up to 4 child profiles', 'Unlimited sessions', 'All subjects + Faith mode', 'Full parent dashboard', 'Session summaries'],
-    cta: 'Get Family Plan',
-    primary: true,
-    badge: 'Most Popular',
+    cta: 'Get Family Plan', primary: true, badge: 'Most Popular',
   },
   {
-    name: 'Annual',
-    price: '$69.99',
-    period: '/yr',
-    description: 'Best value — save 27%.',
+    name: 'Annual', price: '$69.99', period: '/yr', description: 'Best value — save 27%.',
     features: ['Everything in Family Plan', 'Priority support', '~$5.83/month billed annually'],
-    cta: 'Get Annual Plan',
-    primary: false,
+    cta: 'Get Annual Plan', primary: false,
   },
 ]
 
+const conversation = [
+  { role: 'user', text: "What's 3/4 + 1/4?" },
+  { role: 'pip',  text: 'Good question! What do you think the bottom number tells us about the pieces?' },
+  { role: 'user', text: "That they're the same size?" },
+  { role: 'pip',  text: 'Exactly! So if you have 3 pieces and add 1 more of the same size — how many do you have now?' },
+]
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function PipAvatar({ palette, size = 'md' }) {
+  const dim    = size === 'lg' ? 'w-20 h-20' : size === 'sm' ? 'w-10 h-10' : 'w-14 h-14'
+  const font   = size === 'lg' ? 'text-3xl'  : size === 'sm' ? 'text-base'  : 'text-xl'
+  const styles = palette
+    ? { background: palette.avatarBg, borderColor: palette.avatarRing, boxShadow: `0 0 24px ${palette.avatarGlow}` }
+    : {}
+  const textStyle = palette ? { color: palette.avatarText } : {}
+  const base = palette ? '' : 'bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/30'
+  return (
+    <div
+      className={`${dim} rounded-full flex items-center justify-center border-2 ${base}`}
+      style={styles}
+    >
+      <span className={`font-serif ${font}`} style={textStyle}>P</span>
+    </div>
+  )
+}
+
+/** A mini themed chat mockup rendered entirely with inline styles from a palette */
+function ThemeChatPreview({ theme, selected, onSelect }) {
+  const p = theme.palette
+  return (
+    <button
+      onClick={onSelect}
+      className="relative w-full text-left rounded-2xl overflow-hidden transition-all duration-300 focus:outline-none"
+      style={{
+        border: selected ? `2px solid ${p.accent}` : `2px solid ${p.border}`,
+        boxShadow: selected
+          ? `0 0 0 4px ${p.accentGlow}, 0 8px 40px rgba(0,0,0,0.18)`
+          : '0 2px 20px rgba(0,0,0,0.08)',
+      }}
+    >
+      {/* Theme label bar */}
+      <div
+        className="flex items-center justify-between px-5 py-3"
+        style={{ background: p.surfaceRaised, borderBottom: `1px solid ${p.border}` }}
+      >
+        <div className="flex items-center gap-3">
+          <PipAvatar palette={p} size="sm" />
+          <div>
+            <p className="font-sans font-semibold text-sm" style={{ color: p.textPrimary }}>{theme.label}</p>
+            <p className="font-sans text-xs" style={{ color: p.textSecondary }}>{theme.tagline}</p>
+          </div>
+        </div>
+        <div
+          className="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
+          style={{
+            borderColor: selected ? p.accent : p.border,
+            background:  selected ? p.accent : 'transparent',
+          }}
+        >
+          {selected && <Check size={12} color="#fff" strokeWidth={3} />}
+        </div>
+      </div>
+
+      {/* Chat body */}
+      <div className="px-4 py-4 space-y-2.5" style={{ background: p.bg }}>
+        {/* Session label */}
+        <div className="text-center mb-3">
+          <span
+            className="font-sans text-xs px-3 py-1 rounded-full"
+            style={{ background: p.timerBg, color: p.timerFg }}
+          >
+            Math · Grade 4 · 12 min
+          </span>
+        </div>
+
+        {conversation.map((msg, i) => (
+          <div
+            key={i}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            {msg.role === 'pip' && (
+              <div className="mr-2 mt-1 flex-shrink-0">
+                <PipAvatar palette={p} size="sm" />
+              </div>
+            )}
+            <div
+              className="max-w-[80%] px-3 py-2 rounded-2xl border font-sans text-xs leading-relaxed"
+              style={
+                msg.role === 'pip'
+                  ? { background: p.pipBubbleBg, color: p.pipBubbleFg, borderColor: p.pipBubbleBorder, borderRadius: '4px 16px 16px 16px' }
+                  : { background: p.userBubbleBg, color: p.userBubbleFg, borderColor: p.userBubbleBorder, borderRadius: '16px 4px 16px 16px' }
+              }
+            >
+              {msg.text}
+            </div>
+          </div>
+        ))}
+
+        {/* Input row */}
+        <div
+          className="mt-4 flex items-center gap-2 rounded-xl px-3 py-2 border"
+          style={{ background: p.inputBg, borderColor: p.inputBorder }}
+        >
+          <span className="flex-1 font-sans text-xs" style={{ color: p.inputPlaceholder }}>
+            Ask Pip something…
+          </span>
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: p.accent }}
+          >
+            <ArrowRight size={10} color="#fff" />
+          </div>
+        </div>
+      </div>
+
+      {/* Selected overlay cue */}
+      {selected && (
+        <div
+          className="absolute inset-0 pointer-events-none rounded-2xl"
+          style={{ boxShadow: `inset 0 0 0 2px ${p.accent}` }}
+        />
+      )}
+    </button>
+  )
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function HomeschoolCompanion() {
+  const [selectedTheme, setSelectedTheme] = useState('grove')
+
   return (
     <div className="pt-16 bg-coal-900">
 
-      {/* Hero */}
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative py-24 px-4 overflow-hidden">
-        {/* Background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-emerald-600/6 rounded-full blur-3xl pointer-events-none" />
-
         <div className="max-w-5xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-emerald-400 font-sans text-xs uppercase tracking-widest">Coming Soon</span>
           </div>
-
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-6">
             The study buddy<br />
             <span className="text-emerald-400">that asks better questions.</span>
           </h1>
-
           <p className="text-white/50 font-sans text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
             When your kid gets stuck, they need a safe place to get unstuck — not YouTube.
-            Homeschool Companion brings Pip, a warm and curious AI guide who leads with questions,
+            Homeschool Companion brings Pip, a warm and curious guide who leads with questions,
             never answers. Distraction-free. Parent-transparent. Works with any curriculum.
           </p>
-
           <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
             <a
               href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-              target="_blank"
-              rel="noopener noreferrer"
+              target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-sans font-semibold text-sm px-8 py-3 rounded-full transition-colors"
             >
               <Bell size={14} /> Notify Me When It Launches
@@ -102,14 +208,13 @@ export default function HomeschoolCompanion() {
               See Pricing <ChevronRight size={13} />
             </a>
           </div>
-
           <p className="text-white/25 font-sans text-xs mt-8">
             Built by a homeschool family, for homeschool families.
           </p>
         </div>
       </section>
 
-      {/* The problem */}
+      {/* ── The Problem ──────────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-coal-800 border-y border-white/5">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-emerald-500 text-xs font-sans uppercase tracking-widest mb-4">The Problem</p>
@@ -127,34 +232,29 @@ export default function HomeschoolCompanion() {
         </div>
       </section>
 
-      {/* Meet Pip */}
+      {/* ── Meet Pip ─────────────────────────────────────────────────────── */}
       <section className="py-24 px-4 bg-coal-900">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-16">
-            {/* Visual */}
             <div className="flex-shrink-0 flex flex-col items-center gap-4">
               <PipAvatar size="lg" />
-              <div className="text-center">
-                <p className="text-emerald-400 font-sans text-xs uppercase tracking-widest">Meet Pip</p>
-              </div>
-              {/* Conversation preview */}
-              <div className="w-64 space-y-3 mt-4">
+              <p className="text-emerald-400 font-sans text-xs uppercase tracking-widest">Meet Pip</p>
+              {/* Static conversation preview using site default colors */}
+              <div className="w-64 space-y-3 mt-2">
                 <div className="bg-coal-700 border border-coal-600 rounded-2xl rounded-tl-sm px-4 py-3">
                   <p className="text-white/80 font-sans text-sm">What's 3/4 + 1/4?</p>
                 </div>
                 <div className="bg-emerald-600/15 border border-emerald-500/20 rounded-2xl rounded-tr-sm px-4 py-3">
-                  <p className="text-emerald-300 font-sans text-sm">Great question! What do you think the denominator tells us about the pieces?</p>
+                  <p className="text-emerald-300 font-sans text-sm">Great question! What do you think the bottom number tells us about the pieces?</p>
                 </div>
                 <div className="bg-coal-700 border border-coal-600 rounded-2xl rounded-tl-sm px-4 py-3">
                   <p className="text-white/80 font-sans text-sm">That they're the same size?</p>
                 </div>
                 <div className="bg-emerald-600/15 border border-emerald-500/20 rounded-2xl rounded-tr-sm px-4 py-3">
-                  <p className="text-emerald-300 font-sans text-sm">Exactly! So if you have 3 pieces and add 1 more piece of the same size — how many do you have?</p>
+                  <p className="text-emerald-300 font-sans text-sm">Exactly! So if you have 3 pieces and add 1 more of the same size — how many do you have now?</p>
                 </div>
               </div>
             </div>
-
-            {/* Text */}
             <div className="flex-1 text-center md:text-left">
               <h2 className="font-serif text-3xl md:text-5xl text-white mb-6 leading-tight">
                 Warm. Curious.<br />Constitutionally incapable<br />of just giving the answer.
@@ -183,8 +283,59 @@ export default function HomeschoolCompanion() {
         </div>
       </section>
 
-      {/* Subject Focus */}
-      <section className="py-20 px-4 bg-coal-800 border-y border-white/5">
+      {/* ── Pip's Look — Theme Picker ─────────────────────────────────────── */}
+      <section className="py-24 px-4 bg-coal-800 border-y border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-emerald-500 text-xs font-sans uppercase tracking-widest mb-3">Made for Your Kid</p>
+            <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Pick Pip's look.</h2>
+            <p className="text-white/40 font-sans text-sm max-w-xl mx-auto">
+              Every child is different. Pip comes in two visual modes —
+              muted and grounded for some, bright and cheerful for others.
+              Parents choose once; kids get a space that feels like theirs.
+            </p>
+          </div>
+
+          {/* Theme cards */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {pipThemeList.map(theme => (
+              <ThemeChatPreview
+                key={theme.id}
+                theme={theme}
+                selected={selectedTheme === theme.id}
+                onSelect={() => setSelectedTheme(theme.id)}
+              />
+            ))}
+          </div>
+
+          {/* Selection callout */}
+          <div className="mt-10 text-center">
+            {(() => {
+              const t = pipThemeList.find(t => t.id === selectedTheme)
+              return (
+                <p className="font-sans text-sm text-white/50">
+                  <span className="text-white/80 font-medium">{t.label}</span>
+                  {' '}— {t.description}{' '}
+                  <span className="text-white/30">You can change it any time from the parent dashboard.</span>
+                </p>
+              )
+            })()}
+          </div>
+
+          {/* What this is NOT callout */}
+          <div className="mt-12 bg-coal-900 border border-coal-600 rounded-2xl px-8 py-6 max-w-3xl mx-auto">
+            <p className="text-white/40 font-sans text-xs uppercase tracking-widest mb-3">Worth noting</p>
+            <p className="text-white/70 font-sans text-sm leading-relaxed">
+              The theme changes the look — not the experience. Both Grove and Bloom use the same
+              Socratic method, the same knowledge base, and the same Pip character.
+              It's the same guide in a different coat.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Subject Focus ─────────────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-coal-900">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-emerald-500 text-xs font-sans uppercase tracking-widest mb-3">Subject Focus Mode</p>
@@ -195,7 +346,7 @@ export default function HomeschoolCompanion() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
             {subjects.map(({ icon: Icon, label, body }) => (
-              <div key={label} className="bg-coal-900 border border-coal-600 rounded-xl p-6 hover:border-emerald-500/30 transition-colors">
+              <div key={label} className="bg-coal-800 border border-coal-600 rounded-xl p-6 hover:border-emerald-500/30 transition-colors">
                 <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
                   <Icon className="text-emerald-400" size={16} />
                 </div>
@@ -207,19 +358,19 @@ export default function HomeschoolCompanion() {
         </div>
       </section>
 
-      {/* Parent Dashboard */}
-      <section className="py-20 px-4 bg-coal-900">
+      {/* ── Parent Dashboard ──────────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-coal-800 border-y border-white/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-emerald-500 text-xs font-sans uppercase tracking-widest mb-3">Parent Dashboard</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white">You stay in the loop.</h2>
             <p className="text-white/40 font-sans text-sm mt-3 max-w-xl mx-auto">
-              A separate parent view so you always know what subjects were covered, how long they worked, and where they got stuck.
+              A separate parent view — subjects covered, time spent, and where they got stuck.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 gap-5">
             {parentFeatures.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="bg-coal-800 border border-coal-600 rounded-xl p-6">
+              <div key={title} className="bg-coal-900 border border-coal-600 rounded-xl p-6">
                 <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
                   <Icon className="text-emerald-400" size={16} />
                 </div>
@@ -231,8 +382,8 @@ export default function HomeschoolCompanion() {
         </div>
       </section>
 
-      {/* Grade Bands */}
-      <section className="py-20 px-4 bg-coal-800 border-y border-white/5">
+      {/* ── Grade Bands ───────────────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-coal-900">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-emerald-500 text-xs font-sans uppercase tracking-widest mb-3">Age-Adaptive</p>
@@ -240,14 +391,14 @@ export default function HomeschoolCompanion() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { band: 'K–2', ages: 'Ages 5–7',   desc: 'Simple vocabulary, short sessions, maximum encouragement. Big celebration for every small step.' },
-              { band: '3–5', ages: 'Ages 8–10',  desc: 'Sentence-level responses, beginning to navigate subjects independently with Pip\'s guidance.' },
-              { band: '6–8', ages: 'Ages 11–13', desc: 'Longer reasoning chains, more abstract concepts. Pip can handle light pushback and challenge.' },
+              { band: 'K–2',  ages: 'Ages 5–7',   desc: 'Simple vocabulary, short sessions, maximum encouragement. Big celebration for every small step.' },
+              { band: '3–5',  ages: 'Ages 8–10',  desc: "Sentence-level responses, beginning to navigate subjects independently with Pip's guidance." },
+              { band: '6–8',  ages: 'Ages 11–13', desc: 'Longer reasoning chains, more abstract concepts. Pip can handle light pushback and challenge.' },
               { band: '9–12', ages: 'Ages 14–18', desc: 'Near-peer tone. Complex subjects, SAT prep, college-level thinking. Pip takes them seriously.' },
             ].map(({ band, ages, desc }) => (
-              <div key={band} className="bg-coal-900 border border-coal-600 rounded-xl p-6 text-center">
+              <div key={band} className="bg-coal-800 border border-coal-600 rounded-xl p-6 text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
-                  <span className="font-serif text-lg text-emerald-400">{band}</span>
+                  <span className="font-serif text-sm text-emerald-400">{band}</span>
                 </div>
                 <p className="text-white/40 font-sans text-xs mb-3">{ages}</p>
                 <p className="text-white/60 font-sans text-sm leading-relaxed">{desc}</p>
@@ -257,8 +408,8 @@ export default function HomeschoolCompanion() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-24 px-4 bg-coal-900">
+      {/* ── Pricing ───────────────────────────────────────────────────────── */}
+      <section id="pricing" className="py-24 px-4 bg-coal-800 border-y border-white/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-emerald-500 text-xs font-sans uppercase tracking-widest mb-3">Pricing</p>
@@ -270,9 +421,7 @@ export default function HomeschoolCompanion() {
               <div
                 key={name}
                 className={`rounded-2xl border p-8 relative ${
-                  primary
-                    ? 'bg-emerald-600/10 border-emerald-500/40'
-                    : 'bg-coal-800 border-coal-600'
+                  primary ? 'bg-emerald-600/10 border-emerald-500/40' : 'bg-coal-900 border-coal-600'
                 }`}
               >
                 {badge && (
@@ -284,13 +433,10 @@ export default function HomeschoolCompanion() {
                   {name}
                 </p>
                 <div className="mb-2">
-                  {price ? (
-                    <span className="font-serif text-4xl text-white">
-                      {price}<span className="text-white/40 text-base font-sans">{period}</span>
-                    </span>
-                  ) : (
-                    <span className="font-serif text-4xl text-white">Free</span>
-                  )}
+                  {price
+                    ? <span className="font-serif text-4xl text-white">{price}<span className="text-white/40 text-base font-sans">{period}</span></span>
+                    : <span className="font-serif text-4xl text-white">Free</span>
+                  }
                 </div>
                 <p className="text-white/40 font-sans text-sm mb-6">{description}</p>
                 <ul className="space-y-2 mb-8">
@@ -303,8 +449,7 @@ export default function HomeschoolCompanion() {
                 </ul>
                 <a
                   href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target="_blank" rel="noopener noreferrer"
                   className={`w-full inline-flex items-center justify-center gap-2 font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors ${
                     primary
                       ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
@@ -319,10 +464,10 @@ export default function HomeschoolCompanion() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 px-4 bg-coal-800 border-t border-white/5 text-center">
-        <div className="max-w-lg mx-auto">
-          <PipAvatar size="md" />
+      {/* ── CTA ───────────────────────────────────────────────────────────── */}
+      <section className="py-24 px-4 bg-coal-900 text-center">
+        <div className="max-w-lg mx-auto flex flex-col items-center">
+          <PipAvatar size="lg" />
           <div className="mt-6" />
           <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Be the first to meet Pip.</h2>
           <p className="text-white/50 font-sans leading-relaxed mb-8">
@@ -331,8 +476,7 @@ export default function HomeschoolCompanion() {
           </p>
           <a
             href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-sans font-semibold px-10 py-4 rounded-full transition-colors"
           >
             Notify Me <ArrowRight size={15} />

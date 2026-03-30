@@ -320,7 +320,7 @@ function useMirrorCanvas() {
     canvas.width  = window.innerWidth
     canvas.height = window.innerHeight
     fogRef.current   = buildFogBuffer(canvas.width, canvas.height)
-    dropsRef.current = Array.from({ length: 45 }, () => createDroplet(canvas.width, canvas.height))
+    dropsRef.current = []
   }, [])
 
   useEffect(() => {
@@ -335,7 +335,7 @@ function useMirrorCanvas() {
         const W = canvas.width, H = canvas.height
         ctx.clearRect(0, 0, W, H)
         ctx.drawImage(fog, 0, 0)
-        drawDroplets(ctx, dropsRef.current, W, H)
+
         itemsRef.current.forEach(({ text, fontSize, y, progress, clearProgress = 0, wipePath }) => {
           const lineH     = fontSize * 1.55              // write-in band height
           const wipeH     = lineH + 70                   // wipe band 70px taller

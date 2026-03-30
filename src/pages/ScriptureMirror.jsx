@@ -95,46 +95,104 @@ function buildFogBuffer(W, H) {
 
 // ─── Drip droplets ────────────────────────────────────────────────────────────
 function createDroplet(W, H, randomY = true) {
-  const rad = 1.2 + Math.random() * 3.8
+  const rad = 1.5 + Math.random() * 4.0
   return {
-    x:        Math.random() * W,
-    y:        randomY ? Math.random() * H : -(rad + Math.random() * 60),
+    x:         Math.random() * W,
+    y:         randomY ? Math.random() * H : -(rad + Math.random() * 80),
     rad,
-    speed:    0.2 + rad * 0.32 + Math.random() * 0.4,
-    alpha:    0.35 + Math.random() * 0.5,
-    trailLen: rad * (4 + Math.random() * 9),
+    speed:     0.25 + rad * 0.28 + Math.random() * 0.45,
+    alpha:     0.4 + Math.random() * 0.45,
+    trailLen:  rad * (18 + Math.random() * 28),
+    // squirm / wobble
+    waveAmp:   0.4 + Math.random() * 1.4,   // horizontal drift amplitude (px)
+    waveFreq:  0.018 + Math.random() * 0.04, // cycles per pixel fallen
+    wavePhase: Math.random() * Math.PI * 2,
+    xBase:     0,   // accumulated x offset (set on spawn)
   }
 }
 
 function drawDroplets(ctx, drops, W, H) {
   drops.forEach(d => {
+    // Squirm — update x using a sine based on how far it has fallen
+    d.x += Math.sin(d.y * d.waveFreq + d.wavePhase) * d.waveAmp * 0.18
+
     // Advance
     d.y += d.speed
     if (d.y > H + d.rad + d.trailLen) {
       Object.assign(d, createDroplet(W, H, false))
+      return
     }
 
-    // Trail — gradient line above the droplet
-    const trail = ctx.createLinearGradient(d.x, d.y - d.trailLen, d.x, d.y)
-    trail.addColorStop(0, `rgba(210,218,230,0)`)
-    trail.addColorStop(1, `rgba(210,218,230,${d.alpha * 0.55})`)
-    ctx.strokeStyle = trail
-    ctx.lineWidth   = d.rad * 0.55
-    ctx.beginPath()
-    ctx.moveTo(d.x, d.y - d.trailLen)
-    ctx.lineTo(d.x, d.y)
-    ctx.stroke()
+    const { x, y, rad, alpha, trailLen, waveAmp, waveFreq, wavePhase } = d
 
-    // Droplet body
+    // ── Trail: tapered, slightly wiggly streak ──────────────────────────────
+    const segments = Math.max(12, Math.floor(trailLen / 3))
+    for (let i = 0; i < segments; i++) {
+      const t0 = i / segments
+      const t1 = (i + 1) / segments
+      const py0 = y - trailLen * (1 - t0)
+      const py1 = y - trailLen * (1 - t1)
+      const px0 = x + Math.sin(py0 * waveFreq + wavePhase) * waveAmp * 0.6
+      const px1 = x + Math.sin(py1 * waveFreq + wavePhase) * waveAmp * 0.6
+      const segAlpha = alpha * 0.45 * t1          // fades toward top
+      const lw = rad * 0.22 + rad * 0.55 * t1    // tapers toward top
+
+      ctx.strokeStyle = `rgba(220,228,240,${segAlpha})`
+      ctx.lineWidth   = lw
+      ctx.lineCap     = 'round'
+      ctx.beginPath()
+      ctx.moveTo(px0, py0)
+      ctx.lineTo(px1, py1)
+      ctx.stroke()
+    }
+
+    // ── Teardrop body ───────────────────────────────────────────────────────
+    // Pointed tip at top (y - rad*2.2), round bulge at bottom (y + rad)
+    const tipY  = y - rad * 2.2
+    const bodyY = y + rad
+    const cpX   = rad * 1.05   // control-point half-width for curves
+
     ctx.beginPath()
-    ctx.arc(d.x, d.y, d.rad, 0, Math.PI * 2)
-    ctx.fillStyle = `rgba(215,222,232,${d.alpha})`
+    ctx.moveTo(x, tipY)
+    ctx.bezierCurveTo(x + cpX, tipY + rad * 1.1,  x + cpX, y,  x, bodyY)
+    ctx.bezierCurveTo(x - cpX, y,                 x - cpX, tipY + rad * 1.1, x, tipY)
+    ctx.closePath()
+
+    // Glassy fill: radial gradient, lighter core → darker edge
+    const gFill = ctx.createRadialGradient(x - rad * 0.25, y - rad * 0.35, 0, x, y, rad * 1.5)
+    gFill.addColorStop(0,   `rgba(240,248,255,${alpha * 0.92})`)
+    gFill.addColorStop(0.5, `rgba(210,222,238,${alpha * 0.75})`)
+    gFill.addColorStop(1,   `rgba(175,192,215,${alpha * 0.55})`)
+    ctx.fillStyle = gFill
     ctx.fill()
 
-    // Specular highlight
+    // Thin rim highlight
+    ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.28})`
+    ctx.lineWidth   = 0.6
+    ctx.stroke()
+
+    // ── Primary crescent highlight (upper-left) ─────────────────────────────
+    ctx.save()
     ctx.beginPath()
-    ctx.arc(d.x - d.rad*.28, d.y - d.rad*.28, d.rad*.36, 0, Math.PI*2)
-    ctx.fillStyle = `rgba(255,255,255,${d.alpha * 0.62})`
+    ctx.moveTo(x, tipY)
+    ctx.bezierCurveTo(x + cpX, tipY + rad * 1.1,  x + cpX, y,  x, bodyY)
+    ctx.bezierCurveTo(x - cpX, y,                 x - cpX, tipY + rad * 1.1, x, tipY)
+    ctx.clip()
+    const hiGrad = ctx.createRadialGradient(
+      x - rad * 0.32, y - rad * 0.5, 0,
+      x - rad * 0.32, y - rad * 0.5, rad * 0.9
+    )
+    hiGrad.addColorStop(0,   `rgba(255,255,255,${alpha * 0.82})`)
+    hiGrad.addColorStop(0.45, `rgba(255,255,255,${alpha * 0.3})`)
+    hiGrad.addColorStop(1,   `rgba(255,255,255,0)`)
+    ctx.fillStyle = hiGrad
+    ctx.fill()
+    ctx.restore()
+
+    // ── Small secondary specular dot ────────────────────────────────────────
+    ctx.beginPath()
+    ctx.arc(x + rad * 0.22, y + rad * 0.28, rad * 0.2, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(255,255,255,${alpha * 0.38})`
     ctx.fill()
   })
 }

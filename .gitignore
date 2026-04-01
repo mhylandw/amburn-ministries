@@ -8,3 +8,5 @@ Books/*.epub
 
 ios/
 android/
+Assets/*.mov
+Assets/*.mp4

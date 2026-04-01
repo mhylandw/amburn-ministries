@@ -23,6 +23,7 @@ import Missions from './pages/Missions'
 import Media from './pages/Media'
 import Podcast from './pages/Podcast'
 import ScriptureMirror from './pages/ScriptureMirror'
+import PrayerRequest from './pages/PrayerRequest'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -54,6 +55,7 @@ function SiteLayout() {
           <Route path="/missions" element={<Missions />} />
           <Route path="/media" element={<Media />} />
           <Route path="/podcast" element={<Podcast />} />
+          <Route path="/prayer" element={<PrayerRequest />} />
         </Routes>
       </main>
       <RadioMiniPlayer />

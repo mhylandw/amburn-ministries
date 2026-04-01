@@ -16,7 +16,6 @@ const navLinks = [
   { label: 'Prayer', to: '/prayer' },
   { label: 'Donate', to: '/donate' },
   { label: 'Contact', to: '/contact' },
-  { label: 'Scripture Mirror', to: '/scripture-mirror' },
 ]
 
 export default function Navbar() {

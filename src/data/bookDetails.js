@@ -42,7 +42,7 @@ This book asks the harder question: are you actually in a wilderness, or have yo
     promo: overcomerCover,
     title: 'Overcomer',
     subtitle: "God's Love Through the Eyes of a Rebel",
-    tagline: 'What do you do when you've burned every bridge — and God builds another one?',
+    tagline: "What do you do when you've burned every bridge — and God builds another one?",
     status: 'coming-soon',
     epub: null,
     filename: null,

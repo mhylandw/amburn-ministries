@@ -13,12 +13,11 @@ export default function EmailSubscribe({ className = '' }) {
   function handleSubmit(e) {
     e.preventDefault()
     if (!email) return
-    // Open Beehiiv subscribe page with email pre-filled
-    window.open(
-      `https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {})
     setSubmitted(true)
   }
 
@@ -26,7 +25,7 @@ export default function EmailSubscribe({ className = '' }) {
     return (
       <div className={`flex items-center gap-3 text-flame-400 font-sans text-sm ${className}`}>
         <Check size={18} />
-        <span>Check the new tab to confirm your subscription!</span>
+        <span>You're subscribed — welcome to the newsletter!</span>
       </div>
     )
   }

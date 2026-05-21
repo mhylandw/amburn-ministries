@@ -26,6 +26,13 @@ export default function LeadMagnetPopup() {
     e.preventDefault()
     if (!email) return
 
+    // Subscribe silently
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {})
+
     // Trigger download immediately
     const link = document.createElement('a')
     link.href = '/texting-with-god.epub'

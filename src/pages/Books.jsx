@@ -74,16 +74,16 @@ function DownloadForm({ epub, filename, title }) {
   const [done, setDone] = useState(false)
   const [open, setOpen] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!email) return
-    // Subscribe via Beehiiv
-    window.open(
-      `https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
-    // Trigger download
+    // Subscribe silently via serverless function
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {}) // fire and forget
+    // Trigger download immediately
     const link = document.createElement('a')
     link.href = epub
     link.download = filename

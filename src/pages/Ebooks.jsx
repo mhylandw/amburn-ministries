@@ -1,10 +1,12 @@
-import { BookOpen, Download, ArrowRight } from 'lucide-react'
+import { useState } from 'react'
+import { BookOpen, Download, ArrowRight, Check, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
-import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
-import weightOfYesCover from '../assets/weight-of-yes-3d.png'
-import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.png'
-import textingGodCover from '../assets/texting-with-god-3d.png'
+import graceLiftsCover from '../assets/when-the-grace-lifts-3d.jpg'
+import weightOfYesCover from '../assets/weight-of-yes-3d.jpg'
+import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.jpg'
+import textingGodCover from '../assets/texting-with-god-3d.jpg'
+import ravenCover from '../assets/wheres-my-raven.png'
 
 const ebooks = [
   {
@@ -13,7 +15,9 @@ const ebooks = [
     subtitle: "God's Love Through the Eyes of a Rebel",
     description: 'A raw, honest story of failure, faith, and the relentless love of God.',
     price: 9.99,
-    stripeLink: null, // add Stripe Payment Link here
+    stripeLink: null,
+    epub: null,
+    filename: null,
   },
   {
     cover: textingGodCover,
@@ -22,6 +26,8 @@ const ebooks = [
     description: 'The story of how one man learned to hear God\'s voice — not in thunder, but in the quiet of a Notes app on his phone.',
     price: 9.99,
     stripeLink: 'https://buy.stripe.com/14AbJ1cwgcW7cxP5BH3sI03',
+    epub: '/texting-with-god.epub',
+    filename: 'Texting With God - Amburn Ministries.epub',
   },
   {
     cover: graceLiftsCover,
@@ -30,6 +36,8 @@ const ebooks = [
     description: 'A field guide for when God feels distant — written for the seasons when heaven feels silent.',
     price: 9.99,
     stripeLink: 'https://buy.stripe.com/eVq3cvao8e0b41j9RX3sI00',
+    epub: '/when-the-grace-lifts.epub',
+    filename: 'When the Grace Lifts - Amburn Ministries.epub',
   },
   {
     cover: weightOfYesCover,
@@ -38,6 +46,8 @@ const ebooks = [
     description: 'Saying yes to God sounds simple — until it costs you something.',
     price: 9.99,
     stripeLink: 'https://buy.stripe.com/cNi4gz9k43lx7dv9RX3sI01',
+    epub: '/weight-of-yes.epub',
+    filename: 'The Weight of Yes - Amburn Ministries.epub',
   },
   {
     cover: afterBreakthroughCover,
@@ -46,8 +56,85 @@ const ebooks = [
     description: 'The breakthrough came — now what? Learn to steward what God unlocked.',
     price: 9.99,
     stripeLink: 'https://buy.stripe.com/7sY3cvao8aNZ0P7c053sI02',
+    epub: '/after-the-breakthrough.epub',
+    filename: 'After the Breakthrough - Amburn Ministries.epub',
+  },
+  {
+    cover: ravenCover,
+    title: "Where's My Raven?",
+    subtitle: 'Exposing the Entitlement Mindset in the Church',
+    description: "What if the provision you're waiting on was never coming — because God already gave you coordinates?",
+    price: 9.99,
+    stripeLink: null,
+    epub: '/wheres-my-raven.epub',
+    filename: "Where's My Raven - Amburn Ministries.epub",
   },
 ]
+
+function DownloadForm({ epub, filename }) {
+  const [email, setEmail] = useState('')
+  const [done, setDone] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!email) return
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {})
+    const link = document.createElement('a')
+    link.href = epub
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    setDone(true)
+  }
+
+  if (done) {
+    return (
+      <div className="flex items-center gap-2 text-flame-400 font-sans text-xs mt-2">
+        <Check size={13} /> Download started!
+      </div>
+    )
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-1.5 text-white/40 hover:text-flame-400 font-sans text-xs transition-colors mt-2"
+      >
+        <Download size={12} /> Free Download
+      </button>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2 mt-2">
+      <div className="relative flex-1">
+        <Mail size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" />
+        <input
+          type="email"
+          required
+          autoFocus
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          className="w-full bg-coal-700 border border-coal-500 focus:border-flame-500 rounded-full pl-7 pr-2 py-1.5 text-white text-xs font-sans outline-none transition-colors placeholder-white/30"
+        />
+      </div>
+      <button
+        type="submit"
+        className="bg-flame-500 hover:bg-flame-400 text-white font-sans text-xs px-3 py-1.5 rounded-full transition-colors whitespace-nowrap"
+      >
+        Get It
+      </button>
+    </form>
+  )
+}
 
 export default function Ebooks() {
   return (
@@ -57,10 +144,8 @@ export default function Ebooks() {
         <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Digital Library</p>
         <h1 className="font-serif text-4xl md:text-5xl text-white mb-4">eBooks</h1>
         <p className="text-white/50 font-sans max-w-lg mx-auto text-sm leading-relaxed">
-          All titles available as ePub — compatible with Kindle, Apple Books, Kobo, and any ebook reader.
+          All titles available as ePub — compatible with Kindle, Apple Books, Kobo, and any ebook reader. Free to download or support the mission.
         </p>
-
-        {/* Format badges */}
         <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
           {['ePub', 'Kindle', 'Apple Books', 'Kobo'].map(f => (
             <span key={f} className="text-xs font-sans text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
@@ -98,39 +183,43 @@ export default function Ebooks() {
                 <p className="text-white/50 font-sans text-sm leading-relaxed flex-1">{book.description}</p>
 
                 {/* Price + CTA */}
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="font-sans text-white font-semibold text-lg">
-                    ${book.price.toFixed(2)}
-                  </span>
-
+                <div className="mt-6 pt-4 border-t border-white/5">
                   {book.stripeLink ? (
-                    <a
-                      href={book.stripeLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-5 py-2.5 rounded-full transition-colors"
-                    >
-                      Buy <ArrowRight size={14} />
-                    </a>
-                  ) : (
-                    <span className="flex items-center gap-2 border border-white/10 text-white/30 font-sans text-sm px-5 py-2.5 rounded-full cursor-default">
-                      Coming Soon
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="font-sans text-white font-semibold text-lg">${book.price.toFixed(2)}</span>
+                      <a
+                        href={book.stripeLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-5 py-2.5 rounded-full transition-colors"
+                      >
+                        Buy <ArrowRight size={14} />
+                      </a>
+                    </div>
+                  ) : book.epub ? null : (
+                    <div className="flex items-center justify-between">
+                      <span className="font-sans text-white font-semibold text-lg">${book.price.toFixed(2)}</span>
+                      <span className="flex items-center gap-2 border border-white/10 text-white/30 font-sans text-sm px-5 py-2.5 rounded-full cursor-default">
+                        Coming Soon
+                      </span>
+                    </div>
                   )}
+
+                  {/* Free download option */}
+                  {book.epub && <DownloadForm epub={book.epub} filename={book.filename} />}
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Also available in print */}
         <div className="max-w-5xl mx-auto mt-16 text-center border-t border-white/5 pt-12">
           <p className="text-white/40 font-sans text-sm mb-4">Prefer a physical copy?</p>
           <Link
             to="/books"
             className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors"
           >
-            View Print Books <ArrowRight size={14} />
+            View All Books <ArrowRight size={14} />
           </Link>
         </div>
       </section>

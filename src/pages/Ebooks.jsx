@@ -14,8 +14,6 @@ const ebooks = [
     title: 'Overcomer',
     subtitle: "God's Love Through the Eyes of a Rebel",
     description: 'A raw, honest story of failure, faith, and the relentless love of God.',
-    price: 9.99,
-    stripeLink: null,
     epub: null,
     filename: null,
   },
@@ -24,8 +22,6 @@ const ebooks = [
     title: 'Texting With God',
     subtitle: 'The Story Behind the Conversation',
     description: 'The story of how one man learned to hear God\'s voice — not in thunder, but in the quiet of a Notes app on his phone.',
-    price: 9.99,
-    stripeLink: 'https://buy.stripe.com/14AbJ1cwgcW7cxP5BH3sI03',
     epub: '/texting-with-god.epub',
     filename: 'Texting With God - Amburn Ministries.epub',
   },
@@ -34,8 +30,6 @@ const ebooks = [
     title: 'When the Grace Lifts',
     subtitle: 'Finding faithfulness in the inbetweens',
     description: 'A field guide for when God feels distant — written for the seasons when heaven feels silent.',
-    price: 9.99,
-    stripeLink: 'https://buy.stripe.com/eVq3cvao8e0b41j9RX3sI00',
     epub: '/when-the-grace-lifts.epub',
     filename: 'When the Grace Lifts - Amburn Ministries.epub',
   },
@@ -44,8 +38,6 @@ const ebooks = [
     title: 'The Weight of Yes',
     subtitle: 'What obedience costs... and what it forms',
     description: 'Saying yes to God sounds simple — until it costs you something.',
-    price: 9.99,
-    stripeLink: 'https://buy.stripe.com/cNi4gz9k43lx7dv9RX3sI01',
     epub: '/weight-of-yes.epub',
     filename: 'The Weight of Yes - Amburn Ministries.epub',
   },
@@ -54,8 +46,6 @@ const ebooks = [
     title: 'After the Breakthrough',
     subtitle: 'Living from intimacy, not outcomes',
     description: 'The breakthrough came — now what? Learn to steward what God unlocked.',
-    price: 9.99,
-    stripeLink: 'https://buy.stripe.com/7sY3cvao8aNZ0P7c053sI02',
     epub: '/after-the-breakthrough.epub',
     filename: 'After the Breakthrough - Amburn Ministries.epub',
   },
@@ -64,8 +54,6 @@ const ebooks = [
     title: "Where's My Raven?",
     subtitle: 'Exposing the Entitlement Mindset in the Church',
     description: "What if the provision you're waiting on was never coming — because God already gave you coordinates?",
-    price: 9.99,
-    stripeLink: null,
     epub: '/wheres-my-raven.epub',
     filename: "Where's My Raven - Amburn Ministries.epub",
   },
@@ -105,9 +93,9 @@ function DownloadForm({ epub, filename }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-white/40 hover:text-flame-400 font-sans text-xs transition-colors mt-2"
+        className="flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-4 py-2 rounded-full transition-colors"
       >
-        <Download size={12} /> Free Download
+        <Download size={13} /> Free Download
       </button>
     )
   }
@@ -144,7 +132,7 @@ export default function Ebooks() {
         <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Digital Library</p>
         <h1 className="font-serif text-4xl md:text-5xl text-white mb-4">eBooks</h1>
         <p className="text-white/50 font-sans max-w-lg mx-auto text-sm leading-relaxed">
-          All titles available as ePub — compatible with Kindle, Apple Books, Kobo, and any ebook reader. Free to download or support the mission.
+          All titles available as ePub — compatible with Kindle, Apple Books, Kobo, and any ebook reader. Enter your email and download free.
         </p>
         <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
           {['ePub', 'Kindle', 'Apple Books', 'Kobo'].map(f => (
@@ -182,31 +170,15 @@ export default function Ebooks() {
                 <p className="text-white/40 font-sans italic text-xs mb-3">{book.subtitle}</p>
                 <p className="text-white/50 font-sans text-sm leading-relaxed flex-1">{book.description}</p>
 
-                {/* Price + CTA */}
+                {/* CTA */}
                 <div className="mt-6 pt-4 border-t border-white/5">
-                  {book.stripeLink ? (
-                    <div className="flex items-center justify-between">
-                      <span className="font-sans text-white font-semibold text-lg">${book.price.toFixed(2)}</span>
-                      <a
-                        href={book.stripeLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-5 py-2.5 rounded-full transition-colors"
-                      >
-                        Buy <ArrowRight size={14} />
-                      </a>
-                    </div>
-                  ) : book.epub ? null : (
-                    <div className="flex items-center justify-between">
-                      <span className="font-sans text-white font-semibold text-lg">${book.price.toFixed(2)}</span>
-                      <span className="flex items-center gap-2 border border-white/10 text-white/30 font-sans text-sm px-5 py-2.5 rounded-full cursor-default">
-                        Coming Soon
-                      </span>
-                    </div>
+                  {book.epub ? (
+                    <DownloadForm epub={book.epub} filename={book.filename} />
+                  ) : (
+                    <span className="flex items-center gap-2 border border-white/10 text-white/30 font-sans text-sm px-4 py-2 rounded-full w-fit cursor-default">
+                      Coming Soon
+                    </span>
                   )}
-
-                  {/* Free download option */}
-                  {book.epub && <DownloadForm epub={book.epub} filename={book.filename} />}
                 </div>
               </div>
             </div>

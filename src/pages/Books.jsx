@@ -6,6 +6,7 @@ import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
 import weightOfYesCover from '../assets/weight-of-yes-3d.png'
 import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.png'
 import textingGodCover from '../assets/texting-with-god-3d.png'
+import ravenCover from '../assets/wheres-my-raven.png'
 
 const books = [
   {
@@ -55,6 +56,16 @@ const books = [
     status: 'available',
     epub: '/after-the-breakthrough.epub',
     filename: 'After the Breakthrough - Amburn Ministries.epub',
+  },
+  {
+    cover: ravenCover,
+    title: "Where's My Raven?",
+    slug: 'wheres-my-raven',
+    subtitle: 'Exposing the Entitlement Mindset in the Church',
+    description: "What if the provision you're waiting on was never coming — because God already gave you coordinates? A sharp, honest look at entitlement, striving, and what it really means to trust God.",
+    status: 'available',
+    epub: '/wheres-my-raven.epub',
+    filename: "Where's My Raven - Amburn Ministries.epub",
   },
 ]
 

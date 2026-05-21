@@ -1,3 +1,4 @@
+import ravenCover from '../assets/wheres-my-raven.png'
 import overcomerCover3d from '../assets/overcomer-cover-3d.png'
 import overcomerCover from '../assets/overcomer-cover.png'
 import graceLiftsCover3d from '../assets/when-the-grace-lifts-3d.png'
@@ -12,6 +13,28 @@ import textingGodCover from '../assets/texting-with-god.jpg'
 import textingGodPromo from '../assets/texting-with-god-promo.jpg'
 
 export const bookDetails = [
+  {
+    slug: 'wheres-my-raven',
+    cover3d: ravenCover,
+    cover: ravenCover,
+    promo: ravenCover,
+    title: "Where's My Raven?",
+    subtitle: 'Exposing the Entitlement Mindset in the Church — and the Striving Spirit on the Other Side',
+    tagline: "What if the provision you're waiting on was never coming — because God already gave you coordinates?",
+    status: 'available',
+    epub: '/wheres-my-raven.epub',
+    filename: "Where's My Raven - Amburn Ministries.epub",
+    color: 'flame',
+    description: `We have taken Elijah's ravens and built a theology of divine entitlement from them. We have romanticized the wilderness, spiritualized our inactivity, and called it faith.
+
+Where's My Raven? is Michael Amstutz-Washburn's honest, unflinching examination of two traps the church falls into: the entitlement mindset that waits for God to deliver what He already gave you instructions to build — and the striving spirit that grinds in its own strength and calls it faithfulness.
+
+Elijah was never in a receiving posture. He was running for his life, breaking down under a juniper tree, walking forty days in exhaustion. God met him there — not because Elijah had mastered spiritual waiting, but because God wasn't finished with him yet.
+
+This book asks the harder question: are you actually in a wilderness, or have you just decided to stop moving?`,
+    pullQuote: '"The ravens came because God had a plan that Elijah was still inside of. That is a fundamentally different foundation to build a theology on."',
+    themes: ['Provision & Faith', 'Entitlement', 'Obedience', 'Work & Rest', 'Trusting God'],
+  },
   {
     slug: 'overcomer',
     cover3d: overcomerCover3d,

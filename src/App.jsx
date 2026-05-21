@@ -24,6 +24,7 @@ import Media from './pages/Media'
 import Podcast from './pages/Podcast'
 import ScriptureMirror from './pages/ScriptureMirror'
 import PrayerRequest from './pages/PrayerRequest'
+import BookLanding from './pages/BookLanding'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -56,6 +57,7 @@ function SiteLayout() {
           <Route path="/media" element={<Media />} />
           <Route path="/podcast" element={<Podcast />} />
           <Route path="/prayer" element={<PrayerRequest />} />
+          <Route path="/books/:slug" element={<BookLanding />} />
         </Routes>
       </main>
       <RadioMiniPlayer />

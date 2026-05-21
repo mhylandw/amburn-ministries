@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ArrowRight, BookOpen, Download, Check, Mail } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
 import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
 import weightOfYesCover from '../assets/weight-of-yes-3d.png'
@@ -10,6 +11,7 @@ const books = [
   {
     cover: overcomerCover,
     title: 'Overcomer',
+    slug: 'overcomer',
     subtitle: "God's Love Through the Eyes of a Rebel",
     description: 'A raw, honest story of failure, faith, and the relentless love of God. Michael\'s debut memoir traces the wreckage of rebellion and the miracle of redemption.',
     status: 'coming-soon',
@@ -17,6 +19,7 @@ const books = [
   {
     cover: textingGodCover,
     title: 'Texting With God',
+    slug: 'texting-with-god',
     subtitle: 'The Story Behind the Conversation',
     description: 'The story of how one man learned to hear God\'s voice — not in thunder, but in the quiet of a Notes app on his phone.',
     status: 'available',
@@ -26,6 +29,7 @@ const books = [
   {
     cover: graceLiftsCover,
     title: 'When the Grace Lifts',
+    slug: 'when-the-grace-lifts',
     subtitle: 'Finding faithfulness in the inbetweens',
     description: 'A field guide for when God feels distant. Written in the quiet after the storm, this book helps you find God\'s voice in the seasons… when it feels silent.',
     status: 'available',
@@ -35,6 +39,7 @@ const books = [
   {
     cover: weightOfYesCover,
     title: 'The Weight of Yes',
+    slug: 'the-weight-of-yes',
     subtitle: 'What obedience costs... and what it forms',
     description: 'Saying yes to God sounds simple — until it costs you something. This book explores what real obedience looks like when the stakes are high and the path is hard.',
     status: 'available',
@@ -44,6 +49,7 @@ const books = [
   {
     cover: afterBreakthroughCover,
     title: 'After the Breakthrough',
+    slug: 'after-the-breakthrough',
     subtitle: 'Living from intimacy, not outcomes',
     description: 'The breakthrough came — now what? This book helps you steward the revelation God gave you and actually live in the freedom He unlocked.',
     status: 'available',
@@ -171,16 +177,32 @@ export default function Books() {
                   <p className="text-white/60 font-sans leading-relaxed mb-6 max-w-lg">{book.description}</p>
 
                   {book.status === 'available' ? (
-                    <DownloadForm epub={book.epub} filename={book.filename} title={book.title} />
+                    <div className="flex flex-col gap-3">
+                      <DownloadForm epub={book.epub} filename={book.filename} title={book.title} />
+                      <Link
+                        to={`/books/${book.slug}`}
+                        className="text-white/30 hover:text-flame-400 font-sans text-xs transition-colors inline-flex items-center gap-1"
+                      >
+                        Learn more <ArrowRight size={11} />
+                      </Link>
+                    </div>
                   ) : (
-                    <a
-                      href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"
-                    >
-                      Get Notified <ArrowRight size={15} />
-                    </a>
+                    <div className="flex flex-col gap-3">
+                      <a
+                        href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors w-fit"
+                      >
+                        Get Notified <ArrowRight size={15} />
+                      </a>
+                      <Link
+                        to={`/books/${book.slug}`}
+                        className="text-white/30 hover:text-flame-400 font-sans text-xs transition-colors inline-flex items-center gap-1"
+                      >
+                        Learn more <ArrowRight size={11} />
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>

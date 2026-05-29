@@ -1,12 +1,26 @@
+const AMBURN_COMMAND_URL = 'https://command.amburnmedia.com';
+const MINISTRIES_FUNNEL_SLUG = 'ministries-email-list';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { email } = req.body
+  const { email, name } = req.body
   if (!email) {
     return res.status(400).json({ error: 'Email required' })
   }
+
+  // Capture in Amburn Command CRM (fire-and-forget — never blocks the response)
+  fetch(`${AMBURN_COMMAND_URL}/f/${MINISTRIES_FUNNEL_SLUG}/optin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      name: name ?? undefined,
+      referer: req.headers['referer'] ?? req.headers['origin'] ?? undefined,
+    }),
+  }).catch(() => {})
 
   try {
     const response = await fetch(

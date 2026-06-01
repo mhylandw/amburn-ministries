@@ -1,0 +1,7 @@
+node_modules/
+ios/
+android/
+/Assets/
+Books/
+dist/
+contacts-clean.csv

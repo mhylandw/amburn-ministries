@@ -1,3 +1,4 @@
+import counterfeitLightCover from '../assets/counterfeit-light.png'
 import ravenCover from '../assets/wheres-my-raven.png'
 import overcomerCover3d from '../assets/overcomer-cover-3d.png'
 import overcomerCover from '../assets/overcomer-cover.png'
@@ -13,6 +14,28 @@ import textingGodCover from '../assets/texting-with-god.jpg'
 import textingGodPromo from '../assets/texting-with-god-promo.jpg'
 
 export const bookDetails = [
+  {
+    slug: 'the-counterfeit-light',
+    cover3d: counterfeitLightCover,
+    cover: counterfeitLightCover,
+    promo: counterfeitLightCover,
+    title: 'The Counterfeit Light',
+    subtitle: 'How to Tell the Light From Its Shadow',
+    tagline: 'Not all light is the same — and this book shows you the difference.',
+    status: 'available',
+    epub: '/The Counterfeit Light-wmO5aOUwgh.epub',
+    filename: 'The Counterfeit Light - Amburn Ministries.epub',
+    color: 'flame',
+    description: `Not all light is the same — and if you've spent years sincerely seeking, you may have already learned that the hard way.
+
+The Counterfeit Light is written by someone who spent forty years moving through religions, philosophies, and spiritual experiences that felt real but ultimately didn't love him back. It's not a book for skeptics. It's a book for sincere seekers — the ones who know God is real, but aren't yet sure they've actually found Him.
+
+Michael Amstutz-Washburn writes from the inside of that journey, not from a comfortable distance. He maps the differences between true light and its shadow — not as abstract theology, but as lived experience. And he leads the reader toward the surrender that actually wins.
+
+If you've ever felt drawn to something spiritual that turned out to be hollow, this book was written for you.`,
+    pullQuote: '"The counterfeit looks real, feels real, and sometimes even sounds like God. The difference is whether it loves you back."',
+    themes: ['Spiritual Discernment', 'True vs Counterfeit', 'Seeking God', 'Surrender', 'Real Faith'],
+  },
   {
     slug: 'wheres-my-raven',
     cover3d: ravenCover,

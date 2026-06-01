@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Music, Mail, Compass, Bell } from 'lucide-react'
+import { ArrowRight, Music, Mail, Compass } from 'lucide-react'
 import discernScreen from '../assets/discern-screen-home.png'
 import discernRoger from '../assets/discern-screen-roger.png'
 import heroBg from '../assets/mk-header.png'
@@ -163,36 +163,33 @@ export default function Home() {
                 <img src={discernScreen} alt="Discern home" className="w-full h-auto block" />
               </div>
               <div className="w-36 rounded-[2rem] border-4 border-white/10 shadow-2xl overflow-hidden bg-coal-900">
-                <img src={discernRoger} alt="Roger check-in" className="w-full h-auto block" />
+                <img src={discernRoger} alt="Discern daily companion" className="w-full h-auto block" />
               </div>
             </div>
 
             {/* Text */}
             <div className="flex-1 text-center md:text-left">
-              <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Coming Soon</p>
+              <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">A Free Discipleship Tool</p>
               <h2 className="font-serif text-4xl md:text-5xl text-white leading-tight mb-4">
                 Quiet your Heart.<br />And Listen.
               </h2>
-              <p className="text-white/50 font-sans leading-relaxed mb-3 max-w-md">
-                A daily spiritual companion built to help you hear God more clearly — through conversation, scripture, guided practices, and reflection.
-              </p>
-              <p className="text-white/30 font-sans text-xs mb-8 italic">
-                Based on the teachings of Daniel Amstutz & Michael Amstutz-Washburn
+              <p className="text-white/50 font-sans leading-relaxed mb-8 max-w-md">
+                A daily spiritual companion to help you hear God more clearly — through scripture, guided practices, prayer, and reflection.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 md:justify-start justify-center">
                 <Link
                   to="/discern"
                   className="inline-flex items-center justify-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-7 py-3 rounded-full transition-colors"
                 >
-                  Learn More <ArrowRight size={14} />
+                  Download Free <ArrowRight size={14} />
                 </Link>
                 <a
-                  href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
+                  href="https://apps.apple.com/app/id6760718115"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 border border-white/15 hover:border-flame-500 text-white/50 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors"
                 >
-                  <Bell size={13} /> Notify Me
+                  iOS &amp; Android
                 </a>
               </div>
             </div>

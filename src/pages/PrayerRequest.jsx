@@ -28,6 +28,9 @@ export default function PrayerRequest() {
       if (res.ok) {
         setStatus('success')
         setForm({ name: '', email: '', request: '', private: false })
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'generate_lead', { send_to: 'AW-17236573986' })
+        }
       } else {
         setStatus('error')
       }

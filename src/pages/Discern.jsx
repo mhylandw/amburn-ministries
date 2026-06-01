@@ -1,8 +1,15 @@
-import { Link } from 'react-router-dom'
-import { ArrowRight, Bell, Sun, Heart, BookOpen, Compass, PenLine, Layers } from 'lucide-react'
+import { ArrowRight, Sun, Heart, BookOpen, Compass, PenLine, Layers } from 'lucide-react'
 import screenHome from '../assets/discern-screen-home.png'
 import screenRoger from '../assets/discern-screen-roger.png'
-import screenCheckin from '../assets/discern-screen-checkin.png'
+
+const APP_STORE = 'https://apps.apple.com/app/id6760718115'
+const PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.discern.app'
+
+function trackDownload() {
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'conversion', { send_to: 'AW-17236573986' })
+  }
+}
 
 function PhoneMockup({ src, alt, offset = false }) {
   return (
@@ -23,6 +30,34 @@ const features = [
   { icon: BookOpen, title: 'Teaching Library',      body: 'Teachings on hearing God, identity, grace, and discernment — grounded in the word of God.' },
 ]
 
+function DownloadButtons({ size = 'md' }) {
+  const base = size === 'lg'
+    ? 'inline-flex items-center gap-3 font-sans font-semibold px-8 py-4 rounded-full transition-colors text-base'
+    : 'inline-flex items-center gap-2 font-sans font-semibold px-6 py-3 rounded-full transition-colors text-sm'
+  return (
+    <div className="flex flex-col sm:flex-row items-center gap-3">
+      <a
+        href={APP_STORE}
+        onClick={trackDownload}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${base} bg-flame-500 hover:bg-flame-400 text-white`}
+      >
+        Download on iOS <ArrowRight size={size === 'lg' ? 16 : 14} />
+      </a>
+      <a
+        href={PLAY_STORE}
+        onClick={trackDownload}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${base} border border-white/20 hover:border-flame-500 text-white/70 hover:text-flame-400`}
+      >
+        Download on Android
+      </a>
+    </div>
+  )
+}
+
 export default function Discern() {
   return (
     <div className="pt-16 bg-coal-900">
@@ -31,59 +66,41 @@ export default function Discern() {
       <section className="relative py-24 px-4 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-flame-600/8 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-14 relative z-10">
-          {/* Text */}
           <div className="flex-1 text-center md:text-left">
-            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-4">Coming Soon</p>
+            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-4">A Free Discipleship Tool</p>
             <h1 className="font-serif text-5xl md:text-6xl text-white leading-tight mb-4">
               Quiet your Heart.<br />And Listen.
             </h1>
             <p className="text-white/50 font-sans leading-relaxed text-lg mb-8 max-w-lg">
-              A daily spiritual companion designed to help you hear God more clearly — through conversation, scripture, guided practices, and reflection.
+              A daily spiritual companion to help you hear God more clearly — through scripture, guided practices, prayer, and reflection.
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-3 md:justify-start justify-center">
-              <a
-                href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold text-sm px-8 py-3 rounded-full transition-colors"
-              >
-                <Bell size={14} /> Notify Me When It Launches
-              </a>
-              <a
-                href="https://discernapp.us"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors"
-              >
-                Visit discernapp.us <ArrowRight size={13} />
-              </a>
+            <div className="md:justify-start justify-center">
+              <DownloadButtons size="md" />
             </div>
-            <p className="text-white/25 font-sans text-xs mt-6">
-              Based on the teachings of Daniel Amstutz & Michael Amstutz-Washburn
+            <p className="text-white/25 font-sans text-xs mt-5">
+              Free to try — no credit card required.
             </p>
           </div>
-
-          {/* Phone mockups */}
           <div className="flex gap-4 items-end flex-shrink-0">
             <PhoneMockup src={screenHome} alt="Discern home screen" offset={true} />
-            <PhoneMockup src={screenRoger} alt="Roger check-in screen" />
+            <PhoneMockup src={screenRoger} alt="Discern daily companion screen" />
           </div>
         </div>
       </section>
 
-      {/* Meet Roger */}
+      {/* Meet Daniel */}
       <section className="py-20 px-4 bg-coal-800 border-y border-white/5">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-flame-500/10 border border-flame-500/30 mb-6">
-            <span className="font-serif text-2xl text-flame-400">R</span>
+            <span className="font-serif text-2xl text-flame-400">D</span>
           </div>
-          <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Meet Roger</p>
+          <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Meet Daniel</p>
           <h2 className="font-serif text-3xl md:text-4xl text-white mb-6">Your guide in truth.</h2>
           <p className="text-white/50 font-sans leading-relaxed mb-4 max-w-xl mx-auto">
-            Every day, Roger checks in with you — asking how you're showing up, pointing you to scripture, leading you in prayer, and walking with you through whatever you're carrying.
+            Every day, Daniel checks in with you — asking how you're showing up, pointing you to scripture, leading you in prayer, and walking with you through whatever you're carrying.
           </p>
           <p className="text-white/30 font-sans text-sm italic">
-            Grounded in scripture, not just AI. Roger is a guided discernment companion — a steady presence for your daily walk.
+            Grounded in scripture and the teachings of Daniel Amstutz. A steady presence for your daily walk.
           </p>
         </div>
       </section>
@@ -112,20 +129,16 @@ export default function Discern() {
       {/* CTA */}
       <section className="py-24 px-4 bg-coal-800 text-center">
         <div className="max-w-lg mx-auto">
-          <Bell className="text-flame-500 mx-auto mb-4" size={28} />
-          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Be the first to know.</h2>
+          <h2 className="font-serif text-3xl md:text-4xl text-white mb-4">Start hearing God more clearly.</h2>
           <p className="text-white/50 font-sans leading-relaxed mb-8">
-            Join the newsletter and we'll notify you the moment Discern is ready to download.
+            Discern is free to try. No account required to get started.
           </p>
-          <a
-            href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 text-white font-sans font-semibold px-10 py-4 rounded-full transition-colors"
-          >
-            Notify Me <ArrowRight size={15} />
-          </a>
-          <p className="text-white/20 font-sans text-xs mt-4">Free to download when it launches.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <DownloadButtons size="lg" />
+          </div>
+          <p className="text-white/20 font-sans text-xs mt-6">
+            An Amburn Ministries resource &nbsp;·&nbsp; Available on iOS and Android
+          </p>
         </div>
       </section>
 

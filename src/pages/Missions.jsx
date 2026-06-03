@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Missions() {
+  usePageTitle('Missions | Amburn Ministries', 'The global outreach vision of Amburn Ministries — healing the nations one heart at a time.')
+
   return (
     <div className="pt-16">
 

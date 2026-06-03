@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Mic, Bell, ArrowRight } from 'lucide-react'
 import awakenCover from '../assets/awaken-my-heart.png'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Podcast() {
   const [email, setEmail] = useState('')
@@ -11,6 +12,8 @@ export default function Podcast() {
     if (!email) return
     setSubmitted(true)
   }
+
+  usePageTitle('Podcast | Amburn Ministries', 'The Amburn Ministries podcast — faith conversations, teaching, and encouragement for your walk.')
 
   return (
     <div className="pt-16 min-h-screen bg-coal-900">

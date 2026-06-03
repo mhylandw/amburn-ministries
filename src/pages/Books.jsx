@@ -7,6 +7,7 @@ import weightOfYesCover from '../assets/weight-of-yes-3d.jpg'
 import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.jpg'
 import textingGodCover from '../assets/texting-with-god-3d.jpg'
 import ravenCover from '../assets/wheres-my-raven.png'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const books = [
   {
@@ -150,6 +151,8 @@ function Book3D({ cover, title }) {
 }
 
 export default function Books() {
+  usePageTitle('Books | Amburn Ministries', 'Books by Michael Amstutz-Washburn — free to download. Healing, faith, and breakthrough for real life.')
+
   return (
     <div className="pt-16">
       {/* Page header */}

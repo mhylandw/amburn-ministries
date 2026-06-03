@@ -2,10 +2,15 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Calendar, User, Clock, Mail, ArrowRight, Heart } from 'lucide-react'
 import { posts } from '../data/posts'
 import EmailSubscribe from '../components/EmailSubscribe'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function BlogPost() {
   const { slug } = useParams()
   const post = posts.find((p) => p.slug === slug)
+  usePageTitle(
+    post ? `${post.title} | Amburn Ministries` : 'Blog | Amburn Ministries',
+    post ? post.excerpt || post.description || undefined : undefined
+  )
   const related = post
     ? posts.filter((p) => p.slug !== slug && (p.tag === post.tag || p.authors === post.authors)).slice(0, 3)
     : []

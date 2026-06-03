@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Heart, CheckCircle, Send, ShieldCheck } from 'lucide-react'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function PrayerRequest() {
   const [status, setStatus] = useState('idle')
@@ -38,6 +39,8 @@ export default function PrayerRequest() {
       setStatus('error')
     }
   }
+
+  usePageTitle('Prayer Request | Amburn Ministries', 'Submit a prayer request to Amburn Ministries. We believe God answers prayer.')
 
   return (
     <div className="pt-16">

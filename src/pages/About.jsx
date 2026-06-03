@@ -2,8 +2,11 @@ import mkPhoto from '../assets/mk-photo.avif'
 import ministryPhoto from '../assets/ministry-photo.avif'
 import mkTogetherPhoto from '../assets/IMG_2773_edited.jpg'
 import headerBg from '../assets/mk-header.png'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function About() {
+  usePageTitle('About | Amburn Ministries', 'Michael Amstutz-Washburn — minister, author, and founder of Amburn Ministries. Rooted in faith, healing, and restoration.')
+
   return (
     <div className="pt-16">
 

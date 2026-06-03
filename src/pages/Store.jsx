@@ -6,6 +6,7 @@ import weightCover from '../assets/weight-of-yes-3d.jpg'
 import breakthroughCover from '../assets/after-the-breakthrough-3d.jpg'
 import ravenCover from '../assets/wheres-my-raven.png'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const EBOOKS = [
   {
@@ -118,6 +119,8 @@ function DownloadForm({ epub, filename }) {
 }
 
 export default function Store() {
+  usePageTitle('Store | Amburn Ministries', 'Free ministry resources and books available for download from Amburn Ministries.')
+
   return (
     <div className="min-h-screen bg-coal-900 pt-24 pb-20 px-4">
       <div className="max-w-5xl mx-auto">

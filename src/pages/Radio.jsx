@@ -1,8 +1,11 @@
 import { Play, Pause, Radio, Shuffle } from 'lucide-react'
 import { useRadio } from '../context/RadioContext'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function RadioPage() {
   const { playlist, currentTrack, currentIndex, isPlaying, shuffled, setShuffled, playTrack, togglePlay } = useRadio()
+
+  usePageTitle('Radio | Amburn Ministries', 'Listen to Amburn Ministries Radio — faith, healing, and worship streaming live.')
 
   return (
     <div className="pt-16 min-h-screen bg-coal-900">

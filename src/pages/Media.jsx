@@ -11,6 +11,8 @@ export default function Media() {
     'HA0BhXInYxw',
   ]
 
+  usePageTitle('Media | Amburn Ministries', 'Watch and listen to teachings, messages, and ministry content from Amburn Ministries.')
+
   return (
     <div className="pt-16">
       <div className="bg-coal-800 py-20 px-4 text-center border-b border-coal-600">

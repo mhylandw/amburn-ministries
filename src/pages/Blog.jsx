@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Calendar, User, Clock } from 'lucide-react'
 import { posts } from '../data/posts'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Blog() {
+  usePageTitle('Blog | Amburn Ministries', 'Articles on faith, healing, prayer, and the Christian walk from Amburn Ministries.')
+
   return (
     <div className="pt-16">
       <div className="bg-coal-800 py-20 px-4 text-center border-b border-coal-600">

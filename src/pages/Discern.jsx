@@ -1,6 +1,7 @@
 import { ArrowRight, Sun, Heart, BookOpen, Compass, PenLine, Layers } from 'lucide-react'
 import screenHome from '../assets/discern-screen-home.png'
 import screenRoger from '../assets/discern-screen-roger.png'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const APP_STORE = 'https://apps.apple.com/app/id6760718115'
 const PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.discern.app'
@@ -59,6 +60,8 @@ function DownloadButtons({ size = 'md' }) {
 }
 
 export default function Discern() {
+  usePageTitle('Discern App | Amburn Ministries', 'Discern — your AI-powered spiritual growth companion, built on biblical truth.')
+
   return (
     <div className="pt-16 bg-coal-900">
 

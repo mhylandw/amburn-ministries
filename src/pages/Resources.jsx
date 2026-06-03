@@ -3,9 +3,12 @@ import { Music, Download, ArrowRight, Compass, Tv } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import overcomerCover from '../assets/overcomer-cover.png'
 import SongDownloadModal from '../components/SongDownloadModal'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Resources() {
   const [showSongModal, setShowSongModal] = useState(false)
+  usePageTitle('Resources | Amburn Ministries', 'Free faith resources, devotionals, and tools to help you grow deeper in God.')
+
   return (
     <div className="pt-16">
       {/* Page header */}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Download, Check, Mail, ArrowRight, ArrowLeft, BookOpen } from 'lucide-react'
 import { bookDetails } from '../data/bookDetails'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 function DownloadForm({ epub, filename }) {
   const [email, setEmail] = useState('')
@@ -83,6 +84,10 @@ function DownloadForm({ epub, filename }) {
 export default function BookLanding() {
   const { slug } = useParams()
   const book = bookDetails.find((b) => b.slug === slug)
+  usePageTitle(
+    book ? `${book.title} | Amburn Ministries` : 'Books | Amburn Ministries',
+    book ? book.tagline || undefined : undefined
+  )
 
   if (!book) {
     return (

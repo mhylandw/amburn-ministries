@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Mail, Phone, Send, CheckCircle, Music, Users, Mic2 } from 'lucide-react'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Contact() {
   const [status, setStatus] = useState('idle') // idle | sending | success | error
@@ -32,6 +33,8 @@ export default function Contact() {
       setStatus('error')
     }
   }
+
+  usePageTitle('Contact | Amburn Ministries', 'Reach out to Amburn Ministries. We would love to hear from you.')
 
   return (
     <div className="pt-16">

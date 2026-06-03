@@ -8,6 +8,7 @@ import img5 from '../assets/ministry-5.avif'
 import img6 from '../assets/ministry-6.png'
 import img7 from '../assets/mk-photo.avif'
 import img8 from '../assets/IMG_2773_edited.jpg'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const slides = [img1, img2, img3, img4, img5, img6, img7, img8]
 
@@ -57,6 +58,8 @@ export default function Donate() {
     if (!finalAmount || parseFloat(finalAmount) < 1) return
     window.open(`https://www.paypal.me/amburnmedia/${parseFloat(finalAmount).toFixed(2)}`, '_blank', 'noopener,noreferrer')
   }
+
+  usePageTitle('Give | Amburn Ministries', 'Support the healing outreach of Amburn Ministries. Every gift helps reach the broken and restore the weary.')
 
   return (
     <div className="pt-16">

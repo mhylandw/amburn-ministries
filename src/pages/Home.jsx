@@ -13,8 +13,10 @@ import weightCover from '../assets/weight-of-yes-3d.png'
 import breakthroughCover from '../assets/after-the-breakthrough-3d.png'
 import EmailSubscribe from '../components/EmailSubscribe'
 import SongDownloadModal from '../components/SongDownloadModal'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Home() {
+  usePageTitle('Amburn Ministries — Heal · Deliver · Restore', 'Biblical inner healing, faith resources, and ministry teaching from Michael Amstutz-Washburn. Free books, prayer, and more.')
   const [showSongModal, setShowSongModal] = useState(false)
 
   return (

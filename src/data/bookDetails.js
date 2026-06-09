@@ -66,9 +66,12 @@ This book asks the harder question: are you actually in a wilderness, or have yo
     title: 'Overcomer',
     subtitle: "God's Love Through the Eyes of a Rebel",
     tagline: "What do you do when you've burned every bridge — and God builds another one?",
-    status: 'available',
-    epub: '/overcomer.epub',
-    filename: 'Overcomer - Amburn Ministries.epub',
+    status: 'for-sale',
+    epub: null,         // paid via Stripe — not a free download
+    filename: null,
+    price: '$9.99',     // epub price via Stripe
+    stripeId: 'overcomer',
+    amazonUrl: null,    // add Amazon paperback URL once live on KDP
     color: 'flame',
     description: `Some stories don't start with a prayer — they start with a wreck.
 

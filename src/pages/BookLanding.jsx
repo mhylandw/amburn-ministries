@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Download, Check, Mail, ArrowRight, ArrowLeft, BookOpen } from 'lucide-react'
+import { Download, Check, Mail, ArrowRight, ArrowLeft, BookOpen, ShoppingCart, ExternalLink, Loader2 } from 'lucide-react'
 import { bookDetails } from '../data/bookDetails'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { trackConversion } from '../lib/analytics'
@@ -83,6 +83,55 @@ function DownloadForm({ epub, filename }) {
   )
 }
 
+/** Buy buttons for paid books — epub via Stripe, paperback via Amazon */
+function BuyButtons({ stripeId, price, amazonUrl }) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleEbookBuy() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId: stripeId }),
+      })
+      const { url } = await res.json()
+      if (url) window.location.href = url
+    } catch {
+      alert('Could not start checkout. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-3 items-center md:items-start">
+      <button
+        onClick={handleEbookBuy}
+        disabled={loading}
+        className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 disabled:opacity-60 text-white font-sans font-semibold text-base px-8 py-4 rounded-full transition-colors"
+      >
+        {loading ? <Loader2 size={18} className="animate-spin" /> : <ShoppingCart size={18} />}
+        Buy eBook — {price}
+      </button>
+      {amazonUrl ? (
+        <a
+          href={amazonUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/70 hover:text-white font-sans text-sm px-6 py-4 rounded-full transition-colors"
+        >
+          <ExternalLink size={15} /> Paperback on Amazon
+        </a>
+      ) : (
+        <span className="text-white/30 font-sans text-sm italic py-4">
+          Paperback coming soon on Amazon
+        </span>
+      )}
+    </div>
+  )
+}
+
 export default function BookLanding() {
   const { slug } = useParams()
   const book = bookDetails.find((b) => b.slug === slug)
@@ -102,7 +151,7 @@ export default function BookLanding() {
     )
   }
 
-  const others = bookDetails.filter((b) => b.slug !== slug && b.status === 'available').slice(0, 3)
+  const others = bookDetails.filter((b) => b.slug !== slug && (b.status === 'available' || b.status === 'for-sale')).slice(0, 3)
 
   return (
     <div className="pt-16">
@@ -131,6 +180,10 @@ export default function BookLanding() {
                 <span className="text-xs font-sans uppercase tracking-widest text-flame-400 bg-flame-500/10 border border-flame-500/30 px-3 py-1 rounded-full">
                   Free eBook
                 </span>
+              ) : book.status === 'for-sale' ? (
+                <span className="text-xs font-sans uppercase tracking-widest text-gold-400 bg-gold-500/10 border border-gold-500/30 px-3 py-1 rounded-full">
+                  Now Available
+                </span>
               ) : (
                 <span className="text-xs font-sans uppercase tracking-widest text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
                   Coming Soon
@@ -147,6 +200,11 @@ export default function BookLanding() {
               <div className="flex flex-col gap-2">
                 <DownloadForm epub={book.epub} filename={book.filename} />
                 <p className="text-white/25 font-sans text-xs">Free forever. No credit card needed.</p>
+              </div>
+            ) : book.status === 'for-sale' ? (
+              <div className="flex flex-col gap-3">
+                <BuyButtons stripeId={book.stripeId} price={book.price} amazonUrl={book.amazonUrl} />
+                <p className="text-white/25 font-sans text-xs">Secure checkout via Stripe. Instant download after purchase.</p>
               </div>
             ) : (
               <a
@@ -201,7 +259,7 @@ export default function BookLanding() {
         </div>
       </section>
 
-      {/* Download CTA */}
+      {/* Bottom CTA */}
       {book.status === 'available' && (
         <section className="py-16 px-4 bg-coal-900 border-t border-coal-700">
           <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-5">
@@ -214,6 +272,20 @@ export default function BookLanding() {
             </p>
             <DownloadForm epub={book.epub} filename={book.filename} />
             <p className="text-white/20 font-sans text-xs">No spam. Unsubscribe anytime.</p>
+          </div>
+        </section>
+      )}
+      {book.status === 'for-sale' && (
+        <section className="py-16 px-4 bg-coal-900 border-t border-coal-700">
+          <div className="max-w-xl mx-auto text-center flex flex-col items-center gap-5">
+            <div className="w-12 h-12 rounded-full bg-flame-500/10 border border-flame-500/30 flex items-center justify-center">
+              <BookOpen className="text-flame-500" size={20} />
+            </div>
+            <h2 className="font-serif text-3xl text-white">Get your copy.</h2>
+            <p className="text-white/50 font-sans leading-relaxed">
+              <em>{book.title}</em> — available as an eBook or paperback.
+            </p>
+            <BuyButtons stripeId={book.stripeId} price={book.price} amazonUrl={book.amazonUrl} />
           </div>
         </section>
       )}
@@ -240,7 +312,7 @@ export default function BookLanding() {
                     <p className="text-white/40 font-sans text-xs">{b.subtitle}</p>
                   </div>
                   <span className="text-flame-400 font-sans text-xs flex items-center gap-1 group-hover:gap-2 transition-all">
-                    Free Download <ArrowRight size={12} />
+                    {b.status === 'for-sale' ? `Buy ${b.price}` : 'Free Download'} <ArrowRight size={12} />
                   </span>
                 </Link>
               ))}

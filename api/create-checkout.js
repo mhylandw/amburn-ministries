@@ -3,6 +3,11 @@ import Stripe from 'stripe'
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 const BOOKS = {
+  'overcomer': {
+    name: 'Overcomer',
+    description: "God's Love Through the Eyes of a Rebel — eBook by Michael Amstutz-Washburn",
+    price: 999, // $9.99 — update to preferred price
+  },
   'when-the-grace-lifts': {
     name: 'When the Grace Lifts',
     description: 'Finding Faithfulness in the In-Between — eBook',

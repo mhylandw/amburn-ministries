@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Download, Check, Mail, ArrowRight, ArrowLeft, BookOpen } from 'lucide-react'
 import { bookDetails } from '../data/bookDetails'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { trackConversion } from '../lib/analytics'
 
 function DownloadForm({ epub, filename }) {
   const [email, setEmail] = useState('')
@@ -26,6 +27,7 @@ function DownloadForm({ epub, filename }) {
     link.click()
     document.body.removeChild(link)
     setDone(true)
+    trackConversion('download', { item: filename })
   }
 
   if (done) {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Heart, CheckCircle, Send, ShieldCheck } from 'lucide-react'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { trackConversion } from '../lib/analytics'
 
 export default function PrayerRequest() {
   const [status, setStatus] = useState('idle')
@@ -29,9 +30,7 @@ export default function PrayerRequest() {
       if (res.ok) {
         setStatus('success')
         setForm({ name: '', email: '', request: '', private: false })
-        if (typeof window.gtag === 'function') {
-          window.gtag('event', 'generate_lead', { send_to: 'AW-17236573986' })
-        }
+        trackConversion('lead')
       } else {
         setStatus('error')
       }

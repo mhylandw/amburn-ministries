@@ -2,14 +2,16 @@ import { ArrowRight, Sun, Heart, BookOpen, Compass, PenLine, Layers } from 'luci
 import screenHome from '../assets/discern-screen-home.png'
 import screenRoger from '../assets/discern-screen-roger.png'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { trackConversion } from '../lib/analytics'
 
 const APP_STORE = 'https://apps.apple.com/app/id6760718115'
 const PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.discern.app'
+// The Android app is not yet live on Google Play, so linking PLAY_STORE 404s.
+// Flip this to true once the listing is published and the button goes live.
+const ANDROID_LIVE = false
 
 function trackDownload() {
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', 'conversion', { send_to: 'AW-17236573986' })
-  }
+  trackConversion('app')
 }
 
 function PhoneMockup({ src, alt, offset = false }) {
@@ -46,15 +48,24 @@ function DownloadButtons({ size = 'md' }) {
       >
         Download on iOS <ArrowRight size={size === 'lg' ? 16 : 14} />
       </a>
-      <a
-        href={PLAY_STORE}
-        onClick={trackDownload}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${base} border border-white/20 hover:border-flame-500 text-white/70 hover:text-flame-400`}
-      >
-        Download on Android
-      </a>
+      {ANDROID_LIVE ? (
+        <a
+          href={PLAY_STORE}
+          onClick={trackDownload}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${base} border border-white/20 hover:border-flame-500 text-white/70 hover:text-flame-400`}
+        >
+          Download on Android
+        </a>
+      ) : (
+        <span
+          className={`${base} border border-white/10 text-white/30 cursor-default select-none`}
+          aria-disabled="true"
+        >
+          Android — Coming Soon
+        </span>
+      )}
     </div>
   )
 }

@@ -100,9 +100,13 @@ Each time you change the React source:
 
 ```bash
 cd "/Users/michaelamstutz/Amburn Ministries"
-npm run build
+npm run build:cap   # relative asset base (./) — required for Capacitor's file:// loading
 npx cap sync
 ```
+
+> Note: use `build:cap`, NOT plain `build`, for the mobile app. The plain web
+> build uses an absolute base (`/`) for Vercel; loading those assets from
+> `file://` inside the native shell would 404. `build:cap` sets `CAP_BUILD=1`.
 
 Then reopen in Xcode/Android Studio and re-run.
 

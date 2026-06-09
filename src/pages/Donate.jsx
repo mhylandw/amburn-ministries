@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Heart, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { trackConversion } from '../lib/analytics'
 import img1 from '../assets/ministry-1.avif'
 import img2 from '../assets/ministry-2.jpg'
 import img3 from '../assets/ministry-3.avif'
@@ -56,6 +57,7 @@ export default function Donate() {
 
   function handleGive() {
     if (!finalAmount || parseFloat(finalAmount) < 1) return
+    trackConversion('donate', { value: parseFloat(finalAmount), currency: 'USD' })
     window.open(`https://www.paypal.me/amburnmedia/${parseFloat(finalAmount).toFixed(2)}`, '_blank', 'noopener,noreferrer')
   }
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { X, Music, ArrowRight, Check } from 'lucide-react'
+import { trackConversion } from '../lib/analytics'
 
 export default function SongDownloadModal({ onClose }) {
   const [email, setEmail] = useState('')
@@ -18,6 +19,7 @@ export default function SongDownloadModal({ onClose }) {
     document.body.removeChild(link)
 
     setSubmitted(true)
+    trackConversion('download', { item: 'Healing You Again (Communion)' })
   }
 
   return (

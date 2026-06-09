@@ -4,6 +4,7 @@ import { ArrowRight, Music, Mail, Compass } from 'lucide-react'
 import discernScreen from '../assets/discern-screen-home.png'
 import discernRoger from '../assets/discern-screen-roger.png'
 import heroBg from '../assets/mk-header.png'
+import { trackConversion } from '../lib/analytics'
 import mkPhoto from '../assets/mk-hero.avif'
 import logo from '../assets/logo.avif'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
@@ -189,9 +190,10 @@ export default function Home() {
                   href="https://apps.apple.com/app/id6760718115"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackConversion('app')}
                   className="inline-flex items-center justify-center gap-2 border border-white/15 hover:border-flame-500 text-white/50 hover:text-flame-400 font-sans text-sm px-6 py-3 rounded-full transition-colors"
                 >
-                  iOS &amp; Android
+                  Download on iOS
                 </a>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Download, ArrowRight, Check, BookOpen } from 'lucide-react'
 import textingWithGodCover from '../assets/texting-with-god-promo.jpg'
+import { trackConversion } from '../lib/analytics'
 
 export default function LeadMagnetPopup() {
   const [visible, setVisible] = useState(false)
@@ -43,6 +44,7 @@ export default function LeadMagnetPopup() {
 
     setSubmitted(true)
     localStorage.setItem('popup_dismissed', 'true')
+    trackConversion('lead')
   }
 
   if (!visible) return null

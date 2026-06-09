@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BookOpen, Download, ArrowRight, Check, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { trackConversion } from '../lib/analytics'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
 import graceLiftsCover from '../assets/when-the-grace-lifts-3d.jpg'
 import weightOfYesCover from '../assets/weight-of-yes-3d.jpg'
@@ -80,6 +81,7 @@ function DownloadForm({ epub, filename }) {
     link.click()
     document.body.removeChild(link)
     setDone(true)
+    trackConversion('download', { item: filename })
   }
 
   if (done) {

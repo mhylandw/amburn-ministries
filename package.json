@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:cap": "CAP_BUILD=1 vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

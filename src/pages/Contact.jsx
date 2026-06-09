@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Mail, Phone, Send, CheckCircle, Music, Users, Mic2 } from 'lucide-react'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { trackConversion } from '../lib/analytics'
 
 export default function Contact() {
   const [status, setStatus] = useState('idle') // idle | sending | success | error
@@ -26,6 +27,7 @@ export default function Contact() {
       if (res.ok) {
         setStatus('success')
         setForm({ firstName: '', lastName: '', email: '', phone: '', message: '' })
+        trackConversion('lead')
       } else {
         setStatus('error')
       }

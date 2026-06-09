@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Mail, ArrowRight, Check } from 'lucide-react'
+import { trackConversion } from '../lib/analytics'
 
 /**
  * Inline email subscribe form.
@@ -19,9 +20,7 @@ export default function EmailSubscribe({ className = '' }) {
       body: JSON.stringify({ email }),
     }).catch(() => {})
     setSubmitted(true)
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'generate_lead', { send_to: 'AW-17236573986' })
-    }
+    trackConversion('lead')
   }
 
   if (submitted) {

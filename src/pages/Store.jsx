@@ -7,9 +7,17 @@ import weightCover from '../assets/weight-of-yes-3d.png'
 import breakthroughCover from '../assets/after-the-breakthrough-3d.png'
 import ravenCover from '../assets/wheres-my-raven.png'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
+import counterfeitLightCover from '../assets/counterfeit-light-3d.png'
 import { usePageTitle } from '../hooks/usePageTitle'
 
 const EBOOKS = [
+  {
+    title: 'The Counterfeit Light',
+    subtitle: 'How to Tell the Light From Its Shadow',
+    cover: counterfeitLightCover,
+    epub: '/The Counterfeit Light-wmO5aOUwgh.epub',
+    filename: 'The Counterfeit Light - Amburn Ministries.epub',
+  },
   {
     title: 'Texting With God',
     subtitle: 'The Story Behind the Conversation',

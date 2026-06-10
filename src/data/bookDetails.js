@@ -1,22 +1,23 @@
 import counterfeitLightCover from '../assets/counterfeit-light.png'
+import counterfeitLight3d from '../assets/counterfeit-light-3d.png'
 import ravenCover from '../assets/wheres-my-raven.png'
 import overcomerCover3d from '../assets/overcomer-cover-3d.png'
 import overcomerCover from '../assets/overcomer-cover.png'
-import graceLiftsCover3d from '../assets/when-the-grace-lifts-3d.jpg'
+import graceLiftsCover3d from '../assets/when-the-grace-lifts-3d.png'
 import graceLiftsCover from '../assets/when-the-grace-lifts.jpg'
 import graceLiftsPromo from '../assets/grace-lifts-promo.jpg'
-import weightOfYesCover3d from '../assets/weight-of-yes-3d.jpg'
+import weightOfYesCover3d from '../assets/weight-of-yes-3d.png'
 import weightOfYesCover from '../assets/weight-of-yes.jpg'
-import afterBreakthroughCover3d from '../assets/after-the-breakthrough-3d.jpg'
+import afterBreakthroughCover3d from '../assets/after-the-breakthrough-3d.png'
 import afterBreakthroughCover from '../assets/after-the-breakthrough.jpg'
-import textingGodCover3d from '../assets/texting-with-god-3d.jpg'
+import textingGodCover3d from '../assets/texting-with-god-3d.png'
 import textingGodCover from '../assets/texting-with-god.jpg'
 import textingGodPromo from '../assets/texting-with-god-promo.jpg'
 
 export const bookDetails = [
   {
     slug: 'the-counterfeit-light',
-    cover3d: counterfeitLightCover,
+    cover3d: counterfeitLight3d,
     cover: counterfeitLightCover,
     promo: counterfeitLightCover,
     title: 'The Counterfeit Light',

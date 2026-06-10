@@ -3,14 +3,25 @@ import { ArrowRight, BookOpen, Download, Check, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { trackConversion } from '../lib/analytics'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
-import graceLiftsCover from '../assets/when-the-grace-lifts-3d.jpg'
-import weightOfYesCover from '../assets/weight-of-yes-3d.jpg'
-import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.jpg'
-import textingGodCover from '../assets/texting-with-god-3d.jpg'
+import graceLiftsCover from '../assets/when-the-grace-lifts-3d.png'
+import weightOfYesCover from '../assets/weight-of-yes-3d.png'
+import afterBreakthroughCover from '../assets/after-the-breakthrough-3d.png'
+import textingGodCover from '../assets/texting-with-god-3d.png'
 import ravenCover from '../assets/wheres-my-raven.png'
+import counterfeitLightCover from '../assets/counterfeit-light-3d.png'
 import { usePageTitle } from '../hooks/usePageTitle'
 
 const books = [
+  {
+    cover: counterfeitLightCover,
+    title: 'The Counterfeit Light',
+    slug: 'the-counterfeit-light',
+    subtitle: 'How to Tell the Light From Its Shadow',
+    description: 'Written by someone who spent forty years moving through religions and spiritual experiences that felt real but never loved him back. A field guide for sincere seekers learning to tell the true Light from its convincing counterfeit.',
+    status: 'available',
+    epub: '/The Counterfeit Light-wmO5aOUwgh.epub',
+    filename: 'The Counterfeit Light - Amburn Ministries.epub',
+  },
   {
     cover: overcomerCover,
     title: 'Overcomer',

@@ -1,4 +1,4 @@
-import { ArrowRight, Sun, Heart, BookOpen, Compass, PenLine, Layers } from 'lucide-react'
+import { ArrowRight, Sun, Heart, BookOpen, Compass, PenLine, Layers, Activity } from 'lucide-react'
 import screenHome from '../assets/discern-screen-home.png'
 import screenRoger from '../assets/discern-screen-roger.png'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -25,12 +25,12 @@ function PhoneMockup({ src, alt, offset = false }) {
 }
 
 const features = [
-  { icon: Sun,      title: 'Morning Activation',   body: 'Start every day grounded — with a verse, a moment of stillness, and an intention to carry into your day.' },
-  { icon: Heart,    title: 'Emotional Check-In',    body: 'Name what you\'re feeling. Receive scripture, a prayer, and a path forward — no wrong answers.' },
-  { icon: Layers,   title: 'Guided Practices',      body: 'Evening reflection, prayerful reading, decision fasting, and more — for every season of life.' },
-  { icon: Compass,  title: 'Discernment Tools',     body: 'Test impressions step by step. Track what God has said. See what unfolds over time.' },
-  { icon: PenLine,  title: 'Private Journal',       body: 'Write freely, record prayers, capture what you sense God saying. Voice-to-text. Always private.' },
-  { icon: BookOpen, title: 'Teaching Library',      body: 'Teachings on hearing God, identity, grace, and discernment — grounded in the word of God.' },
+  { icon: Sun,      title: 'Morning Activation',   body: 'Start every day grounded — a verse, a moment of stillness, and an intention to carry into your day. Free for everyone.' },
+  { icon: Heart,    title: 'Emotional Check-In',   body: 'Name what you\'re carrying. Receive scripture, a discernment principle, and a prayer — tailored to where you actually are.' },
+  { icon: Activity, title: 'Heart Monitor',        body: 'A living picture of your spiritual pulse — animated, honest, and based on your actual check-in patterns over time.' },
+  { icon: Compass,  title: 'Discernment Tools',    body: 'Test impressions step by step. Track what God has said. See patterns emerge over time.' },
+  { icon: PenLine,  title: 'Private Journal',      body: 'Write freely, record prayers, capture what you sense God saying. Voice-to-text. Always private.' },
+  { icon: BookOpen, title: 'Teaching Library',     body: 'Teachings on hearing God, identity, grace, and discernment — grounded in the word of God.' },
 ]
 
 function DownloadButtons({ size = 'md' }) {
@@ -71,7 +71,7 @@ function DownloadButtons({ size = 'md' }) {
 }
 
 export default function Discern() {
-  usePageTitle('Discern App | Amburn Ministries', 'Discern — your AI-powered spiritual growth companion, built on biblical truth.')
+  usePageTitle('Discern App | Amburn Ministries', 'Discern — a daily companion for hearing God more clearly, built on scripture and biblical truth.')
 
   return (
     <div className="pt-16 bg-coal-900">
@@ -113,9 +113,10 @@ export default function Discern() {
           <p className="text-white/50 font-sans leading-relaxed mb-4 max-w-xl mx-auto">
             Every day, Daniel checks in with you — asking how you're showing up, pointing you to scripture, leading you in prayer, and walking with you through whatever you're carrying.
           </p>
-          <p className="text-white/30 font-sans text-sm italic">
+          <p className="text-white/30 font-sans text-sm mb-2">
             Grounded in scripture and the teachings of Daniel Amstutz. A steady presence for your daily walk.
           </p>
+          <p className="text-flame-500/70 font-sans text-xs uppercase tracking-widest">3 free conversations per day — no subscription required</p>
         </div>
       </section>
 

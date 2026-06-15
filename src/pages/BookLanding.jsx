@@ -259,6 +259,29 @@ export default function BookLanding() {
         </div>
       </section>
 
+      {/* Reviews */}
+      {book.reviews?.length > 0 && (
+        <section className="py-16 px-4 bg-coal-900 border-t border-coal-700">
+          <div className="max-w-2xl mx-auto flex flex-col gap-10">
+            {book.reviews.map((review, i) => (
+              <div key={i} className="flex flex-col gap-4">
+                <div className="flex gap-1">
+                  {Array.from({ length: review.stars }).map((_, s) => (
+                    <span key={s} className="text-yellow-500 text-lg">★</span>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-3">
+                  {review.text.split('\n\n').map((para, p) => (
+                    <p key={p} className="text-white/70 font-sans leading-relaxed text-base">{para}</p>
+                  ))}
+                </div>
+                <p className="text-flame-500 text-xs font-sans uppercase tracking-widest">— {review.attribution}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Bottom CTA */}
       {book.status === 'available' && (
         <section className="py-16 px-4 bg-coal-900 border-t border-coal-700">

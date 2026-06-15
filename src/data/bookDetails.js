@@ -72,7 +72,7 @@ This book asks the harder question: are you actually in a wilderness, or have yo
     filename: null,
     price: '$9.99',     // epub price via Stripe
     stripeId: 'overcomer',
-    amazonUrl: null,    // add Amazon paperback URL once live on KDP
+    amazonUrl: 'http://bit.ly/4eu8pXL',
     color: 'flame',
     description: `Some stories don't start with a prayer — they start with a wreck.
 
@@ -83,6 +83,21 @@ Michael Amstutz-Washburn doesn't write the version of the story that looks good 
 This is a book about the relentless love of a Father who doesn't give up.`,
     pullQuote: '"I didn\'t find God at an altar call. I found Him in the rubble of everything I\'d destroyed."',
     themes: ['Redemption', 'Identity', 'Father\'s Love', 'Healing', 'Rebellion & Grace'],
+    reviews: [
+      {
+        stars: 5,
+        text: `"Overcomer is an honest book full of the Father's truth.
+
+Because of that, it is also a challenging book.
+
+When I was growing up, I remember my dad teaching my brothers how to defend themselves. He said the secret to a solid punch is that it starts in the middle of your back and follows through with your whole arm.
+
+That image stayed with me while reading this book because it perfectly describes Michael's writing. Everything begins from the deepest part of who he is—his heart—and he follows through without pulling back. He doesn't soften the truth, dilute the lesson, or avoid the difficult moments. He tells the story honestly and lets the truth land where it needs to land.
+
+Thank you for writing a book full of His truth and writing it truthfully."`,
+        attribution: 'T.A.',
+      },
+    ],
   },
   {
     slug: 'texting-with-god',

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { ArrowRight, BookOpen, Download, Check, Mail } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ArrowRight, Download, Check, Mail, ShoppingCart, Loader2, ExternalLink, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { trackConversion } from '../lib/analytics'
 import overcomerCover from '../assets/overcomer-cover-3d.png'
@@ -21,14 +21,6 @@ const books = [
     status: 'available',
     epub: '/The Counterfeit Light-wmO5aOUwgh.epub',
     filename: 'The Counterfeit Light - Amburn Ministries.epub',
-  },
-  {
-    cover: overcomerCover,
-    title: 'Overcomer',
-    slug: 'overcomer',
-    subtitle: "God's Love Through the Eyes of a Rebel",
-    description: 'A raw, honest story of failure, faith, and the relentless love of God. Michael\'s debut memoir traces the wreckage of rebellion and the miracle of redemption.',
-    status: 'coming-soon',
   },
   {
     cover: textingGodCover,
@@ -81,6 +73,50 @@ const books = [
     filename: "Where's My Raven - Amburn Ministries.epub",
   },
 ]
+
+function BuyButtons({ stripeId, price, amazonUrl }) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleEbookBuy() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId: stripeId }),
+      })
+      const { url } = await res.json()
+      if (url) window.location.href = url
+    } catch {
+      alert('Could not start checkout. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-3 items-start">
+      <button
+        onClick={handleEbookBuy}
+        disabled={loading}
+        className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 disabled:opacity-60 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors"
+      >
+        {loading ? <Loader2 size={15} className="animate-spin" /> : <ShoppingCart size={15} />}
+        Buy eBook — {price}
+      </button>
+      {amazonUrl && (
+        <a
+          href={amazonUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-white font-sans text-sm px-6 py-3 rounded-full transition-colors"
+        >
+          <ExternalLink size={14} /> Paperback on Amazon
+        </a>
+      )}
+    </div>
+  )
+}
 
 function DownloadForm({ epub, filename, title }) {
   const [email, setEmail] = useState('')
@@ -151,6 +187,50 @@ function DownloadForm({ epub, filename, title }) {
   )
 }
 
+function OvercomerPopup({ onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="relative bg-coal-800 border border-coal-600 rounded-2xl max-w-lg w-full p-8 shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"
+          aria-label="Close"
+        >
+          <X size={20} />
+        </button>
+
+        <span className="text-xs font-sans uppercase tracking-widest text-flame-400 bg-flame-500/10 border border-flame-500/30 px-3 py-1 rounded-full inline-block mb-6">
+          New Release
+        </span>
+
+        <div className="flex gap-6 items-start mb-6">
+          <img
+            src={overcomerCover}
+            alt="Overcomer"
+            className="w-24 flex-shrink-0 object-contain drop-shadow-xl"
+          />
+          <div>
+            <h2 className="font-serif text-2xl text-white mb-1">Overcomer</h2>
+            <p className="text-white/50 font-sans italic text-sm mb-3">God's Love Through the Eyes of a Rebel</p>
+            <p className="text-white/60 font-sans text-sm leading-relaxed">
+              A raw, honest story of failure, faith, and the relentless love of God. Michael's debut memoir traces the wreckage of rebellion and the miracle of redemption.
+            </p>
+          </div>
+        </div>
+
+        <BuyButtons stripeId="overcomer" price="$9.99" amazonUrl="http://bit.ly/4eu8pXL" />
+
+        <button
+          onClick={onClose}
+          className="mt-4 text-white/25 hover:text-white/50 font-sans text-xs transition-colors"
+        >
+          Maybe later
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function Book3D({ cover, title }) {
   return (
     <div className="flex-shrink-0 flex justify-center w-full md:w-auto">
@@ -166,14 +246,29 @@ function Book3D({ cover, title }) {
 export default function Books() {
   usePageTitle('Books | Amburn Ministries', 'Books by Michael Amstutz-Washburn — free to download. Healing, faith, and breakthrough for real life.')
 
+  const [showPopup, setShowPopup] = useState(false)
+
+  useEffect(() => {
+    if (!sessionStorage.getItem('overcomer-popup-seen')) {
+      const t = setTimeout(() => setShowPopup(true), 800)
+      return () => clearTimeout(t)
+    }
+  }, [])
+
+  function closePopup() {
+    sessionStorage.setItem('overcomer-popup-seen', '1')
+    setShowPopup(false)
+  }
+
   return (
     <div className="pt-16">
+      {showPopup && <OvercomerPopup onClose={closePopup} />}
       {/* Page header */}
       <div className="bg-coal-800 py-20 px-4 text-center border-b border-coal-600">
         <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">By Michael Amstutz-Washburn</p>
         <h1 className="font-serif text-4xl md:text-5xl text-white mb-4">Books</h1>
         <p className="text-white/50 font-sans max-w-lg mx-auto text-sm leading-relaxed">
-          Real stories and honest theology for people who are ready to go deeper with God. All eBooks are free.
+          Real stories and honest theology for people who are ready to go deeper with God. Most eBooks are free.
         </p>
       </div>
 
@@ -194,6 +289,10 @@ export default function Books() {
                     <span className="text-xs font-sans uppercase tracking-widest text-flame-500 bg-flame-500/10 border border-flame-500/30 px-3 py-1 rounded-full w-fit mb-4">
                       Coming Soon
                     </span>
+                  ) : book.status === 'for-sale' ? (
+                    <span className="text-xs font-sans uppercase tracking-widest text-flame-400 bg-flame-500/10 border border-flame-500/30 px-3 py-1 rounded-full w-fit mb-4">
+                      Available Now
+                    </span>
                   ) : (
                     <span className="text-xs font-sans uppercase tracking-widest text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full w-fit mb-4">
                       Free eBook
@@ -206,6 +305,16 @@ export default function Books() {
                   {book.status === 'available' ? (
                     <div className="flex flex-col gap-3">
                       <DownloadForm epub={book.epub} filename={book.filename} title={book.title} />
+                      <Link
+                        to={`/books/${book.slug}`}
+                        className="text-white/30 hover:text-flame-400 font-sans text-xs transition-colors inline-flex items-center gap-1"
+                      >
+                        Learn more <ArrowRight size={11} />
+                      </Link>
+                    </div>
+                  ) : book.status === 'for-sale' ? (
+                    <div className="flex flex-col gap-3">
+                      <BuyButtons stripeId={book.stripeId} price={book.price} amazonUrl={book.amazonUrl} />
                       <Link
                         to={`/books/${book.slug}`}
                         className="text-white/30 hover:text-flame-400 font-sans text-xs transition-colors inline-flex items-center gap-1"

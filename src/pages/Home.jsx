@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Music, Mail, Compass } from 'lucide-react'
+import { ArrowRight, Music, Mail, Compass, ShoppingCart, ExternalLink, Loader2 } from 'lucide-react'
 import discernScreen from '../assets/discern-screen-home.png'
 import discernRoger from '../assets/discern-screen-roger.png'
 import heroBg from '../assets/mk-header.png'
@@ -15,6 +15,50 @@ import breakthroughCover from '../assets/after-the-breakthrough-3d.png'
 import EmailSubscribe from '../components/EmailSubscribe'
 import SongDownloadModal from '../components/SongDownloadModal'
 import { usePageTitle } from '../hooks/usePageTitle'
+
+function BuyButtons({ stripeId, price, amazonUrl }) {
+  const [loading, setLoading] = useState(false)
+
+  async function handleEbookBuy() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId: stripeId }),
+      })
+      const { url } = await res.json()
+      if (url) window.location.href = url
+    } catch {
+      alert('Could not start checkout. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-3 items-start flex-wrap">
+      <button
+        onClick={handleEbookBuy}
+        disabled={loading}
+        className="inline-flex items-center gap-2 bg-flame-500 hover:bg-flame-400 disabled:opacity-60 text-white font-sans font-semibold text-sm px-6 py-3 rounded-full transition-colors"
+      >
+        {loading ? <Loader2 size={15} className="animate-spin" /> : <ShoppingCart size={15} />}
+        Buy eBook — {price}
+      </button>
+      {amazonUrl && (
+        <a
+          href={amazonUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 border border-white/20 hover:border-flame-500 text-white/60 hover:text-white font-sans text-sm px-6 py-3 rounded-full transition-colors"
+        >
+          <ExternalLink size={14} /> Paperback on Amazon
+        </a>
+      )}
+    </div>
+  )
+}
 
 export default function Home() {
   usePageTitle('Amburn Ministries — Heal · Deliver · Restore', 'Biblical inner healing, faith resources, and ministry teaching from Michael Amstutz-Washburn. Free books, prayer, and more.')
@@ -109,24 +153,20 @@ export default function Home() {
           </div>
 
           <div>
-            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">New Book</p>
+            <p className="text-flame-500 text-xs font-sans uppercase tracking-widest mb-3">Now Available</p>
             <h2 className="font-serif text-3xl md:text-4xl text-white mb-2">Overcomer</h2>
             <p className="text-white/50 font-sans text-sm italic mb-6">God's Love Through the Eyes of a Rebel</p>
-            <p className="text-white/60 font-sans leading-relaxed mb-4">
+            <p className="text-white/60 font-sans leading-relaxed mb-6">
               Michael Amstutz-Washburn's writing style hits with a rare blend of passion and honesty. It moves you—and points you back to Jesus.
             </p>
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="inline-flex items-center gap-2 border border-flame-500/40 text-flame-400 font-sans text-sm px-6 py-3 rounded-full w-fit">
-                Coming Soon
-              </span>
-              <a
-                href="https://michaels-newsletter-e5cb1e.beehiiv.com/subscribe"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-white/40 hover:text-flame-400 font-sans text-sm transition-colors"
+            <div className="flex flex-col gap-3">
+              <BuyButtons stripeId="overcomer" price="$9.99" amazonUrl="http://bit.ly/4eu8pXL" />
+              <Link
+                to="/books/overcomer"
+                className="flex items-center gap-1 text-white/30 hover:text-flame-400 font-sans text-xs transition-colors"
               >
-                Get notified <ArrowRight size={13} />
-              </a>
+                Learn more <ArrowRight size={11} />
+              </Link>
             </div>
           </div>
         </div>
